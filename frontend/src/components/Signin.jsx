@@ -37,6 +37,7 @@ function Signin() {
       login(res.data.token);
       sessionStorage.setItem("role", role);
       sessionStorage.setItem("username", user.username);
+      sessionStorage.setItem("userId", user._id || user.id || "");   // for socket targeting
 
       alert("Login Successful");
 

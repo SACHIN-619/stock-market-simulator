@@ -16,6 +16,7 @@ import aiRouter from "./routes/aiRoute.js";
 import aiChatRouter from "./routes/aiChatRoute.js";
 import adminActivityRouter from "./routes/adminActivityRoute.js";
 import leaderboardApp from "./routes/leaderboardRoute.js";
+import watchlistRouter from "./routes/watchlistRoute.js";
 
 // ──────────────────────────────────────────────
 // CREATE EXPRESS APP
@@ -107,6 +108,9 @@ app.use("/api/ai", aiLimiter, aiChatRouter);
 
 // Trader leaderboard
 app.use("/trader-api", leaderboardApp);
+
+// Watchlist — real-time AI signal tracking
+app.use("/api/watchlist", watchlistRouter);
 
 // ──────────────────────────────────────────────
 // 404 HANDLER

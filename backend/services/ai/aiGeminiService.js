@@ -12,14 +12,18 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const groq   = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const hf     = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
 
-// Gemini models to try (first hit wins)
-// Gemini models to try (first hit wins)
-// Gemini models to try (first hit wins)
-const GEMINI_MODELS = ["gemini-1.5-flash", "gemini-1.5-pro", "gemini-2.0-flash-exp"];
+// Gemini models to try in order (first hit wins)
+// Updated to current working model names for Gemini API v1
+const GEMINI_MODELS = [
+    "gemini-2.0-flash",         // Latest stable flash model
+    "gemini-2.0-flash-lite",    // Lightweight fallback
+    "gemini-1.5-flash-latest",  // Latest 1.5 flash
+    "gemini-1.5-pro-latest",    // Latest 1.5 pro
+];
 
-// GROQ fallback models (Llama 3.3 70B is the best free option)
+// GROQ fallback models — try large model first, small model for budget
 const GROQ_TEXT_MODELS  = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"];
-const GROQ_JSON_MODELS  = ["llama-3.3-70b-versatile"];
+const GROQ_JSON_MODELS  = ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]; // both support json_object
 const HF_FINANCE_MODEL  = "ProsusAI/finbert";
 
 /**
@@ -109,8 +113,8 @@ const generateTextViaHF = async (prompt) => {
         const result = await hf.chatCompletion({
             model: "Qwen/Qwen2.5-72B-Instruct",
             messages: [{ role: "user", content: prompt }],
-            max_tokens: 1024,
-            temperature: 0.7,
+            max_tokens: 4096,   // Increased: full JSON schema needs ~3500 tokens
+            temperature: 0.3,   // Lower temp for more consistent JSON output
         });
         if (result?.choices[0]?.message?.content) {
             console.log("[HF] Success with Qwen-72B");
@@ -120,6 +124,29 @@ const generateTextViaHF = async (prompt) => {
         console.warn("[HF] Qwen failed:", err.message);
     }
     return null;
+};
+
+// ──────────────────────────────────────────────────────────────────────
+// HELPER: Attempt to salvage partial/truncated JSON from HF output
+// ──────────────────────────────────────────────────────────────────────
+const tryParsePartialJSON = (text) => {
+    try {
+        return JSON.parse(cleanJSON(text));
+    } catch {
+        // Try to extract just the JSON object via regex
+        const match = text.match(/\{[\s\S]+/);
+        if (match) {
+            try {
+                // Attempt to close any open structures and parse
+                let partial = match[0];
+                const openBraces = (partial.match(/\{/g) || []).length;
+                const closeBraces = (partial.match(/\}/g) || []).length;
+                partial += '}'.repeat(Math.max(0, openBraces - closeBraces));
+                return JSON.parse(partial);
+            } catch { /* ignore */ }
+        }
+        return null;
+    }
 };
 
 /**
@@ -171,16 +198,17 @@ export const generateStructuredJSON = async (prompt) => {
                     temperature: 0.2,
                     maxOutputTokens: 2048,
                 },
-            }, { apiVersion: 'v1beta' });
+            }, { apiVersion: 'v1' });
             const result = await model.generateContent(prompt);
-            const parsed = JSON.parse(cleanJSON(result.response.text()));
+            const rawText = result.response.text();
+            const parsed = JSON.parse(cleanJSON(rawText));
             console.log(`[Gemini] JSON success with model: ${modelName}`);
             return parsed;
         } catch (err) {
             console.warn(`[Gemini] JSON (${modelName}) failed:`, err.message);
             if (isGeminiQuotaError(err)) {
-                console.warn("[Gemini] Quota exhausted → falling back to GROQ for JSON...");
-                break; // stop trying Gemini models
+                console.warn("[Gemini] Quota hit -> falling back...");
+                break; 
             }
             continue;
         }
@@ -189,6 +217,22 @@ export const generateStructuredJSON = async (prompt) => {
     // ── Fall back to GROQ ──
     const groqResult = await generateJSONViaGroq(prompt);
     if (groqResult) return groqResult;
+
+    // ── Fall back to Hugging Face ──
+    try {
+        console.warn("[AI] Falling back to Hugging Face for JSON...");
+        const hfRaw = await generateTextViaHF(prompt);
+        if (hfRaw) {
+            const parsed = tryParsePartialJSON(hfRaw);
+            if (parsed) {
+                console.log("[HF] JSON success");
+                return parsed;
+            }
+            console.warn("[HF] JSON parsing failed: could not extract valid JSON");
+        }
+    } catch (err) {
+        console.warn("[HF] Unexpected error:", err.message);
+    }
 
     console.error("[AI] All providers failed for JSON generation.");
     return null;
@@ -210,7 +254,7 @@ export const generateText = async (prompt) => {
                     { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",  threshold: "BLOCK_NONE" },
                     { category: "HARM_CATEGORY_DANGEROUS_CONTENT",  threshold: "BLOCK_NONE" },
                 ],
-            }, { apiVersion: 'v1beta' });
+            }, { apiVersion: 'v1' });
             const result = await model.generateContent(prompt);
             const text   = result.response.text();
             console.log(`[Gemini] Text success with model: ${modelName}`);

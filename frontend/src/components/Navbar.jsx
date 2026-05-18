@@ -1,11 +1,13 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import api from "../service/api";
-import myImage from '../assets/logo.jpeg'
+import WatchlistBell from "./WatchlistBell";
 
 function Navbar() {
   const navigate = useNavigate();
 
-  const role = sessionStorage.getItem("role");
+  const role     = sessionStorage.getItem("role");
+  const userId   = sessionStorage.getItem("userId");     // set on login
+  const username = sessionStorage.getItem("username");
 
   const handleLogout = async () => {
     try {
@@ -15,7 +17,7 @@ function Navbar() {
     } finally {
       sessionStorage.removeItem("role");
       sessionStorage.removeItem("username");
-
+      sessionStorage.removeItem("userId");
       navigate("/signin");
     }
   };
@@ -55,7 +57,10 @@ function Navbar() {
       </NavLink>
 
       {/* RIGHT SIDE */}
-      <div className="flex gap-4 items-center">
+      <div className="flex gap-3 items-center">
+        {/* ── WATCHLIST BELL (traders only) ── */}
+        {role === "trader" && <WatchlistBell userId={userId} />}
+
         {!role ? (
           <div className="flex items-center gap-3">
             <NavLink
@@ -100,3 +105,4 @@ function Navbar() {
 }
 
 export default Navbar;
+

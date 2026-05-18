@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import api from "../service/api";
 
-import { getSingleStock } from "../service/stockService";
+import { getSingleStock, getAllStocks, getStockDetails } from "../service/stockService";
 import { buyStock, sellStock } from "../service/tradeService";
 
 import { socket } from "../socket/socket";
@@ -16,6 +16,7 @@ import CoinIcon from "./CoinIcon";
 function StockDetails() {
   const { stockSymbol } = useParams();
   const [stock, setStock] = useState(null);
+  const navigate = useNavigate();
 
   // LIVE GRAPH STATES
   const [livePrice, setLivePrice] = useState(null);
@@ -46,6 +47,12 @@ function StockDetails() {
 
   const role = sessionStorage.getItem("role");
   const historicalSectionRef = useRef(null);
+
+  // AI MARKET PULSE POPUP STATES
+  const [allStocksList, setAllStocksList] = useState([]);
+  const [loadingStocksList, setLoadingStocksList] = useState(false);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [filterText, setFilterText] = useState("");
 
   // 1. FETCH STOCK DETAILS
   // ... (existing fetchStock and formatMarketCap)
@@ -126,6 +133,50 @@ function StockDetails() {
     }
   }, [stock]);
 
+  // AI MARKET PULSE DATA FETCH
+  const fetchAllStocksList = async () => {
+    try {
+      setLoadingStocksList(true);
+      const data = await getAllStocks(1, "", 100);
+      const allStocks = data.payload || [];
+      const activeStocks = role === "trader" ? allStocks.filter(s => s.isActive) : allStocks;
+
+      const detailedStocks = await Promise.all(
+        activeStocks.map(async (stk) => {
+          try {
+            const details = await getStockDetails(stk.stockSymbol);
+            const liveData = details.payload || {};
+            const price = liveData.c || stk.currentPrice || 0;
+            const changePct = liveData.dp !== undefined ? liveData.dp : 0;
+            return {
+              stockSymbol: stk.stockSymbol,
+              companyName: stk.companyName,
+              price: price,
+              change: `${changePct >= 0 ? "+" : ""}${changePct.toFixed(2)}%`
+            };
+          } catch (err) {
+            console.error(`Failed to fetch details for ${stk.stockSymbol}`, err);
+            return {
+              stockSymbol: stk.stockSymbol,
+              companyName: stk.companyName,
+              price: stk.currentPrice || 0,
+              change: "+0.00%"
+            };
+          }
+        })
+      );
+      setAllStocksList(detailedStocks);
+    } catch (error) {
+      console.error("Error fetching all stocks list:", error);
+    } finally {
+      setLoadingStocksList(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllStocksList();
+  }, [stockSymbol]); // Refetch when transitioning between stocks to keep data fresh
+
   // 3. SOCKET LIVE UPDATES
   useEffect(() => {
     socket.on("stockUpdates", (data) => {
@@ -153,6 +204,44 @@ function StockDetails() {
         });
 
         setStock(prev => prev ? { ...prev, currentPrice: latestPrice } : prev);
+      }
+
+      // Live updates for AI Market Pulse popup
+      if (Array.isArray(data)) {
+        setAllStocksList((prevList) => {
+          return prevList.map((item) => {
+            const match = data.find((d) => d.stockSymbol === item.stockSymbol);
+            if (match) {
+              const price = Number(match.currentPrice);
+              const prevClose = Number(match.previousClose) || price;
+              const diff = price - prevClose;
+              const pct = prevClose ? (diff / prevClose) * 100 : 0;
+              return {
+                ...item,
+                price: price,
+                change: `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`
+              };
+            }
+            return item;
+          });
+        });
+      } else if (data?.stockSymbol) {
+        setAllStocksList((prevList) => {
+          return prevList.map((item) => {
+            if (item.stockSymbol === data.stockSymbol) {
+              const price = Number(data.currentPrice);
+              const prevClose = Number(data.previousClose) || price;
+              const diff = price - prevClose;
+              const pct = prevClose ? (diff / prevClose) * 100 : 0;
+              return {
+                ...item,
+                price: price,
+                change: `${pct >= 0 ? "+" : ""}${pct.toFixed(2)}%`
+              };
+            }
+            return item;
+          });
+        });
       }
     });
 
@@ -271,6 +360,21 @@ function StockDetails() {
         html, body {
           overflow-x: hidden !important;
           max-width: 100vw !important;
+        }
+        /* Custom scrollbar for our quick table */
+        .pulse-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .pulse-scrollbar::-webkit-scrollbar-track {
+          background: rgba(15, 23, 42, 0.3);
+          border-radius: 10px;
+        }
+        .pulse-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(99, 102, 241, 0.3);
+          border-radius: 10px;
+        }
+        .pulse-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(99, 102, 241, 0.6);
         }
       ` }} />
 
@@ -673,6 +777,138 @@ function StockDetails() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* AI MARKET PULSE FLOATING BUTTON & LOOKUP POPUP */}
+      <div className="fixed bottom-24 right-6 z-[200] flex flex-col items-end gap-2">
+        {isPopupOpen && (
+          <div className="w-[320px] sm:w-[360px] rounded-3xl border border-slate-800/80 bg-[#050914]/95 backdrop-blur-xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)] animate-slide-up absolute bottom-16 right-0 mb-2">
+            {/* Header */}
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/60">
+              <div className="flex items-center gap-2">
+                <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-400">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h5l2 8 5-16 3 10 5-2"/></svg>
+                </div>
+                <div>
+                  <h4 className="text-xs font-black text-white uppercase tracking-wider">AI Market Pulse</h4>
+                  <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Real-time Stock Hub</p>
+                </div>
+              </div>
+              <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-full text-[8px] font-black uppercase tracking-wider">
+                Live
+              </span>
+            </div>
+
+            {/* Filter Input */}
+            <div className="relative mb-3">
+              <input
+                type="text"
+                placeholder="Filter by symbol or name..."
+                value={filterText}
+                onChange={(e) => setFilterText(e.target.value)}
+                className="w-full bg-slate-950/60 border border-slate-800/80 focus:border-indigo-500/50 rounded-xl px-3 py-1.5 text-[10px] font-medium text-white outline-none placeholder:text-slate-600 transition-all"
+              />
+              <span className="absolute right-3 top-2 text-[10px] text-slate-600">🔍</span>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-y-auto max-h-[220px] pulse-scrollbar">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-800/40 text-[9px] font-black text-slate-500 uppercase tracking-wider">
+                    <th className="pb-2">Symbol</th>
+                    <th className="pb-2 text-right">Price</th>
+                    <th className="pb-2 text-right">Change</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/30">
+                  {loadingStocksList ? (
+                    <tr>
+                      <td colSpan="3" className="py-8 text-center">
+                        <div className="inline-block w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-2">Loading market data...</p>
+                      </td>
+                    </tr>
+                  ) : allStocksList.filter(s => 
+                      s.stockSymbol.toLowerCase().includes(filterText.toLowerCase()) || 
+                      s.companyName.toLowerCase().includes(filterText.toLowerCase())
+                    ).length === 0 ? (
+                    <tr>
+                      <td colSpan="3" className="py-8 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                        No Stocks Found
+                      </td>
+                    </tr>
+                  ) : (
+                    allStocksList
+                      .filter(s => 
+                        s.stockSymbol.toLowerCase().includes(filterText.toLowerCase()) || 
+                        s.companyName.toLowerCase().includes(filterText.toLowerCase())
+                      )
+                      .map((stk) => {
+                        const isNegative = stk.change?.includes('-');
+                        return (
+                          <tr 
+                            key={stk.stockSymbol}
+                            className="hover:bg-white/[0.02] transition-colors duration-150 group/row cursor-pointer"
+                            onClick={() => {
+                              setIsPopupOpen(false);
+                              navigate(`/stocks/${stk.stockSymbol}`);
+                            }}
+                          >
+                            {/* Symbol Column */}
+                            <td className="py-2.5 relative group/symbol">
+                              <span 
+                                className="text-xs font-black text-indigo-400 group-hover/row:text-indigo-300 transition-colors uppercase relative cursor-help"
+                              >
+                                {stk.stockSymbol}
+                                
+                                {/* Custom Premium Tooltip */}
+                                <span className="pointer-events-none absolute left-0 bottom-full mb-1.5 opacity-0 group-hover/symbol:opacity-100 transition-all duration-200 transform translate-y-1 group-hover/symbol:translate-y-0 bg-[#020617] text-white text-[9px] font-black uppercase tracking-wider px-2 py-1.5 rounded-xl border border-slate-800 shadow-[0_10px_30px_rgba(0,0,0,0.8)] whitespace-nowrap z-50">
+                                  {stk.companyName}
+                                </span>
+                              </span>
+                            </td>
+
+                            {/* Price Column */}
+                            <td className="py-2.5 text-right text-xs font-black text-white">
+                              ${stk.price ? Number(stk.price).toFixed(2) : "0.00"}
+                            </td>
+
+                            {/* Change Column */}
+                            <td className={`py-2.5 text-right text-xs font-black ${isNegative ? 'text-red-400' : 'text-emerald-400'}`}>
+                              <span className="inline-flex items-center gap-0.5">
+                                <span>{isNegative ? '▼' : '▲'}</span>
+                                {stk.change || '0.00%'}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+
+        {/* Pulsating hexagonal button */}
+        <button
+          onClick={() => setIsPopupOpen(!isPopupOpen)}
+          className="relative group hover:scale-110 active:scale-95 transition-all duration-300 flex items-center justify-center w-14 h-14"
+          title="AI Market Pulse"
+        >
+          <div className="absolute inset-0 bg-indigo-500/30 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+          <div 
+            className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-purple-600 text-white text-[8px] font-black flex flex-col items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-300"
+            style={{ clipPath: "polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%)" }}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="mb-0.5"><path d="M2 12h5l2 8 5-16 3 10 5-2"/></svg>
+            <span>PULSE</span>
+          </div>
+          <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500 border border-[#020617]"></span>
+          </span>
+        </button>
       </div>
     </>
   );

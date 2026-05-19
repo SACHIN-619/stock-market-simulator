@@ -523,49 +523,6 @@ function Home() {
         </div>
       </section>
 
-      {/* LIVE simulated TICKER MARQUEE */}
-      <section className="bg-white border-y border-slate-100 py-6 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-2">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-              <span className="text-xs uppercase font-extrabold text-slate-400 tracking-widest">
-                Simulated Market Feed
-              </span>
-            </div>
-            <span className="text-[10px] text-slate-400 font-bold">Ticks live every 3s</span>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {stocks.map((stock) => (
-              <div
-                key={stock.symbol}
-                className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between hover:border-indigo-100 transition duration-300"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-sm font-black text-slate-900">{stock.symbol}</span>
-                    <p className="text-[10px] text-slate-400 font-bold leading-none">{stock.name}</p>
-                  </div>
-                  <span
-                    className={`text-xs font-black px-2 py-0.5 rounded-md ${
-                      stock.isUp ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
-                    }`}
-                  >
-                    {stock.isUp ? "+" : ""}{stock.change}%
-                  </span>
-                </div>
-
-                <div className="flex items-end justify-between mt-4">
-                  <span className="text-base font-black text-slate-900">${stock.price.toFixed(2)}</span>
-                  {renderSparkline(stock.sparkline, stock.isUp)}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CORE CAPABILITIES GRID */}
       <section className="py-24 px-6 md:px-16 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
@@ -633,6 +590,48 @@ function Home() {
               <li className="flex items-center gap-2">✓ Multi-sector risk concentration analysis</li>
               <li className="flex items-center gap-2">✓ Live cash vs equity yield tracking</li>
             </ul>
+          </div>
+        </div>
+      </section>
+
+      {/* LIVE simulated TICKER MARQUEE */}
+      <section className="bg-white border-y border-slate-100 py-6 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="text-xs uppercase font-extrabold text-slate-400 tracking-widest">
+                Simulated Market Feed
+              </span>
+            </div>
+            <span className="text-[10px] text-slate-400 font-bold">Ticks live every 3s</span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {stocks.map((stock) => (
+              <div
+                key={stock.symbol}
+                className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between hover:border-indigo-100 transition duration-300"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="text-sm font-black text-slate-900">{stock.symbol}</span>
+                    <p className="text-[10px] text-slate-400 font-bold leading-none">{stock.name}</p>
+                  </div>
+                  <span
+                    className={`text-xs font-black px-2 py-0.5 rounded-md ${stock.isUp ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                      }`}
+                  >
+                    {stock.isUp ? "+" : ""}{stock.change}%
+                  </span>
+                </div>
+
+                <div className="flex items-end justify-between mt-4">
+                  <span className="text-base font-black text-slate-900">${stock.price.toFixed(2)}</span>
+                  {renderSparkline(stock.sparkline, stock.isUp)}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -740,7 +739,7 @@ function Home() {
       </section>
 
       {/* INVESTOPEDIA FINANCIAL LEARNING HUB */}
-      <section className="py-24 px-6 md:px-16 max-w-6xl mx-auto">
+      <section className="py-24 px-6 md:px-20 lg:px-32 w-full">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <span className="text-xs font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-full">
             Knowledge Center
@@ -758,11 +757,10 @@ function Home() {
           <div className="lg:col-span-1 flex flex-col gap-3">
             <button
               onClick={() => setActiveTab("market")}
-              className={`p-5 rounded-2xl border text-left transition duration-300 cursor-pointer ${
-                activeTab === "market"
+              className={`p-5 rounded-2xl border text-left transition duration-300 cursor-pointer ${activeTab === "market"
                   ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
                   : "bg-white border-slate-100 hover:border-slate-200 text-slate-700"
-              }`}
+                }`}
             >
               <span className="text-[10px] font-extrabold uppercase tracking-widest block opacity-75 mb-1">
                 Concept 01
@@ -772,11 +770,10 @@ function Home() {
 
             <button
               onClick={() => setActiveTab("short")}
-              className={`p-5 rounded-2xl border text-left transition duration-300 cursor-pointer ${
-                activeTab === "short"
+              className={`p-5 rounded-2xl border text-left transition duration-300 cursor-pointer ${activeTab === "short"
                   ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
                   : "bg-white border-slate-100 hover:border-slate-200 text-slate-700"
-              }`}
+                }`}
             >
               <span className="text-[10px] font-extrabold uppercase tracking-widest block opacity-75 mb-1">
                 Concept 02
@@ -786,11 +783,10 @@ function Home() {
 
             <button
               onClick={() => setActiveTab("risk")}
-              className={`p-5 rounded-2xl border text-left transition duration-300 cursor-pointer ${
-                activeTab === "risk"
+              className={`p-5 rounded-2xl border text-left transition duration-300 cursor-pointer ${activeTab === "risk"
                   ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
                   : "bg-white border-slate-100 hover:border-slate-200 text-slate-700"
-              }`}
+                }`}
             >
               <span className="text-[10px] font-extrabold uppercase tracking-widest block opacity-75 mb-1">
                 Concept 03
@@ -935,4 +931,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Home;

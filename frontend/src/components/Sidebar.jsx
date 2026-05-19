@@ -29,13 +29,13 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
   ];
 
   return (
-    <aside className={`fixed left-0 top-16 h-[calc(100vh-64px)] ${isCollapsed ? "w-20" : "w-20 lg:w-64"} bg-[#020617] border-r border-slate-800 transition-all duration-300 z-40 overflow-y-auto`}>
+    <aside className={`fixed left-0 top-16 h-[calc(100vh-64px)] ${isCollapsed ? "w-20" : "w-20 lg:w-64"} bg-[#EFEFEA] border-r border-slate-200/60 transition-all duration-300 z-40 overflow-y-auto`}>
       <div className="flex flex-col h-full py-4">
         {/* Toggle Button */}
         <div className={`px-4 mb-4 flex ${isCollapsed ? "justify-center" : "justify-end"}`}>
            <button 
              onClick={() => setIsCollapsed(!isCollapsed)}
-             className="p-2 rounded-xl bg-slate-900/50 border border-slate-800 text-slate-500 hover:text-emerald-400 hover:border-emerald-500/30 transition-all group"
+             className="p-2 rounded-xl bg-slate-50 border border-slate-200/50 text-slate-400 hover:text-blue-600 hover:border-blue-500/30 transition-all cursor-pointer group"
              title={isCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
            >
              <svg 
@@ -49,11 +49,11 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
                strokeLinejoin="round"
                className={`transition-transform duration-500 ${isCollapsed ? "rotate-180" : ""}`}
              >
-                <polyline points="11 17 6 12 11 7" />
-                <polyline points="18 17 13 12 18 7" />
+                  <polyline points="11 17 6 12 11 7" />
+                  <polyline points="18 17 13 12 18 7" />
              </svg>
            </button>
-        </div>
+         </div>
 
         <nav className="flex-1 px-4 space-y-2">
           {navItems.map((item) => (
@@ -61,10 +61,10 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
               key={item.name}
               to={item.path}
               className={({ isActive }) =>
-                `flex items-center ${isCollapsed ? "justify-center" : "gap-4"} px-4 py-3 rounded-xl transition-all group ${
+                `flex items-center ${isCollapsed ? "justify-center" : "gap-4"} px-4 py-3 rounded-xl transition-all border group ${
                   isActive
-                    ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-slate-200 border border-transparent"
+                    ? "bg-[#E0EFFF] text-[#1D4ED8] border-[#BCD6F2] font-black shadow-2xs"
+                    : "text-slate-550 hover:bg-[#E4E5DF] hover:text-slate-800 border-transparent font-semibold"
                 }`
               }
               title={isCollapsed ? item.name : ""}
@@ -72,16 +72,16 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
               <div className="shrink-0 flex items-center justify-center w-5 h-5">
                 {item.icon}
               </div>
-              {!isCollapsed && <span className="hidden lg:block font-bold text-sm tracking-tight">{item.name}</span>}
+              {!isCollapsed && <span className="hidden lg:block text-sm tracking-tight">{item.name}</span>}
             </NavLink>
           ))}
         </nav>
 
         {!isCollapsed && (
           <div className="px-4 mt-auto mb-4 hidden lg:block">
-            <div className="p-4 rounded-2xl bg-linear-to-br from-emerald-500/10 to-transparent border border-emerald-500/10">
-              <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-2">AI Intelligence</p>
-              <p className="text-[10px] font-bold text-slate-500 leading-relaxed uppercase">
+            <div className="p-4 rounded-2xl bg-[#E0EFFF]/40 border border-[#BCD6F2]/40">
+              <p className="text-[10px] font-black text-[#1D4ED8] uppercase tracking-widest mb-2">AI Intelligence</p>
+              <p className="text-[10px] font-bold text-slate-550 leading-relaxed uppercase">
                 Identify market trends with our smart analysis tools.
               </p>
             </div>

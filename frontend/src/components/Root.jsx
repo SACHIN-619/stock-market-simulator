@@ -28,7 +28,7 @@ function Root() {
   }, [navigate, role, location.pathname]);
 
   return (
-    <div className="min-h-screen bg-[#020617] text-slate-200 flex flex-col relative">
+    <div className="min-h-screen bg-[#F4F5F0] text-slate-855 flex flex-col relative">
       <Navbar />
       
       <div className="flex flex-1 pt-16">
@@ -46,18 +46,27 @@ function Root() {
       {showFloatingChat && (
         <div className="fixed bottom-6 right-6 z-50">
           {!isChatOpen ? (
-            <button
+             <button
               onClick={() => setIsChatOpen(true)}
-              className="relative group hover:scale-110 transition-all duration-300 flex items-center justify-center w-14 h-14"
+              className="relative group flex items-center justify-center w-14 h-14 rounded-full bg-white border border-slate-100 shadow-[0_8px_30px_rgba(0,0,0,0.06),0_1px_3px_rgba(0,0,0,0.02)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(37,99,235,0.15)] hover:scale-105 active:scale-95 cursor-pointer"
             >
-              <div 
-                className="w-12 h-12 bg-gradient-to-br from-emerald-400 to-teal-500 text-black text-xs font-black flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-all duration-300"
-                style={{ clipPath: "polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%)" }}
-              >
-                AI
+              <div className="w-10 h-10 bg-blue-500/10 rounded-full flex items-center justify-center transition-transform duration-500 group-hover:rotate-12">
+                <svg
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-blue-500"
+                >
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                </svg>
               </div>
-              <span className="absolute top-1 right-1 flex h-2.5 w-2.5">
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 border border-[#020617]"></span>
+              <span className="absolute top-1.5 right-1.5 flex h-2.5 w-2.5">
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-400 border border-white"></span>
               </span>
             </button>
           ) : (

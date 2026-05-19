@@ -81,7 +81,7 @@ const aiLimiter = rateLimit({
 
 const generalLimiter = rateLimit({
     windowMs: 60 * 1000,
-    max: 100,
+    max: 1000, // Increased to 1000 to support high frequency local testing and updates without 429 blocks
     message: { message: "Too many requests. Please slow down." },
     standardHeaders: true,
     legacyHeaders: false,

@@ -3,11 +3,11 @@
 function AISummaryCard({ summary, traderScore, marketPhase = "N/A" }) {
 
   return (
-    <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-indigo-500/10 via-slate-900 to-emerald-500/10 p-8 lg:p-10">
+    <div className="relative overflow-hidden rounded-[2.5rem] border border-slate-200/60 bg-gradient-to-br from-indigo-500/5 via-white to-emerald-500/5 p-8 lg:p-10 shadow-[0_8px_30px_rgba(0,0,0,0.02)]">
 
       {/* BACKGROUND GLOW */}
-      <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/10 blur-[120px] rounded-full" />
-      <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-500/10 blur-[120px] rounded-full" />
+      <div className="absolute top-0 right-0 w-72 h-72 bg-emerald-500/5 blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-72 h-72 bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
 
       <div className="relative z-10">
 
@@ -16,46 +16,46 @@ function AISummaryCard({ summary, traderScore, marketPhase = "N/A" }) {
 
           <div>
 
-            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-white/5 border border-white/10 mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-slate-100 border border-slate-200/40 mb-4">
 
               <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
 
-              <span className="text-[10px] tracking-[0.25em] uppercase font-black text-emerald-400">
+              <span className="text-[10px] tracking-[0.25em] uppercase font-black text-emerald-600">
                 Executive AI Summary
               </span>
 
             </div>
 
-            <h2 className="text-2xl lg:text-3xl font-black tracking-tight text-white mb-4">
+            <h2 className="text-2xl lg:text-3xl font-black tracking-tight text-slate-900 mb-4">
               Institutional Grade Portfolio Intelligence
             </h2>
 
-            <p className="text-slate-300 text-lg leading-relaxed max-w-4xl">
+            <p className="text-slate-600 text-lg leading-relaxed max-w-4xl font-medium">
               {summary}
             </p>
 
           </div>
 
           {/* SCORE PANEL */}
-          <div className="min-w-[220px] rounded-[2rem] border border-emerald-500/20 bg-emerald-500/10 p-6 backdrop-blur-xl">
+          <div className="min-w-[220px] rounded-[2rem] border border-emerald-100 bg-emerald-50/50 p-6 backdrop-blur-xl">
 
-            <p className="text-[10px] uppercase tracking-[0.3em] text-emerald-400 font-black mb-3">
+            <p className="text-[10px] uppercase tracking-[0.3em] text-emerald-600 font-black mb-3">
               Trader Score
             </p>
 
             <div className="flex items-end gap-2">
 
-              <h1 className="text-6xl font-black text-white leading-none">
+              <h1 className="text-6xl font-black text-slate-900 leading-none">
                 {traderScore}
               </h1>
 
-              <span className="text-emerald-400 font-black text-xl mb-1">
+              <span className="text-emerald-600 font-black text-xl mb-1">
                 /100
               </span>
 
             </div>
 
-            <div className="mt-4 h-3 rounded-full bg-black/30 overflow-hidden">
+            <div className="mt-4 h-3 rounded-full bg-slate-200 overflow-hidden">
 
               <div
                 className={`h-full rounded-full transition-all duration-700 ${
@@ -72,7 +72,7 @@ function AISummaryCard({ summary, traderScore, marketPhase = "N/A" }) {
 
             </div>
 
-            <p className="mt-4 text-sm text-slate-300 leading-relaxed">
+            <p className="mt-4 text-sm text-slate-500 leading-relaxed font-semibold">
               AI confidence calibrated using portfolio performance,
               diversification quality, volatility exposure,
               and market alignment.
@@ -86,9 +86,9 @@ function AISummaryCard({ summary, traderScore, marketPhase = "N/A" }) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
 
           {/* AI STATUS */}
-          <div className="rounded-[2rem] border border-white/5 bg-black/20 p-6">
+          <div className="rounded-[2rem] border border-slate-200/50 bg-slate-50/50 p-6">
 
-            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-slate-500 mb-3">
+            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-slate-400 mb-3">
               AI Status
             </p>
 
@@ -96,30 +96,30 @@ function AISummaryCard({ summary, traderScore, marketPhase = "N/A" }) {
 
               <div className="w-3 h-3 rounded-full bg-emerald-500 animate-pulse" />
 
-              <h3 className="text-xl font-black text-white">
+              <h3 className="text-xl font-black text-slate-900">
                 Operational
               </h3>
 
             </div>
 
-            <p className="mt-3 text-slate-400 text-sm">
+            <p className="mt-3 text-slate-500 text-sm font-semibold">
               Live portfolio reasoning engine active.
             </p>
 
           </div>
 
           {/* ANALYSIS MODE */}
-          <div className="rounded-[2rem] border border-white/5 bg-black/20 p-6">
+          <div className="rounded-[2rem] border border-slate-200/50 bg-slate-50/50 p-6">
 
-            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-slate-500 mb-3">
+            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-slate-400 mb-3">
               Analysis Mode
             </p>
 
-            <h3 className="text-xl font-black text-indigo-400">
+            <h3 className="text-xl font-black text-indigo-600">
               Multi-Factor
             </h3>
 
-            <p className="mt-3 text-slate-400 text-sm">
+            <p className="mt-3 text-slate-500 text-sm font-semibold">
               Technical indicators + sentiment fusion +
               portfolio behavior analysis.
             </p>
@@ -127,17 +127,17 @@ function AISummaryCard({ summary, traderScore, marketPhase = "N/A" }) {
           </div>
 
           {/* MARKET PHASE */}
-          <div className="rounded-[2rem] border border-white/5 bg-black/20 p-6">
+          <div className="rounded-[2rem] border border-slate-200/50 bg-slate-50/50 p-6">
 
-            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-slate-500 mb-3">
+            <p className="text-[10px] uppercase tracking-[0.25em] font-black text-slate-400 mb-3">
               Market Phase
             </p>
 
-            <h3 className="text-xl font-black text-emerald-400">
+            <h3 className="text-xl font-black text-emerald-600">
               {marketPhase}
             </h3>
 
-            <p className="mt-3 text-slate-400 text-sm">
+            <p className="mt-3 text-slate-500 text-sm font-semibold">
               AI detects increased institutional accumulation
               across growth sectors.
             </p>

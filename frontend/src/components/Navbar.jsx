@@ -24,7 +24,7 @@ function Navbar() {
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-4 
-    bg-[#020617]/80 backdrop-blur-md border-b border-slate-800">
+    bg-[#F4F5F0]/90 backdrop-blur-md border-b border-[#e4e5df]/50">
 
       {/* LOGO & BRAND */}
       <NavLink
@@ -32,7 +32,7 @@ function Navbar() {
         className="flex items-center gap-3 group"
       >
         <div className="relative flex items-center justify-center">
-          <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20 transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 group-hover:border-emerald-500/40">
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-[#e4e5df] transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 group-hover:border-blue-500/30 shadow-2xs">
             <svg 
               width="24" 
               height="24" 
@@ -42,17 +42,17 @@ function Navbar() {
               strokeWidth="2.5" 
               strokeLinecap="round" 
               strokeLinejoin="round"
-              className="text-emerald-500"
+              className="text-blue-600"
             >
               <path d="m3 17 6-6 4 4 8-8"/>
               <path d="M17 7h4v4"/>
             </svg>
           </div>
           {/* GLOW */}
-          <div className="absolute inset-0 bg-emerald-500/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute inset-0 bg-blue-500/10 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
-        <span className="text-2xl font-black text-white tracking-tighter">
-          Stock<span className="text-emerald-500">king</span>
+        <span className="text-2xl font-black text-slate-900 tracking-tighter">
+          Stock<span className="text-blue-600">king</span>
         </span>
       </NavLink>
 
@@ -65,13 +65,13 @@ function Navbar() {
           <div className="flex items-center gap-3">
             <NavLink
               to="/signin"
-              className="px-5 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors"
+              className="px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
             >
               Sign In
             </NavLink>
             <NavLink
               to="/register"
-              className="px-6 py-2 bg-emerald-500 hover:bg-emerald-400 text-black text-sm font-medium rounded-xl transition-all shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95"
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-all shadow-md shadow-blue-600/10 hover:scale-105 active:scale-95"
             >
               Start Trading
             </NavLink>
@@ -79,7 +79,7 @@ function Navbar() {
         ) : (
           <button
             onClick={handleLogout}
-            className="flex items-center gap-2 p-2 px-4 rounded-xl bg-slate-900/50 border border-slate-800 text-slate-400 hover:text-red-400 hover:bg-red-400/10 hover:border-red-400/30 transition-all duration-300 group"
+            className="flex items-center gap-2 p-2 px-4 rounded-xl bg-slate-50 border border-slate-200 text-slate-500 hover:text-red-600 hover:bg-red-50 hover:border-red-200 transition-all duration-300 group shadow-xs cursor-pointer"
             title="Logout"
           >
             <svg 

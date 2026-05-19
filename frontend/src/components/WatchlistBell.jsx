@@ -10,10 +10,10 @@ import { socket } from "../socket/socket";
 // ──────────────────────────────────────────────
 
 const SIGNAL_CONFIG = {
-    BUY:   { color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/30", dot: "bg-emerald-400", icon: "↑" },
-    SELL:  { color: "text-red-400",     bg: "bg-red-500/10 border-red-500/30",         dot: "bg-red-400",     icon: "↓" },
-    HOLD:  { color: "text-yellow-400",  bg: "bg-yellow-500/10 border-yellow-500/30",   dot: "bg-yellow-400",  icon: "→" },
-    WATCH: { color: "text-blue-400",    bg: "bg-blue-500/10 border-blue-500/30",       dot: "bg-blue-400",    icon: "◎" },
+    BUY:   { color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-100/50", dot: "bg-emerald-500", icon: "↑" },
+    SELL:  { color: "text-red-600",     bg: "bg-red-50 border-red-100/50",         dot: "bg-red-500",     icon: "↓" },
+    HOLD:  { color: "text-yellow-600",  bg: "bg-yellow-50 border-yellow-100/50",   dot: "bg-yellow-500",  icon: "→" },
+    WATCH: { color: "text-blue-600",    bg: "bg-blue-50 border-blue-100/50",       dot: "bg-blue-500",    icon: "◎" },
 };
 
 const MAX_ALERTS = 20;
@@ -96,18 +96,18 @@ function WatchlistBell({ userId }) {
             {/* ── BELL BUTTON ── */}
             <button
                 onClick={openPanel}
-                className={`relative flex items-center justify-center w-10 h-10 rounded-xl border transition-all duration-300 group
+                className={`relative flex items-center justify-center w-10 h-10 rounded-xl border transition-all duration-300 group cursor-pointer
                     ${unreadCount > 0
-                        ? "bg-amber-500/10 border-amber-500/30 hover:bg-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
-                        : "bg-slate-900/50 border-slate-800 hover:bg-slate-800 hover:border-slate-700"
+                        ? "bg-amber-550/10 border-amber-500/30 hover:bg-amber-500/20 shadow-[0_0_15px_rgba(245,158,11,0.2)]"
+                        : "bg-white border-[#e4e5df] hover:border-blue-500/30 hover:bg-slate-50/50 text-slate-500"
                     }`}
                 title="Watchlist Alerts"
             >
                 {/* Bell SVG */}
                 <svg
                     width="18" height="18" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
-                    className={`transition-colors ${unreadCount > 0 ? "text-amber-400" : "text-slate-400 group-hover:text-slate-200"}`}
+                    stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+                    className={`transition-colors ${unreadCount > 0 ? "text-amber-500" : "text-slate-500 group-hover:text-slate-800"}`}
                 >
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
                     <path d="M13.73 21a2 2 0 0 1-3.46 0" />
@@ -115,7 +115,7 @@ function WatchlistBell({ userId }) {
 
                 {/* ── UNREAD BADGE ── */}
                 {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-[9px] font-black shadow-lg shadow-red-500/30 animate-bounce-once border-2 border-[#020617]">
+                    <span className="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 rounded-full bg-red-500 text-white text-[9px] font-black shadow-lg shadow-red-500/30 animate-bounce-once border-2 border-white">
                         {unreadCount > 9 ? "9+" : unreadCount}
                     </span>
                 )}
@@ -130,26 +130,26 @@ function WatchlistBell({ userId }) {
 
             {/* ── DROPDOWN PANEL ── */}
             {isOpen && (
-                <div className="absolute right-0 top-12 w-96 max-h-[520px] flex flex-col rounded-2xl border border-white/10 bg-[#0a0f1e]/95 backdrop-blur-xl shadow-2xl shadow-black/60 z-50 overflow-hidden animate-fade-in">
+                <div className="absolute right-0 top-12 w-96 max-h-[520px] flex flex-col rounded-2xl border border-slate-200 bg-white shadow-xl z-50 overflow-hidden animate-fade-in">
 
                     {/* Header */}
-                    <div className="flex items-center justify-between px-5 py-4 border-b border-white/5 bg-slate-900/40 shrink-0">
+                    <div className="flex items-center justify-between px-5 py-4 border-b border-slate-100 bg-slate-50/50 shrink-0">
                         <div>
-                            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-500 font-black">Real-Time Alerts</p>
-                            <h3 className="text-sm font-black text-white mt-0.5">Watchlist Signals</h3>
+                            <p className="text-[10px] uppercase tracking-[0.25em] text-slate-400 font-black">Real-Time Alerts</p>
+                            <h3 className="text-sm font-black text-slate-900 mt-0.5">Watchlist Signals</h3>
                         </div>
                         <div className="flex items-center gap-2">
                             {alerts.length > 0 && (
                                 <button
                                     onClick={clearAll}
-                                    className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-red-400 transition-colors px-2 py-1 rounded-lg hover:bg-red-500/10"
+                                    className="text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-red-650 transition-colors px-2 py-1 rounded-lg hover:bg-red-500/10 cursor-pointer"
                                 >
                                     Clear All
                                 </button>
                             )}
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+                                className="w-7 h-7 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                             >
                                 ✕
                             </button>
@@ -160,12 +160,12 @@ function WatchlistBell({ userId }) {
                     <div className="flex-1 overflow-y-auto custom-scrollbar">
                         {alerts.length === 0 ? (
                             <div className="flex flex-col items-center justify-center py-14 px-6 text-center">
-                                <div className="w-14 h-14 rounded-2xl bg-slate-800/60 border border-slate-700 flex items-center justify-center text-2xl mb-4">🔔</div>
-                                <p className="text-sm font-bold text-slate-400">No alerts yet</p>
-                                <p className="text-xs text-slate-600 mt-1 leading-relaxed">AI will notify you here when a watchlist signal changes (e.g. HOLD → BUY)</p>
+                                <div className="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center text-2xl mb-4">🔔</div>
+                                <p className="text-sm font-bold text-slate-500">No alerts yet</p>
+                                <p className="text-xs text-slate-400 mt-1 leading-relaxed font-semibold">AI will notify you here when a watchlist signal changes (e.g. HOLD → BUY)</p>
                             </div>
                         ) : (
-                            <div className="divide-y divide-white/[0.03]">
+                            <div className="divide-y divide-slate-100 bg-white">
                                 {alerts.map((alert) => {
                                     const cfg = SIGNAL_CONFIG[alert.newSignal] || SIGNAL_CONFIG.WATCH;
                                     const prevCfg = SIGNAL_CONFIG[alert.previousSignal] || SIGNAL_CONFIG.WATCH;
@@ -174,48 +174,48 @@ function WatchlistBell({ userId }) {
                                             key={alert.id}
                                             to={alert.link}
                                             onClick={() => setIsOpen(false)}
-                                            className={`flex flex-col gap-2 px-5 py-4 hover:bg-white/[0.02] transition-colors group ${!alert.read ? "bg-white/[0.015]" : ""}`}
+                                            className={`flex flex-col gap-2 px-5 py-4 hover:bg-slate-50/50 transition-colors group ${!alert.read ? "bg-indigo-50/10" : ""}`}
                                         >
                                             {/* Top row */}
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     {/* Unread dot */}
-                                                    {!alert.read && <div className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
-                                                    <span className="text-base font-black text-white group-hover:text-emerald-400 transition-colors">{alert.symbol}</span>
+                                                    {!alert.read && <div className="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0 animate-pulse" />}
+                                                    <span className="text-base font-black text-slate-900 group-hover:text-indigo-650 transition-colors">{alert.symbol}</span>
                                                     {/* Signal transition badge */}
                                                     <div className="flex items-center gap-1.5">
                                                         <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg border ${prevCfg.bg} ${prevCfg.color}`}>
                                                             {alert.previousSignal}
                                                         </span>
-                                                        <span className="text-slate-600 text-xs">→</span>
+                                                        <span className="text-slate-400 text-xs">→</span>
                                                         <span className={`text-[10px] font-black px-2 py-0.5 rounded-lg border ${cfg.bg} ${cfg.color}`}>
                                                             {alert.newSignal}
                                                         </span>
                                                     </div>
                                                 </div>
-                                                <span className="text-[10px] text-slate-600 font-medium shrink-0">{formatTime(alert.timestamp)}</span>
+                                                <span className="text-[10px] text-slate-400 font-bold shrink-0">{formatTime(alert.timestamp)}</span>
                                             </div>
 
                                             {/* Price + change */}
                                             {alert.price != null && (
                                                 <div className="flex items-center gap-3">
-                                                    <span className="text-xs text-slate-300 font-bold">${alert.price.toFixed(2)}</span>
+                                                    <span className="text-xs text-slate-800 font-bold">${alert.price.toFixed(2)}</span>
                                                     {alert.change != null && (
-                                                        <span className={`text-[10px] font-black ${alert.change >= 0 ? "text-emerald-400" : "text-red-400"}`}>
+                                                        <span className={`text-[10px] font-black ${alert.change >= 0 ? "text-emerald-600" : "text-red-600"}`}>
                                                             {alert.change >= 0 ? "+" : ""}{alert.change.toFixed(2)}%
                                                         </span>
                                                     )}
                                                     {alert.sentiment && (
-                                                        <span className="text-[10px] text-slate-500 font-medium">{alert.sentiment}</span>
+                                                        <span className="text-[10px] text-slate-400 font-bold">{alert.sentiment}</span>
                                                     )}
                                                 </div>
                                             )}
 
                                             {/* Reason */}
-                                            <p className="text-[11px] text-slate-500 leading-relaxed line-clamp-2">{alert.reason}</p>
+                                            <p className="text-[11px] text-slate-650 leading-relaxed font-semibold line-clamp-2">{alert.reason}</p>
 
                                             {/* Click to view CTA */}
-                                            <span className="text-[10px] text-slate-600 group-hover:text-emerald-500 transition-colors font-black uppercase tracking-widest">
+                                            <span className="text-[10px] text-indigo-600 group-hover:text-indigo-700 transition-colors font-black uppercase tracking-widest">
                                                 View Chart →
                                             </span>
                                         </Link>
@@ -226,11 +226,11 @@ function WatchlistBell({ userId }) {
                     </div>
 
                     {/* Footer */}
-                    <div className="px-5 py-3 border-t border-white/5 bg-slate-900/40 shrink-0">
+                    <div className="px-5 py-3 border-t border-slate-100 bg-slate-50/50 shrink-0">
                         <Link
                             to="/ai"
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-emerald-400 transition-colors"
+                            className="flex items-center justify-center gap-2 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-indigo-600 transition-colors"
                         >
                             Manage Watchlist in AI Dashboard →
                         </Link>

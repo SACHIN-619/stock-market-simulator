@@ -61,14 +61,14 @@ function AICommandCenter() {
 
   if (loading || !aiData) {
     return (
-      <div className="min-h-screen bg-[#050816] p-6 lg:p-10">
+      <div className="min-h-screen bg-[#F4F5F0] p-6 lg:p-10">
         <div className="animate-pulse space-y-6">
-          <div className="h-40 rounded-[2rem] bg-slate-900/60" />
+          <div className="h-40 rounded-[2rem] bg-slate-200/60" />
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="h-40 rounded-[2rem] bg-slate-900/60"
+                className="h-40 rounded-[2rem] bg-slate-200/60"
               />
             ))}
           </div>
@@ -76,7 +76,7 @@ function AICommandCenter() {
             {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="h-72 rounded-[2rem] bg-slate-900/60"
+                className="h-72 rounded-[2rem] bg-slate-200/60"
               />
             ))}
           </div>
@@ -92,26 +92,26 @@ function AICommandCenter() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white p-6 lg:p-10 pb-32">
+    <div className="min-h-screen bg-[#F4F5F0] text-slate-800 p-6 lg:p-10 pb-32">
       {/* PAGE HEADER */}
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">
-          <div className="px-4 py-1 rounded-full bg-emerald-500/20 border border-emerald-500/20 text-emerald-400 text-[10px] font-black tracking-[0.25em] uppercase">
+          <div className="px-4 py-1 rounded-full bg-emerald-50 border border-emerald-100/50 text-emerald-600 text-[10px] font-black tracking-[0.25em] uppercase">
             Institutional AI
           </div>
           <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
         </div>
-        <h1 className="text-5xl lg:text-6xl font-black tracking-tight mb-4">
+        <h1 className="text-5xl lg:text-6xl font-black text-slate-900 tracking-tight mb-4">
           Alpha Insight Engine
         </h1>
-        <p className="text-slate-400 max-w-3xl text-lg leading-relaxed">
+        <p className="text-slate-500 max-w-3xl text-lg leading-relaxed font-medium">
           Real-time portfolio intelligence, AI trade signals, risk analysis, and institutional-grade market reasoning.
         </p>
       </div>
 
       {/* ERROR */}
       {error && (
-        <div className="mb-8 bg-red-500/10 border border-red-500/20 rounded-3xl p-6 text-red-300 font-semibold">
+        <div className="mb-8 bg-red-50 border border-red-100/50 rounded-3xl p-6 text-red-600 font-semibold">
           {error}
         </div>
       )}
@@ -131,10 +131,10 @@ function AICommandCenter() {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 ${
+            className={`flex items-center gap-2 px-6 py-4 rounded-2xl font-black text-sm uppercase tracking-widest transition-all duration-300 cursor-pointer ${
               activeTab === tab.id
-                ? "bg-emerald-500 text-black shadow-[0_0_20px_rgba(16,185,129,0.3)]"
-                : "bg-slate-900/50 text-slate-400 hover:bg-slate-800 border border-slate-800"
+                ? "bg-blue-600 text-white shadow-md shadow-blue-600/10 scale-102"
+                : "bg-white text-slate-500 hover:bg-slate-100 hover:text-slate-850 border border-slate-200/60"
             }`}
           >
             <span className="text-lg">{tab.icon}</span>

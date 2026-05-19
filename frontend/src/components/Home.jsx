@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import vid from '../assets/stockking.mp4'
 
 // --- ANIMATION COMPONENT ---
 const LogoAnimation = () => {
@@ -474,7 +475,9 @@ function Home() {
       {/* LEARN SECTION */}
       <section className="py-16 px-6 md:px-16 flex flex-col md:flex-row-reverse gap-10 items-center">
         <img
-          src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80"
+          // src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80"
+          // src="../assets/stockking.mp4"
+          src={vid}
           alt="analysis"
           className="rounded-lg h-64 w-full md:w-1/2 object-cover border border-slate-800 hover:scale-105 transition"
         />

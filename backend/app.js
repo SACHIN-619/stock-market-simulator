@@ -31,7 +31,7 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            imgSrc: ["'self'", "data:", "http://localhost:5000", "http://127.0.0.1:5000"],
+            imgSrc: ["'self'", "data:", "http://localhost:5000", "http://127.0.0.1:5000", "https://res.cloudinary.com"],
             connectSrc: ["'self'", "http://localhost:5000", "http://127.0.0.1:5000"],
         }
     }

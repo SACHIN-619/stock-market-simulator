@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 const { sign } = jwt;
 import { hash, compare } from "bcryptjs";
 import { userModel } from "../models/UserModel.js";
+import { uploadToCloudinary, deleteFromCloudinary } from "../config/cloudinaryUpload.js";
 
 // ──────────────────────────────────────────────
 // REGISTER USER
@@ -190,17 +191,33 @@ export const uploadProfileImage = async (req, res, next) => {
         }
 
         const userId = req.user.id;
-        const fileUrl = `${req.protocol}://${req.get("host")}/uploads/profiles/${req.file.filename}`;
 
-        const user = await userModel.findByIdAndUpdate(
-            userId,
-            { profileImage: fileUrl },
-            { new: true }
-        ).select("-password");
+        // Find existing user to clean up their old profile image if it exists on Cloudinary
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Delete old profile image from Cloudinary if it exists
+        if (user.profileImage && user.profileImage.includes("cloudinary.com")) {
+            await deleteFromCloudinary(user.profileImage);
+        }
+
+        // Upload new image buffer to Cloudinary
+        const result = await uploadToCloudinary(req.file.buffer);
+        const fileUrl = result.secure_url;
+
+        // Save new Cloudinary URL in the database
+        user.profileImage = fileUrl;
+        await user.save();
+
+        // Return updated user object without password
+        const updatedUser = user.toObject();
+        delete updatedUser.password;
 
         res.status(200).json({
             message: "Profile image uploaded successfully",
-            payload: user,
+            payload: updatedUser,
         });
     } catch (err) {
         next(err);
@@ -213,15 +230,25 @@ export const uploadProfileImage = async (req, res, next) => {
 export const removeProfileImage = async (req, res, next) => {
     try {
         const userId = req.user.id;
-        const user = await userModel.findByIdAndUpdate(
-            userId,
-            { profileImage: "" },
-            { new: true }
-        ).select("-password");
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Delete profile image from Cloudinary if it exists
+        if (user.profileImage && user.profileImage.includes("cloudinary.com")) {
+            await deleteFromCloudinary(user.profileImage);
+        }
+
+        user.profileImage = "";
+        await user.save();
+
+        const updatedUser = user.toObject();
+        delete updatedUser.password;
 
         res.status(200).json({
             message: "Profile image removed successfully",
-            payload: user,
+            payload: updatedUser,
         });
     } catch (err) {
         next(err);

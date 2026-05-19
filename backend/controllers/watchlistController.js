@@ -1,4 +1,6 @@
 import { watchlistModel } from "../models/WatchlistModel.js";
+import { stockModel } from "../models/StockModel.js";
+import { validateStockSymbol } from "../services/finnhubService.js";
 
 // ──────────────────────────────────────────────
 // GET  /api/watchlist
@@ -26,12 +28,32 @@ export const addToWatchlist = async (req, res) => {
         const { symbol } = req.body;
 
         if (!symbol || typeof symbol !== "string") {
-            return res.status(400).json({ success: false, message: "symbol is required." });
+            return res.status(400).json({ success: false, message: "incorrect symbol name" });
         }
 
         const clean = symbol.trim().toUpperCase();
-        if (!/^[A-Z]{1,6}$/.test(clean)) {
-            return res.status(400).json({ success: false, message: "Invalid ticker symbol." });
+        if (!/^[A-Z.]{1,10}$/.test(clean)) {
+            return res.status(400).json({ success: false, message: "incorrect symbol name" });
+        }
+
+        // Check if stock exists in our database stockModel (must be active too)
+        const stockExists = await stockModel.findOne({ stockSymbol: clean, isActive: true });
+        if (!stockExists) {
+            // Differentiate between 'incorrect symbol' and 'not listed in application'
+            let companyData = null;
+            try {
+                companyData = await validateStockSymbol(clean);
+            } catch (err) {
+                console.error("Finnhub validation failed inside watchlist:", err.message);
+            }
+
+            if (!companyData || !companyData.name || companyData.rateLimited) {
+                // If it is invalid or rate-limited/failed, throw incorrect symbol name
+                return res.status(400).json({ success: false, message: "incorrect symbol name" });
+            }
+
+            // If it exists in Finnhub but not in our database stockModel
+            return res.status(400).json({ success: false, message: "this stocks is not listed in StockKing" });
         }
 
         // upsert — safe to call multiple times

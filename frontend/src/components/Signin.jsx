@@ -162,7 +162,7 @@ function Signin() {
             <img
               src={authImage}
               alt="StockSim sign in"
-              className="relative h-full w-full object-cover filter brightness-95"
+              className="relative h-full w-full object-cover object-right filter brightness-95"
             />
           </div>
         </div>

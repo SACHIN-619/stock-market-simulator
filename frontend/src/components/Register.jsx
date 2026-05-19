@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import authImage from "../assets/register.jpeg";
+import authImage from "../assets/register.png";
 import api from "../service/api";
 import Home from "./Home";
 
@@ -156,7 +156,7 @@ function Register() {
             <img
               src={authImage}
               alt="StockSim user"
-              className="relative h-full w-full object-cover filter brightness-95"
+              className="relative h-full w-full object-cover filter brightness-95 scale-105 -translate-y-1.5"
             />
           </div>
         </div>

@@ -36,30 +36,30 @@ function Register() {
   };
 
   return (
-    <div className="relative min-h-screen">
+    <div className="relative min-h-screen bg-[#F8FAFC]">
       <Home />
 
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#071427]/70 px-4 py-8 backdrop-blur-[2px]">
-        <div className="relative grid w-full max-w-4xl overflow-hidden rounded-2xl border border-white/10 bg-[#10100f]/85 shadow-2xl shadow-black/50 md:grid-cols-2">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/30 px-4 py-8 backdrop-blur-xs">
+        <div className="relative grid w-full max-w-4xl overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-xl md:grid-cols-2">
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="absolute right-4 top-4 z-20 rounded-full px-3 py-1 text-lg font-bold leading-none text-white/70 transition hover:bg-white/10 hover:text-white"
+            className="absolute right-6 top-6 z-20 h-8 w-8 rounded-full border border-slate-200 bg-white flex items-center justify-center text-xs font-black text-slate-400 hover:text-slate-800 hover:bg-slate-50 transition shadow-xs cursor-pointer"
             aria-label="Close register"
           >
-            X
+            ✕
           </button>
 
           <form
             onSubmit={handleSubmit}
-            className="flex min-h-[500px] flex-col justify-center px-8 py-12 text-white sm:px-12"
+            className="flex min-h-[520px] flex-col justify-center px-8 py-12 text-slate-800 sm:px-12 bg-white"
           >
-            <h2 className="text-center text-4xl font-extrabold tracking-normal text-white">
+            <h2 className="text-center text-3xl font-black tracking-tight text-slate-900 uppercase">
               Register
             </h2>
 
-            <p className="mb-8 mt-3 text-center text-sm text-slate-300">
-              Create your StockSim account
+            <p className="mb-8 mt-2 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
+              Create your Stockking account
             </p>
 
             <input
@@ -68,7 +68,7 @@ function Register() {
               placeholder="Username"
               value={form.username}
               onChange={handleChange}
-              className="mb-5 w-full rounded-lg border border-white/10 bg-[#1e293b] px-4 py-4 text-base font-semibold text-white outline-none transition placeholder:text-white/85 focus:border-[#61f4a1] focus:ring-2 focus:ring-[#61f4a1]/45"
+              className="mb-4 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:bg-white focus:border-indigo-500"
               required
             />
 
@@ -78,34 +78,34 @@ function Register() {
               placeholder="Email"
               value={form.email}
               onChange={handleChange}
-              className="mb-5 w-full rounded-lg border border-white/10 bg-[#1e293b] px-4 py-4 text-base font-semibold text-white outline-none transition placeholder:text-white/85 focus:border-[#61f4a1] focus:ring-2 focus:ring-[#61f4a1]/45"
+              className="mb-4 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:bg-white focus:border-indigo-500"
               required
             />
 
-            <div className="relative mb-8">
+            <div className="relative mb-6">
               <input
                 type={showPassword ? "text" : "password"}
                 name="password"
                 placeholder="Password"
                 value={form.password}
                 onChange={handleChange}
-                className="w-full rounded-lg border border-white/10 bg-[#1e293b] px-4 py-4 pr-12 text-base font-semibold text-white outline-none transition placeholder:text-white/85 focus:border-[#61f4a1] focus:ring-2 focus:ring-[#61f4a1]/45"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3.5 pr-12 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:bg-white focus:border-indigo-500"
                 required
               />
 
               <button
                 type="button"
                 onClick={() => setShowPassword((value) => !value)}
-                className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-white/70 transition hover:bg-white/10 hover:text-white"
+                className="absolute right-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 cursor-pointer"
                 aria-label={showPassword ? "Hide password" : "Show password"}
               >
                 {showPassword ? (
                   <svg
                     viewBox="0 0 24 24"
-                    className="h-5 w-5"
+                    className="h-4 w-4"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
@@ -117,10 +117,10 @@ function Register() {
                 ) : (
                   <svg
                     viewBox="0 0 24 24"
-                    className="h-5 w-5"
+                    className="h-4 w-4"
                     fill="none"
                     stroke="currentColor"
-                    strokeWidth="2"
+                    strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   >
@@ -135,28 +135,28 @@ function Register() {
 
             <button
               type="submit"
-              className="w-full rounded-lg bg-emerald-500 py-3 font-semibold text-black transition hover:bg-emerald-600"
+              className="w-full rounded-xl bg-indigo-600 py-3.5 font-black text-xs uppercase tracking-widest text-white shadow-md hover:bg-indigo-500 transition cursor-pointer active:scale-[0.98]"
             >
               Register
             </button>
 
-            <p className="mt-8 text-center text-base font-medium text-white">
+            <p className="mt-6 text-center text-xs font-semibold text-slate-500">
               Already have an account?{" "}
               <Link
                 to="/signin"
-                className="font-extrabold text-[#61f4a1] transition hover:text-[#7cffb5]"
+                className="font-black text-indigo-600 transition hover:text-indigo-500 ml-1"
               >
                 Login
               </Link>
             </p>
           </form>
 
-          <div className="relative hidden min-h-[500px] overflow-hidden bg-[#071427] md:block">
-            <div className="absolute inset-0 bg-[#06101f]/25"></div>
+          <div className="relative hidden min-h-[520px] overflow-hidden bg-slate-50 md:block">
+            <div className="absolute inset-0 bg-indigo-900/5 z-10"></div>
             <img
               src={authImage}
               alt="StockSim user"
-              className="relative z-10 h-full w-full object-cover"
+              className="relative h-full w-full object-cover filter brightness-95"
             />
           </div>
         </div>

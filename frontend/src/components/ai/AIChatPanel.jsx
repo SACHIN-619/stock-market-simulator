@@ -43,7 +43,7 @@ function renderInline(text, key) {
         // Bold
         if (part.startsWith("**") && part.endsWith("**")) {
           return (
-            <strong key={i} className="text-white font-bold">
+            <strong key={i} className="text-slate-900 font-extrabold">
               {part.slice(2, -2)}
             </strong>
           );
@@ -54,7 +54,7 @@ function renderInline(text, key) {
           return (
             <code
               key={i}
-              className="bg-slate-800 border border-white/10 px-1.5 py-0.5 rounded text-emerald-300 text-xs font-mono"
+              className="bg-slate-100 border border-slate-200 px-1.5 py-0.5 rounded text-indigo-600 text-xs font-mono"
             >
               {part.slice(1, -1)}
             </code>
@@ -72,7 +72,7 @@ function renderInline(text, key) {
                   "_blank"
                 )
               }
-              className="cursor-pointer hover:bg-emerald-500/40 inline-flex items-center px-2 py-0.5 mx-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold tracking-wider transition-colors"
+              className="cursor-pointer hover:bg-indigo-100 inline-flex items-center px-2 py-0.5 mx-0.5 rounded-lg bg-indigo-50 border border-indigo-100/50 text-indigo-600 text-xs font-mono font-black tracking-wider transition-colors"
             >
               {part}
             </span>
@@ -108,7 +108,7 @@ function parseContent(text) {
       output.push(
         <p
           key={i}
-          className="text-emerald-400 font-black text-xs uppercase tracking-widest mt-2 mb-1 border-b border-white/10 pb-1"
+          className="text-indigo-600 font-black text-[10px] uppercase tracking-widest mt-3 mb-1.5 border-b border-slate-100 pb-1"
         >
           {renderInline(line.slice(3), "h" + i)}
         </p>
@@ -120,7 +120,7 @@ function parseContent(text) {
     // # Heading
     if (line.startsWith("# ")) {
       output.push(
-        <p key={i} className="text-white font-black text-sm mt-2 mb-1">
+        <p key={i} className="text-slate-900 font-black text-sm mt-3 mb-1.5">
           {renderInline(line.slice(2), "h" + i)}
         </p>
       );
@@ -130,7 +130,7 @@ function parseContent(text) {
 
     // Horizontal rule
     if (/^[-═]{3,}$/.test(line.trim())) {
-      output.push(<hr key={i} className="border-white/10 my-1" />);
+      output.push(<hr key={i} className="border-slate-100 my-2" />);
       i++;
       continue;
     }
@@ -145,11 +145,11 @@ function parseContent(text) {
         if (m) {
           items.push(
             <li key={i} className="flex gap-2 items-start">
-              <span className="text-emerald-400 font-bold text-xs mt-0.5 flex-shrink-0 w-4">
+              <span className="text-indigo-600 font-bold text-xs mt-0.5 flex-shrink-0 w-4">
                 {m[1]}.
               </span>
 
-              <span className="text-slate-200">
+              <span className="text-slate-700">
                 {renderInline(m[2], i)}
               </span>
             </li>
@@ -160,7 +160,7 @@ function parseContent(text) {
       }
 
       output.push(
-        <ol key={"ol" + i} className="space-y-1.5 my-1">
+        <ol key={"ol" + i} className="space-y-1.5 my-1.5">
           {items}
         </ol>
       );
@@ -177,11 +177,11 @@ function parseContent(text) {
 
         items.push(
           <li key={i} className="flex gap-2 items-start">
-            <span className="text-emerald-400 mt-1 flex-shrink-0 text-xs">
+            <span className="text-indigo-500 mt-1 flex-shrink-0 text-xs">
               ▸
             </span>
 
-            <span className="text-slate-200">
+            <span className="text-slate-700">
               {renderInline(content, i)}
             </span>
           </li>
@@ -191,7 +191,7 @@ function parseContent(text) {
       }
 
       output.push(
-        <ul key={"ul" + i} className="space-y-1.5 my-1">
+        <ul key={"ul" + i} className="space-y-1.5 my-1.5">
           {items}
         </ul>
       );
@@ -201,7 +201,7 @@ function parseContent(text) {
 
     // Normal paragraph
     output.push(
-      <p key={i} className="leading-relaxed text-slate-200">
+      <p key={i} className="leading-relaxed text-slate-700">
         {renderInline(line, i)}
       </p>
     );
@@ -217,7 +217,7 @@ function TypingIndicator() {
   return (
     <div className="flex justify-start items-end gap-2">
       <div
-        className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-[8px] font-black text-black flex-shrink-0 mb-1 ml-1 mt-1"
+        className="w-5 h-5 bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-[8px] font-black text-white flex-shrink-0 mb-1 ml-1 mt-1 shadow-sm"
         style={{
           clipPath:
             "polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%)",
@@ -226,15 +226,15 @@ function TypingIndicator() {
         AI
       </div>
 
-      <div className="flex items-center gap-3 rounded-2xl rounded-tl-sm px-5 py-3.5 bg-slate-900/80 border border-white/5">
-        <div className="flex items-center gap-1">
-          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce [animation-delay:0ms]" />
-          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce [animation-delay:150ms]" />
-          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-bounce [animation-delay:300ms]" />
+      <div className="flex items-center gap-3 rounded-2xl rounded-tl-xs px-5 py-3.5 bg-slate-50 border border-slate-200/60 shadow-xs">
+        <div className="flex items-center gap-1.5">
+          <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:0ms]" />
+          <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:150ms]" />
+          <span className="w-1.5 h-1.5 bg-indigo-500 rounded-full animate-bounce [animation-delay:300ms]" />
         </div>
 
-        <span className="text-slate-500 text-xs">
-          Alpha-Insight is thinking…
+        <span className="text-slate-400 text-xs font-semibold">
+          Alpha-Insight is processing…
         </span>
       </div>
     </div>
@@ -249,9 +249,7 @@ function MessageBubble({ msg }) {
 
   const handleCopy = () => {
     navigator.clipboard.writeText(msg.content);
-
     setCopied(true);
-
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -268,12 +266,12 @@ function MessageBubble({ msg }) {
       >
         {/* Avatar */}
         {isUser ? (
-          <div className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black flex-shrink-0 bg-gradient-to-br from-violet-500 to-purple-600 text-white">
-            You
+          <div className="w-7 h-7 rounded-full flex items-center justify-center text-[9px] font-black flex-shrink-0 bg-slate-100 border border-slate-200 text-slate-700">
+            YOU
           </div>
         ) : (
           <div
-            className="w-5 h-5 bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-[8px] font-black text-black flex-shrink-0 mb-1 ml-1 mt-1"
+            className="w-5 h-5 bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-[8px] font-black text-white flex-shrink-0 mb-1 ml-1 mt-1 shadow-sm"
             style={{
               clipPath:
                 "polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%)",
@@ -290,14 +288,14 @@ function MessageBubble({ msg }) {
         >
           {/* Bubble */}
           <div
-            className={`rounded-2xl px-5 py-3.5 border text-sm space-y-1.5 ${
+            className={`rounded-2xl px-5 py-3.5 border text-sm space-y-1.5 shadow-xs ${
               isUser
-                ? "bg-gradient-to-br from-emerald-600/20 to-teal-700/10 border-emerald-500/30 text-emerald-50 rounded-tr-sm"
-                : "bg-slate-900/80 border-white/5 text-slate-200 rounded-tl-sm"
+                ? "bg-indigo-50/50 border-indigo-100 text-slate-850 rounded-tr-xs"
+                : "bg-white border-slate-150 text-slate-700 rounded-tl-xs"
             }`}
           >
             {isUser ? (
-              <p className="leading-relaxed">{msg.content}</p>
+              <p className="leading-relaxed font-semibold">{msg.content}</p>
             ) : (
               parseContent(msg.content)
             )}
@@ -310,7 +308,7 @@ function MessageBubble({ msg }) {
             }`}
           >
             {msg.time && (
-              <span className="text-slate-600 text-[10px]">
+              <span className="text-slate-400 text-[10px] font-bold">
                 {msg.time}
               </span>
             )}
@@ -318,7 +316,7 @@ function MessageBubble({ msg }) {
             {!isUser && (
               <button
                 onClick={handleCopy}
-                className="text-slate-600 hover:text-emerald-400 text-[10px] transition-colors"
+                className="text-slate-400 hover:text-indigo-600 text-[10px] font-black transition-colors cursor-pointer"
               >
                 {copied ? "✓ Copied" : "Copy"}
               </button>
@@ -342,7 +340,7 @@ function AIChatPanel({ onClose, isFloating = false }) {
     {
       role: "assistant",
       content:
-        "**Alpha-Insight Engine online.**\n\nI'm your institutional-grade AI trading assistant.",
+        "**Alpha-Insight Engine online.**\n\nI'm your institutional-grade AI trading assistant. Ask me anything about tickers, portfolio risk, or indicators.",
       time: getTime(),
     },
   ]);
@@ -434,26 +432,26 @@ function AIChatPanel({ onClose, isFloating = false }) {
   };
 
   const containerClasses = isFloating
-    ? "glass-card rounded-[2rem] border border-white/5 flex flex-col overflow-hidden w-[380px] sm:w-[500px] h-[650px] max-h-[85vh]"
-    : "glass-card rounded-[2rem] border border-white/5 h-[750px] flex flex-col overflow-hidden w-full";
+    ? "glass-card bg-white rounded-[2.5rem] border border-slate-150 flex flex-col overflow-hidden w-[380px] sm:w-[480px] h-[600px] max-h-[85vh] shadow-2xl"
+    : "glass-card bg-white rounded-[2.5rem] border border-slate-150 h-[700px] flex flex-col overflow-hidden w-full shadow-sm";
 
   return (
     <div className={containerClasses}>
       {/* Header */}
-      <div className="border-b border-white/5 px-6 py-4 flex items-center justify-between bg-slate-950/60 flex-shrink-0">
+      <div className="border-b border-slate-100 px-6 py-4.5 flex items-center justify-between bg-white flex-shrink-0">
         <div className="flex items-center gap-3">
           <div
-            className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center"
+            className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-sm"
             style={{
               clipPath:
                 "polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%)",
             }}
           >
-            <span className="text-black font-black text-xs">AI</span>
+            <span className="text-white font-black text-[10px]">AI</span>
           </div>
 
           <div>
-            <h2 className="text-lg font-black text-white">
+            <h2 className="text-base font-black text-slate-900 tracking-tight">
               Alpha-Insight Chat
             </h2>
           </div>
@@ -462,7 +460,7 @@ function AIChatPanel({ onClose, isFloating = false }) {
         {onClose && (
           <button
             onClick={onClose}
-            className="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-800 text-slate-400 hover:text-white"
+            className="w-8 h-8 flex items-center justify-center rounded-xl bg-slate-50 border border-slate-200 text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-all cursor-pointer"
           >
             ✕
           </button>
@@ -470,7 +468,7 @@ function AIChatPanel({ onClose, isFloating = false }) {
       </div>
 
       {/* Chat body */}
-      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5 min-h-0">
+      <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5 min-h-0 bg-slate-50/30">
         {messages.map((msg, idx) => (
           <MessageBubble key={idx} msg={msg} />
         ))}
@@ -481,12 +479,12 @@ function AIChatPanel({ onClose, isFloating = false }) {
       </div>
 
       {/* Quick prompts */}
-      <div className="px-5 pb-2 flex gap-2 flex-wrap flex-shrink-0">
+      <div className="px-5 pb-3 flex gap-2 flex-wrap flex-shrink-0 bg-slate-50/30">
         {QUICK_PROMPTS.map((p, i) => (
           <button
             key={i}
             onClick={() => setInput(p.text)}
-            className="px-3 py-1.5 rounded-xl bg-slate-800/80 border border-white/10 text-slate-300 text-xs"
+            className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-indigo-600 hover:border-indigo-200 text-xs font-semibold transition-all duration-200 cursor-pointer shadow-2xs"
           >
             {p.label}
           </button>
@@ -494,7 +492,7 @@ function AIChatPanel({ onClose, isFloating = false }) {
       </div>
 
       {/* Input area */}
-      <div className="border-t border-white/5 px-5 pt-4 pb-5 bg-slate-950/60 flex-shrink-0">
+      <div className="border-t border-slate-100 px-5 pt-4 pb-5 bg-white flex-shrink-0">
         <div className="flex gap-3 items-end">
           <div className="flex-1 relative">
             <textarea
@@ -504,12 +502,12 @@ function AIChatPanel({ onClose, isFloating = false }) {
               onChange={handleInputChange}
               onKeyDown={handleKeyDown}
               placeholder="Ask about market trends, RSI, portfolio risk..."
-              className="w-full bg-slate-900/60 border border-white/10 rounded-2xl px-5 py-3.5 text-white text-sm outline-none resize-none"
+              className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-5 py-3.5 text-slate-800 text-sm outline-none resize-none placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 transition shadow-2xs"
               style={{ minHeight: "52px" }}
             />
 
             {charCount > 0 && (
-              <span className="absolute bottom-3 right-4 text-[10px] font-mono text-slate-600">
+              <span className="absolute bottom-3.5 right-4 text-[9px] font-bold font-mono text-slate-450">
                 {charCount}/{MAX_CHARS}
               </span>
             )}
@@ -518,7 +516,7 @@ function AIChatPanel({ onClose, isFloating = false }) {
           <button
             onClick={sendMessage}
             disabled={loading || !input.trim()}
-            className="flex-shrink-0 min-w-[80px] h-[52px] px-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-black font-black text-sm uppercase tracking-wider"
+            className="flex-shrink-0 min-w-[80px] h-[52px] px-5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-black text-xs uppercase tracking-widest shadow-md active:scale-95 transition cursor-pointer"
           >
             {loading ? "..." : "Send"}
           </button>

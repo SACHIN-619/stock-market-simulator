@@ -15,28 +15,28 @@ function AIRiskPanel({ riskData }) {
 
   const riskColor =
     overallRisk === "LOW"
-      ? "text-emerald-400"
+      ? "text-emerald-600"
       : overallRisk === "HIGH"
-      ? "text-red-400"
-      : "text-yellow-400";
+      ? "text-red-600"
+      : "text-yellow-600";
 
   const riskBg =
     overallRisk === "LOW"
-      ? "bg-emerald-500/10 border-emerald-500/20"
+      ? "bg-emerald-50 border-emerald-100"
       : overallRisk === "HIGH"
-      ? "bg-red-500/10 border-red-500/20"
-      : "bg-yellow-500/10 border-yellow-500/20";
+      ? "bg-red-50 border-red-100"
+      : "bg-yellow-50 border-yellow-100";
 
   return (
-    <div className="glass-card rounded-[2rem] border border-white/5 p-7 h-full">
+    <div className="glass-card rounded-[2rem] border border-slate-200/60 p-7 h-full bg-white">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-7">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-black mb-2">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-black mb-2">
             Risk Engine
           </p>
 
-          <h2 className="text-2xl font-black text-white">
+          <h2 className="text-2xl font-black text-slate-900">
             Portfolio Risk
           </h2>
         </div>
@@ -51,7 +51,7 @@ function AIRiskPanel({ riskData }) {
       {/* VOLATILITY */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-3">
-          <span className="text-slate-400 font-semibold">
+          <span className="text-slate-500 font-semibold">
             Volatility Index
           </span>
 
@@ -60,14 +60,14 @@ function AIRiskPanel({ riskData }) {
           </span>
         </div>
 
-        <div className="w-full h-3 rounded-full bg-slate-800 overflow-hidden">
+        <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-700 ${
               volatility > 70
                 ? "bg-red-500"
                 : volatility > 40
-                ? "bg-yellow-400"
-                : "bg-emerald-400"
+                ? "bg-yellow-500"
+                : "bg-emerald-500"
             }`}
             style={{ width: `${volatility}%` }}
           />
@@ -77,11 +77,11 @@ function AIRiskPanel({ riskData }) {
       {/* CONCENTRATION */}
       <div className="mb-8">
         <div className="flex items-center justify-between">
-          <span className="text-slate-400 font-semibold">
+          <span className="text-slate-500 font-semibold">
             Concentration Risk
           </span>
 
-          <span className="text-white font-black">
+          <span className="text-slate-900 font-black">
             {concentrationRisk}
           </span>
         </div>
@@ -89,7 +89,7 @@ function AIRiskPanel({ riskData }) {
 
       {/* WARNINGS */}
       <div>
-        <h3 className="text-sm font-black uppercase tracking-widest text-red-400 mb-4">
+        <h3 className="text-sm font-black uppercase tracking-widest text-red-600 mb-4">
           Risk Warnings
         </h3>
 
@@ -98,20 +98,20 @@ function AIRiskPanel({ riskData }) {
             warnings.map((warning, index) => (
               <div
                 key={index}
-                className="p-4 rounded-2xl border border-red-500/10 bg-red-500/5"
+                className="p-4 rounded-2xl border border-red-100 bg-red-50/50"
               >
                 <div className="flex gap-3 items-start">
                   <div className="text-lg">⚠️</div>
 
-                  <p className="text-sm text-slate-300 leading-relaxed font-medium">
+                  <p className="text-sm text-slate-600 leading-relaxed font-semibold">
                     {warning}
                   </p>
                 </div>
               </div>
             ))
           ) : (
-            <div className="p-5 rounded-2xl bg-emerald-500/5 border border-emerald-500/10">
-              <p className="text-sm text-emerald-300 font-semibold">
+            <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-100/50">
+              <p className="text-sm text-emerald-600 font-semibold">
                 No major portfolio risks detected currently.
               </p>
             </div>

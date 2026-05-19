@@ -5,30 +5,30 @@ function AIMarketSentiment({ sentimentData }) {
 
 
   const getColor = (score) => {
-    if (score >= 75) return "text-emerald-400";
-    if (score >= 50) return "text-yellow-400";
-    return "text-red-400";
+    if (score >= 75) return "text-emerald-600";
+    if (score >= 50) return "text-yellow-600";
+    return "text-red-600";
   };
 
   const getBar = (score) => {
-    if (score >= 75) return "bg-emerald-400";
-    if (score >= 50) return "bg-yellow-400";
-    return "bg-red-400";
+    if (score >= 75) return "bg-emerald-500";
+    if (score >= 50) return "bg-yellow-500";
+    return "bg-red-500";
   };
 
   return (
-    <div className="glass-card rounded-[2rem] border border-white/5 p-7 h-full relative overflow-hidden">
+    <div className="glass-card rounded-[2rem] border border-slate-200/60 p-7 h-full relative overflow-hidden bg-white">
       {/* BACKGROUND EFFECT */}
-      <div className="absolute top-0 left-0 w-64 h-64 bg-indigo-500/10 blur-[120px] rounded-full" />
+      <div className="absolute top-0 left-0 w-64 h-64 bg-indigo-500/5 blur-[120px] rounded-full pointer-events-none" />
 
       {/* HEADER */}
       <div className="relative z-10 flex items-center justify-between mb-8">
         <div>
-          <p className="text-[10px] uppercase tracking-[0.3em] text-slate-500 font-black mb-2">
+          <p className="text-[10px] uppercase tracking-[0.3em] text-slate-400 font-black mb-2">
             Institutional Market Intelligence
           </p>
 
-          <h2 className="text-2xl font-black text-white">
+          <h2 className="text-2xl font-black text-slate-900">
             Market Sentiment
           </h2>
         </div>
@@ -36,8 +36,8 @@ function AIMarketSentiment({ sentimentData }) {
         <div
           className={`px-5 py-3 rounded-2xl border text-sm font-black uppercase tracking-widest ${
             (data.overall || data.label) === "BULLISH"
-              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-              : "bg-red-500/10 border-red-500/20 text-red-400"
+              ? "bg-emerald-50 border-emerald-100 text-emerald-600"
+              : "bg-red-50 border-red-100 text-red-600"
           }`}
         >
           {data.overall || data.label || "NEUTRAL"}
@@ -46,22 +46,22 @@ function AIMarketSentiment({ sentimentData }) {
 
       {/* TOP METRICS */}
       <div className="relative z-10 grid grid-cols-2 gap-4 mb-8">
-        <div className="rounded-2xl bg-black/20 border border-white/5 p-5">
-          <p className="text-xs uppercase tracking-widest text-slate-500 font-black mb-2">
+        <div className="rounded-2xl bg-slate-50/50 border border-slate-200/50 p-5">
+          <p className="text-xs uppercase tracking-widest text-slate-400 font-black mb-2">
             Fear & Greed
           </p>
 
-          <h3 className="text-4xl font-black text-emerald-400">
+          <h3 className="text-4xl font-black text-emerald-600">
             {data.fearGreedIndex || data.score || 50}
           </h3>
         </div>
 
-        <div className="rounded-2xl bg-black/20 border border-white/5 p-5">
-          <p className="text-xs uppercase tracking-widest text-slate-500 font-black mb-2">
+        <div className="rounded-2xl bg-slate-50/50 border border-slate-200/50 p-5">
+          <p className="text-xs uppercase tracking-widest text-slate-400 font-black mb-2">
             Volatility Index
           </p>
 
-          <h3 className="text-4xl font-black text-yellow-400">
+          <h3 className="text-4xl font-black text-yellow-600">
             {data.volatilityIndex || "N/A"}
           </h3>
         </div>
@@ -69,22 +69,22 @@ function AIMarketSentiment({ sentimentData }) {
 
       {/* INSTITUTIONAL VS RETAIL */}
       <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div className="rounded-2xl border border-emerald-500/10 bg-emerald-500/5 p-5">
-          <p className="text-xs uppercase tracking-widest text-emerald-400 font-black mb-2">
+        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/30 p-5">
+          <p className="text-xs uppercase tracking-widest text-emerald-600 font-black mb-2">
             Institutional Bias
           </p>
 
-          <h3 className="text-2xl font-black text-white">
+          <h3 className="text-2xl font-black text-slate-850">
             {data.institutionalBias || "N/A"}
           </h3>
         </div>
 
-        <div className="rounded-2xl border border-yellow-500/10 bg-yellow-500/5 p-5">
-          <p className="text-xs uppercase tracking-widest text-yellow-400 font-black mb-2">
+        <div className="rounded-2xl border border-yellow-100 bg-yellow-50/30 p-5">
+          <p className="text-xs uppercase tracking-widest text-yellow-600 font-black mb-2">
             Retail Bias
           </p>
 
-          <h3 className="text-2xl font-black text-white">
+          <h3 className="text-2xl font-black text-slate-850">
             {data.retailBias || "N/A"}
           </h3>
         </div>
@@ -101,7 +101,7 @@ function AIMarketSentiment({ sentimentData }) {
             <div key={index}>
               <div className="flex items-center justify-between mb-2">
                 <div>
-                  <h4 className="text-white font-black">
+                  <h4 className="text-slate-900 font-black">
                     {sector.name}
                   </h4>
 
@@ -117,7 +117,7 @@ function AIMarketSentiment({ sentimentData }) {
                 </span>
               </div>
 
-              <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden">
+              <div className="w-full h-2 rounded-full bg-slate-100 overflow-hidden">
                 <div
                   className={`h-full rounded-full transition-all duration-700 ${getBar(
                     sector.score

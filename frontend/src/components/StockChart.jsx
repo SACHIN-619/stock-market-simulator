@@ -16,9 +16,9 @@ function StockChart({
    if (!chartData || chartData.length === 0) {
       const isLive = range === "LIVE";
       return (
-         <div className="flex h-full items-center justify-center text-slate-500 font-bold uppercase tracking-widest text-[10px]">
+         <div className="flex h-full items-center justify-center text-slate-400 font-bold uppercase tracking-widest text-[10px]">
             <div className="flex flex-col items-center gap-3">
-               {!isLive && <div className="w-4 h-4 border-2 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>}
+               {!isLive && <div className="w-4 h-4 border-2 border-indigo-500/20 border-t-indigo-500 rounded-full animate-spin"></div>}
                <p className="animate-pulse">
                   {isLive ? "Connecting to live market stream..." : `Fetching ${range || 'historical'} performance data...`}
                </p>
@@ -61,12 +61,12 @@ function StockChart({
                   >
                      <stop
                         offset="5%"
-                        stopColor="#10b981"
-                        stopOpacity={0.5}
+                        stopColor="#6366f1"
+                        stopOpacity={0.15}
                      />
                      <stop
                         offset="95%"
-                        stopColor="#10b981"
+                        stopColor="#6366f1"
                         stopOpacity={0}
                      />
                   </linearGradient>
@@ -74,15 +74,15 @@ function StockChart({
 
                <CartesianGrid
                   strokeDasharray="3 3"
-                  stroke="#1e293b"
+                  stroke="#f1f5f9"
                   vertical={false}
-                  opacity={0.5}
+                  opacity={0.8}
                />
 
                <XAxis
                   dataKey="date"
-                  stroke="#475569"
-                  tick={{ fontSize: 10, fontWeight: 'bold' }}
+                  stroke="#94a3b8"
+                  tick={{ fontSize: 10, fontWeight: 'semibold', fill: '#64748b' }}
                   interval="preserveStartEnd"
                   minTickGap={40}
                   tickFormatter={(value) => {
@@ -103,9 +103,9 @@ function StockChart({
                />
 
                <YAxis
-                  stroke="#475569"
+                  stroke="#94a3b8"
                   width={80}
-                  tick={{ fontSize: 10, fontWeight: 'bold' }}
+                  tick={{ fontSize: 10, fontWeight: 'semibold', fill: '#64748b' }}
                   tickFormatter={(value) => `$${Number(value).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
                   domain={[
                      (dataMin) => dataMin - (Math.abs(dataMin) * 0.01),
@@ -125,36 +125,38 @@ function StockChart({
                         day: "numeric",
                         month: "short",
                         year: "numeric"
-                     });
+                      });
                   }}
                   formatter={(value) => [
                      `$${Number(value).toFixed(2)}`,
                      "Price"
                   ]}
                   contentStyle={{
-                     backgroundColor: "#020617",
-                     border: "1px solid #1e293b",
+                     backgroundColor: "#ffffff",
+                     border: "1px solid #e2e8f0",
                      borderRadius: "12px",
-                     color: "#fff",
-                     fontWeight: "bold"
+                     color: "#0f172a",
+                     boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+                     fontWeight: "bold",
+                     fontSize: "12px"
                   }}
                />
 
                <ReferenceLine 
                   y={firstPrice} 
-                  stroke="#10b981" 
+                  stroke="#6366f1" 
                   strokeDasharray="3 3" 
-                  opacity={0.4} 
+                  opacity={0.3} 
                />
 
                <Area
                   type="monotone"
                   dataKey="price"
-                  stroke="#10b981"
+                  stroke="#6366f1"
                   fill="url(#colorPrice)"
                   strokeWidth={2.5}
                   dot={false}
-                  activeDot={{ r: 5, fill: "#10b981", strokeWidth: 0 }}
+                  activeDot={{ r: 5, fill: "#6366f1", strokeWidth: 0 }}
                   animationDuration={1500}
                />
             </AreaChart>

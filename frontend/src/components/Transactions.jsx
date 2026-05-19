@@ -26,55 +26,55 @@ function Transactions() {
 
   return (
     <div className="w-full space-y-10 animate-fade-in pb-20">
-      <header className="text-center">
-        <h1 className="text-3xl lg:text-4xl font-black text-white tracking-tight">Transaction History</h1>
-        <p className="text-slate-400 mt-1 font-medium">Keep track of all your simulated trading activity</p>
+      <header className="text-left max-w-xl">
+        <h1 className="text-3xl lg:text-4xl font-black text-slate-900 tracking-tight">Transaction History</h1>
+        <p className="text-slate-500 mt-2 text-sm font-medium">Keep track of all your simulated trading activity with full transactional logs.</p>
       </header>
 
-      <section className="glass-card rounded-[2.5rem] overflow-hidden border-slate-800/50 w-full">
+      <section className="glass-card bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm w-full">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-slate-900/50">
-                <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Type</th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest">Asset</th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Quantity</th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Price</th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Total</th>
-                <th className="px-8 py-4 text-[10px] font-black text-slate-500 uppercase tracking-widest text-right">Date</th>
+              <tr className="bg-slate-50/70 border-b border-slate-100">
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Asset</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Quantity</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Price</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Total</th>
+                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Date</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/50">
+            <tbody className="divide-y divide-slate-100">
               {transactions.length === 0 ? (
                 <tr>
-                  <td className="px-8 py-10 text-center text-slate-500 font-medium" colSpan="6">
+                  <td className="px-8 py-12 text-center text-slate-400 font-medium" colSpan="6">
                     No trading activity found.
                   </td>
                 </tr>
               ) : (
                 transactions.map((tx) => (
-                  <tr key={tx._id} className="hover:bg-white/5 transition-colors group">
+                  <tr key={tx._id} className="hover:bg-slate-50/40 transition-colors group">
                     <td className="px-8 py-6">
-                      <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
-                        tx.transactionType === "BUY" ? "bg-emerald-500/10 text-emerald-400" : "bg-red-500/10 text-red-400"
+                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                        tx.transactionType === "BUY" ? "bg-emerald-50 text-emerald-600 border-emerald-100/50" : "bg-rose-50 text-rose-600 border-rose-100/50"
                       }`}>
-                        <div className={`w-1.5 h-1.5 rounded-full ${tx.transactionType === "BUY" ? "bg-emerald-400" : "bg-red-400"}`} />
+                        <div className={`w-1 h-1 rounded-full ${tx.transactionType === "BUY" ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`} />
                         {tx.transactionType}
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <p className="font-black text-white uppercase">{tx.stockSymbol}</p>
+                      <p className="font-black text-slate-900 uppercase tracking-wide">{tx.stockSymbol}</p>
                     </td>
-                    <td className="px-8 py-6 text-right font-black text-white">{tx.quantity}</td>
-                    <td className="px-8 py-6 text-right font-medium text-slate-400">
+                    <td className="px-8 py-6 text-right font-black text-slate-800">{tx.quantity}</td>
+                    <td className="px-8 py-6 text-right font-medium text-slate-500">
                       ${tx.pricePerShare?.toFixed(2)}
                     </td>
-                    <td className="px-8 py-6 text-right font-black text-white">
+                    <td className="px-8 py-6 text-right font-black text-slate-900">
                       ${tx.totalAmount?.toFixed(2)}
                     </td>
                     <td className="px-8 py-6 text-right font-medium text-slate-500 text-sm">
-                      {new Date(tx.createdAt).toLocaleDateString()}
-                      <span className="block text-[10px] uppercase">{new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="text-slate-700 font-semibold">{new Date(tx.createdAt).toLocaleDateString()}</span>
+                      <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </td>
                   </tr>
                 ))

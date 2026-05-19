@@ -79,7 +79,7 @@ const LogoAnimation = () => {
         .text-stock {
           font-size: 38px;
           font-weight: 900;
-          background: linear-gradient(to bottom, #ffffff, #9ca3af, #d1d5db);
+          background: linear-gradient(to bottom, #020617, #334155, #475569);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
           opacity: 0;
@@ -179,7 +179,7 @@ const LogoAnimation = () => {
               x2="100%"
               y2="0%"
             >
-              <stop offset="0%" stopColor="#FF4136" />
+              <stop offset="0%" stopColor="#EF4444" />
               <stop offset="100%" stopColor={emerald500} />
             </linearGradient>
           </defs>
@@ -191,7 +191,7 @@ const LogoAnimation = () => {
               y1="125"
               x2="60"
               y2="165"
-              stroke="#FF4136"
+              stroke="#EF4444"
               strokeWidth="2"
             />
             <rect
@@ -199,7 +199,7 @@ const LogoAnimation = () => {
               y="135"
               width="12"
               height="20"
-              fill="#B31217"
+              fill="#DC2626"
               rx="2"
             />
           </g>
@@ -210,7 +210,7 @@ const LogoAnimation = () => {
               y1="110"
               x2="85"
               y2="175"
-              stroke="#FF4136"
+              stroke="#EF4444"
               strokeWidth="2"
             />
             <rect
@@ -218,7 +218,7 @@ const LogoAnimation = () => {
               y="120"
               width="12"
               height="40"
-              fill="#B31217"
+              fill="#DC2626"
               rx="2"
             />
           </g>
@@ -229,7 +229,7 @@ const LogoAnimation = () => {
               y1="140"
               x2="110"
               y2="180"
-              stroke="#FF4136"
+              stroke="#EF4444"
               strokeWidth="2"
             />
             <rect
@@ -237,7 +237,7 @@ const LogoAnimation = () => {
               y="150"
               width="12"
               height="15"
-              fill="#B31217"
+              fill="#DC2626"
               rx="2"
             />
           </g>
@@ -344,13 +344,13 @@ const LogoAnimation = () => {
 
         {/* Tagline */}
         <div className="tagline-container flex items-center mt-2">
-          <div className="h-px w-8 bg-emerald-500 mx-2"></div>
+          <div className="h-px w-8 bg-indigo-500 mx-2"></div>
 
-          <span className="text-[10px] text-slate-400 tracking-[3px] uppercase font-bold">
+          <span className="text-[10px] text-indigo-600 tracking-[3px] uppercase font-black">
             Rule The Market
           </span>
 
-          <div className="h-px w-8 bg-emerald-500 mx-2"></div>
+          <div className="h-px w-8 bg-indigo-500 mx-2"></div>
         </div>
       </div>
     </div>
@@ -373,7 +373,7 @@ function Home() {
   }, [navigate]);
 
   return (
-    <div className="bg-[#020617] text-white overflow-x-hidden">
+    <div className="bg-[#F8FAFC] text-slate-800 overflow-x-hidden min-h-screen">
 
       {/* HERO SECTION */}
       <section
@@ -387,26 +387,25 @@ function Home() {
         md:px-20
         lg:px-32
         bg-gradient-to-b
-        from-[#020617]
-        via-[#0f172a]
-        to-[#020617]
+        from-[#F8FAFC]
+        via-[#FFFFFF]
+        to-[#F8FAFC]
       "
       >
         {/* LEFT CONTENT */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
-          <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+          <h1 className="text-5xl md:text-6xl font-black leading-tight text-slate-900 tracking-tight">
             Master Trading <br />
-            <span className="text-emerald-400">Without Risk</span>
+            <span className="text-indigo-600">Without Risk</span>
           </h1>
 
-          <p className="mt-6 text-slate-400 max-w-xl">
-            Practice stock trading using virtual money and learn market
-            strategies safely.
+          <p className="mt-6 text-slate-500 max-w-xl text-base font-semibold leading-relaxed">
+            Practice stock trading using real-time simulated market trends, virtual tokens, and detailed portfolio risk analytics safely.
           </p>
 
           <Link
             to="/register"
-            className="mt-8 px-10 py-4 bg-emerald-500 text-black rounded-lg hover:bg-emerald-600 transition font-bold text-lg"
+            className="mt-8 px-10 py-4.5 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-500 transition-all font-black text-xs uppercase tracking-widest shadow-md active:scale-95 cursor-pointer"
           >
             Get Started
           </Link>
@@ -419,87 +418,85 @@ function Home() {
       </section>
 
       {/* DIVIDER */}
-      <div className="h-px bg-slate-800 mx-10"></div>
+      <div className="h-px bg-slate-100 mx-10"></div>
 
       {/* IMAGE SECTION */}
-      <section className="py-16 px-6 md:px-16 flex flex-col md:flex-row-reverse gap-10 items-center">
+      <section className="py-24 px-6 md:px-16 flex flex-col md:flex-row-reverse gap-12 items-center max-w-6xl mx-auto">
         <img
           src="https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=800&q=80"
           alt="stocks"
-          className="rounded-lg h-64 w-full md:w-1/2 object-cover border border-slate-800 hover:scale-105 transition"
+          className="rounded-[2rem] h-64 w-full md:w-1/2 object-cover border border-slate-100 hover:scale-[1.01] transition shadow-sm"
         />
 
-        <div className="md:w-1/2">
-          <h2 className="text-2xl font-semibold">
+        <div className="md:w-1/2 space-y-4">
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">
             Realistic Trading Experience
           </h2>
 
-          <p className="text-slate-400 mt-3">
-            Simulate buying and selling stocks with live-like price movements.
+          <p className="text-slate-500 font-semibold leading-relaxed">
+            Simulate buying and selling stocks with instant price updates. Gain exposure to actual candlestick charting methods, custom buy/sell limits, and comprehensive trade logs.
           </p>
         </div>
       </section>
 
       {/* DIVIDER */}
-      <div className="h-px bg-slate-800 mx-10"></div>
+      <div className="h-px bg-slate-100 mx-10"></div>
 
       {/* MARKET TREND */}
-      <section className="py-16 px-6 md:px-16 grid md:grid-cols-2 gap-10 items-center">
-        <div className="bg-[#030820] border border-slate-800 rounded-lg p-6">
+      <section className="py-24 px-6 md:px-16 grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+        <div className="bg-white border border-slate-150 rounded-[2.5rem] p-8 shadow-xs">
           <div className="flex items-end gap-2 h-48">
             {[20, 40, 35, 60, 55, 70, 65, 80, 75, 90].map((h, i) => (
               <div
                 key={i}
-                className="bg-emerald-400 w-full rounded-md hover:bg-emerald-500 transition"
+                className="bg-indigo-600/90 w-full rounded-lg hover:bg-indigo-600 transition"
                 style={{ height: `${h}%` }}
               ></div>
             ))}
           </div>
         </div>
 
-        <div>
-          <h2 className="text-2xl font-semibold">
+        <div className="space-y-4">
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">
             Market Trend Simulation
           </h2>
 
-          <p className="text-slate-400 mt-3">
-            Visualize stock price movements and understand how the market
-            behaves in real-time scenarios.
+          <p className="text-slate-500 font-semibold leading-relaxed">
+            Visualize stock price fluctuations and understand how market momentum behaves in live scenarios. Master tools like RSI, high/low analytics, and historical line graphs.
           </p>
         </div>
       </section>
 
-      <div className="h-px bg-slate-800 mx-10"></div>
+      <div className="h-px bg-slate-100 mx-10"></div>
 
       {/* LEARN SECTION */}
-      <section className="py-16 px-6 md:px-16 flex flex-col md:flex-row-reverse gap-10 items-center">
+      <section className="py-24 px-6 md:px-16 flex flex-col md:flex-row-reverse gap-12 items-center max-w-6xl mx-auto">
         <img
           src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=800&q=80"
           alt="analysis"
-          className="rounded-lg h-64 w-full md:w-1/2 object-cover border border-slate-800 hover:scale-105 transition"
+          className="rounded-[2rem] h-64 w-full md:w-1/2 object-cover border border-slate-100 hover:scale-[1.01] transition shadow-sm"
         />
 
-        <div className="md:w-1/2">
-          <h2 className="text-2xl font-semibold">
+        <div className="md:w-1/2 space-y-4">
+          <h2 className="text-3xl font-black text-slate-900 tracking-tight">
             Learn Before You Invest
           </h2>
 
-          <p className="text-slate-400 mt-3">
-            Understand stock market basics, risk management, and portfolio
-            building.
+          <p className="text-slate-500 font-semibold leading-relaxed">
+            Understand stock market basics, virtual capital delegation, risk management, and multi-asset portfolio building. Trade confidently before deploying live currency.
           </p>
         </div>
       </section>
 
       {/* FINAL CTA */}
-      <section className="text-center py-24 bg-gradient-to-t from-[#0f172a] to-transparent">
-        <h2 className="text-3xl font-bold mb-6">
+      <section className="text-center py-28 bg-gradient-to-t from-indigo-50/50 to-transparent">
+        <h2 className="text-4xl font-black mb-8 text-slate-900 tracking-tight">
           Start Your Trading Journey Today
         </h2>
 
         <Link
           to="/register"
-          className="px-8 py-3 bg-emerald-500 text-black rounded-lg hover:bg-emerald-600 transition font-bold"
+          className="px-10 py-4.5 bg-indigo-600 text-white rounded-2xl hover:bg-indigo-500 transition-all font-black text-xs uppercase tracking-widest shadow-md active:scale-95 cursor-pointer"
         >
           Start Trading Now
         </Link>
@@ -508,4 +505,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default Home;

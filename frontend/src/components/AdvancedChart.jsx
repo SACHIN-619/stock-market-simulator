@@ -37,42 +37,42 @@ export default function AdvancedChart({ chartData, range, mainSymbol, compareDat
     const chart = createChart(chartContainerRef.current, {
       layout: {
         background: { type: ColorType.Solid, color: 'transparent' },
-        textColor: '#94a3b8',
+        textColor: '#64748b',
         fontSize: 10,
         fontFamily: 'Inter, sans-serif',
       },
       grid: {
-        vertLines: { color: 'rgba(30, 41, 59, 0.5)' },
-        horzLines: { color: 'rgba(30, 41, 59, 0.5)' },
+        vertLines: { color: '#f1f5f9' },
+        horzLines: { color: '#f1f5f9' },
       },
       width: chartContainerRef.current.clientWidth,
       height: chartContainerRef.current.clientHeight || 500,
       timeScale: {
-        borderColor: 'rgba(30, 41, 59, 0.8)',
+        borderColor: '#e2e8f0',
         timeVisible: true,
         secondsVisible: range === 'LIVE',
       },
       leftPriceScale: {
         visible: !!compareData,
-        borderColor: 'rgba(30, 41, 59, 0.8)',
+        borderColor: '#e2e8f0',
         scaleMargins: { top: 0.1, bottom: 0.2 },
       },
       rightPriceScale: {
         visible: true,
-        borderColor: 'rgba(30, 41, 59, 0.8)',
+        borderColor: '#e2e8f0',
         scaleMargins: { top: 0.1, bottom: 0.2 },
       },
       crosshair: {
         mode: 0,
-        vertLine: { color: '#10b981', width: 1, style: 3, labelBackgroundColor: '#10b981' },
-        horzLine: { color: '#10b981', width: 1, style: 3, labelBackgroundColor: '#10b981' },
+        vertLine: { color: '#6366f1', width: 1, style: 3, labelBackgroundColor: '#6366f1' },
+        horzLine: { color: '#6366f1', width: 1, style: 3, labelBackgroundColor: '#6366f1' },
       },
     });
 
     const areaSeries = chart.addSeries(AreaSeries, {
-      lineColor: '#10b981',
-      topColor: 'rgba(16, 185, 129, 0.4)',
-      bottomColor: 'rgba(16, 185, 129, 0.0)',
+      lineColor: '#6366f1',
+      topColor: 'rgba(99, 102, 241, 0.15)',
+      bottomColor: 'rgba(99, 102, 241, 0.0)',
       lineWidth: 3,
       priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
       priceScaleId: 'right',
@@ -168,7 +168,7 @@ export default function AdvancedChart({ chartData, range, mainSymbol, compareDat
     });
 
     const compareSeries = chartRef.current.addSeries(LineSeries, {
-      color: '#6366f1',
+      color: '#f43f5e',
       lineWidth: 2,
       priceFormat: { type: 'price', precision: 2, minMove: 0.01 },
       title: compareSymbol?.toUpperCase(),
@@ -198,12 +198,12 @@ export default function AdvancedChart({ chartData, range, mainSymbol, compareDat
   }, [compareData, compareSymbol]);
 
   return (
-    <div className="relative w-full h-full flex flex-col min-w-0 overflow-hidden">
+    <div className="relative w-full h-full flex flex-col min-w-0 overflow-hidden bg-white">
       <div ref={chartContainerRef} className="flex-1 w-full h-full min-w-0" />
       <div className="absolute bottom-4 right-4 z-20 pointer-events-none">
-        <div className="flex items-center gap-2 bg-black/40 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/5">
-          <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-          <span className="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">{mainSymbol}</span>
+        <div className="flex items-center gap-2 bg-slate-50/90 backdrop-blur-xs px-3 py-1.5 rounded-full border border-slate-200 shadow-xs">
+          <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></div>
+          <span className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.2em]">{mainSymbol}</span>
         </div>
       </div>
     </div>

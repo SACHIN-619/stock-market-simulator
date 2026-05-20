@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../service/api";
+import { socket } from "../socket/socket";
 
 // --- ANIMATION COMPONENT ---
 const LogoAnimation = () => {
@@ -373,7 +375,7 @@ const LogoAnimation = () => {
 function Home() {
   const navigate = useNavigate();
 
-  // Simulated active stocks for landing page ticker
+  // Simulated active stocks for landing page ticker (initial fallbacks)
   const [stocks, setStocks] = useState([
     { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, sparkline: [175, 176, 175.5, 177, 178.45] },
     { symbol: "TSLA", name: "Tesla Motors", price: 210.12, change: -2.45, isUp: false, sparkline: [215, 214, 212, 209, 210.12] },
@@ -403,26 +405,91 @@ function Home() {
     }
   }, [navigate]);
 
-  // Tick stock prices slightly every 3 seconds to feel completely alive
+  // Fetch initial real-world live prices from Finnhub via our backend
   useEffect(() => {
-    const interval = setInterval(() => {
-      setStocks(prev => prev.map(stock => {
-        const factor = (Math.random() - 0.5) * 0.4;
-        const nextPrice = Number((stock.price + factor).toFixed(2));
-        const changeFactor = factor > 0 ? 0.05 : -0.05;
-        const nextChange = Number((stock.change + changeFactor).toFixed(2));
-        const nextSpark = [...stock.sparkline.slice(1), nextPrice];
-        return {
-          ...stock,
-          price: nextPrice,
-          change: nextChange,
-          isUp: nextChange >= 0,
-          sparkline: nextSpark
+    const fetchInitialPrices = async () => {
+      try {
+        const symbols = ["AAPL", "TSLA", "NVDA", "AMZN", "MSFT"];
+        const names = {
+          AAPL: "Apple Inc.",
+          TSLA: "Tesla Motors",
+          NVDA: "NVIDIA Corp.",
+          AMZN: "Amazon.com",
+          MSFT: "Microsoft Corp."
         };
-      }));
-    }, 3000);
-    return () => clearInterval(interval);
+
+        const updated = await Promise.all(
+          symbols.map(async (symbol) => {
+            try {
+              const res = await api.get(`/stocks/details/${symbol}`);
+              const data = res.data.payload;
+              if (data && data.c) {
+                const prevClose = data.pc || (data.c * 0.99);
+                const mid1 = prevClose + (data.c - prevClose) * 0.25;
+                const mid2 = prevClose + (data.c - prevClose) * 0.5;
+                const mid3 = prevClose + (data.c - prevClose) * 0.75;
+                const sparkline = [prevClose, mid1, mid2, mid3, data.c];
+
+                return {
+                  symbol,
+                  name: names[symbol],
+                  price: data.c,
+                  change: data.dp ? Number(data.dp.toFixed(2)) : 0,
+                  isUp: (data.dp || 0) >= 0,
+                  sparkline
+                };
+              }
+            } catch (err) {
+              console.error(`Failed to fetch initial price for ${symbol}`, err.message);
+            }
+            return null;
+          })
+        );
+
+        const filtered = updated.filter(Boolean);
+        if (filtered.length > 0) {
+          setStocks(prev => prev.map(stock => {
+            const match = filtered.find(f => f.symbol === stock.symbol);
+            return match || stock;
+          }));
+        }
+      } catch (err) {
+        console.error("Failed to fetch initial real-world stock prices", err);
+      }
+    };
+
+    fetchInitialPrices();
   }, []);
+
+  // Connect to realtime Socket.io updates to keep prices fully synchronized and live!
+  useEffect(() => {
+    const handleStockUpdates = (updatedList) => {
+      if (!updatedList || !Array.isArray(updatedList)) return;
+      setStocks(prev => prev.map(stock => {
+        const update = updatedList.find(u => u.stockSymbol?.toUpperCase() === stock.symbol.toUpperCase());
+        if (update) {
+          const currentPrice = update.currentPrice;
+          const prevClose = update.previousClose || stock.price;
+          const newChange = Number((((currentPrice - prevClose) / prevClose) * 100).toFixed(2));
+          const nextSpark = [...stock.sparkline.slice(1), currentPrice];
+          return {
+            ...stock,
+            price: currentPrice,
+            change: newChange,
+            isUp: newChange >= 0,
+            sparkline: nextSpark
+          };
+        }
+        return stock;
+      }));
+    };
+
+    socket.on("stockUpdates", handleStockUpdates);
+    return () => {
+      socket.off("stockUpdates", handleStockUpdates);
+    };
+  }, []);
+
 
   const handleMockBuy = () => {
     const applePrice = stocks[0].price;

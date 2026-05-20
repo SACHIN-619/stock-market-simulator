@@ -15,9 +15,10 @@ const api = axios.create({
 // Perfect for injecting temporary runtime headers or loading indicators before an API request leaves the browser.
 api.interceptors.request.use(
    (config) => {
-      // e.g., If you choose not to use cookies later, you can inject tokens here:
-      // const token = localStorage.getItem("token");
-      // if (token) config.headers.Authorization = `Bearer ${token}`;
+      const token = sessionStorage.getItem("token");
+      if (token && token !== "undefined") {
+         config.headers.Authorization = `Bearer ${token}`;
+      }
       return config;
    },
    (error) => {

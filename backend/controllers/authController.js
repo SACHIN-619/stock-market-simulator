@@ -77,7 +77,7 @@ export const loginUser = async (req, res, next) => {
         // Remove password before sending
         const { password: _pw, ...userPayload } = user;
 
-        res.status(200).json({ message: "Login success", payload: userPayload });
+        res.status(200).json({ message: "Login success", token: signedToken, payload: userPayload });
     } catch (err) {
         next(err);
     }

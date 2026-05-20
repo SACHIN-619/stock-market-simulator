@@ -6,8 +6,16 @@ config();
 export const verifyToken = (...allowedRoles) => {
   return (req, res, next) => {
     try {
-      //get token from cookie
-      const token = req.cookies?.token; // { token : asdasd}
+      let token = req.cookies?.token; // { token : asdasd}
+      
+      // Fallback: Check Authorization header in case browser blocks cross-site cookies
+      if (!token) {
+        const authHeader = req.headers.authorization;
+        if (authHeader && authHeader.startsWith("Bearer ")) {
+          token = authHeader.split(" ")[1];
+        }
+      }
+
       //check token existed or not
       if (!token) {
         return res.status(401).json({ message: "Please login first" });

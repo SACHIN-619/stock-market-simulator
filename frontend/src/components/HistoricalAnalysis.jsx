@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../service/api";
 
 import {
   LineChart,
@@ -27,8 +27,8 @@ function HistoricalAnalysis({ symbol }) {
     const fetchHistoricalData = async (selectedRange) => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `http://localhost:5000/api/historical/history/${symbol.toUpperCase()}?range=${selectedRange}`
+        const response = await api.get(
+          `/historical/history/${symbol.toUpperCase()}?range=${selectedRange}`
         );
 
         if (isMounted) {

@@ -255,10 +255,7 @@ function StockDetails() {
     try {
       setHistoryLoading(true);
       
-      // Dynamic API Base URL with a safe local fallback
-      const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-      const response = await axios.get(`${API_BASE_URL}/api/historical/history/${stockSymbol}?range=${rangeValue}`);
+      const response = await api.get(`/historical/history/${stockSymbol}?range=${rangeValue}`);
       if (response.data.success) {
         setHistoricalData(response.data.data);
       } else {
@@ -288,11 +285,8 @@ function StockDetails() {
     if (!compareSymbol) return;
     setLoadingCompare(true);
     try {
-      // Dynamic API Base URL with a safe local fallback
-      const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-
-      const response = await axios.get(
-        `${API_BASE_URL}/api/historical/history/${compareSymbol.toUpperCase()}?range=${selectedRange}`
+      const response = await api.get(
+        `/historical/history/${compareSymbol.toUpperCase()}?range=${selectedRange}`
       );
       if (response.data && response.data.success) {
         setCompareData(response.data.data);

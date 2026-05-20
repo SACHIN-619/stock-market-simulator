@@ -373,15 +373,15 @@ function StockDetails() {
           width: 4px;
         }
         .pulse-scrollbar::-webkit-scrollbar-track {
-          background: rgba(15, 23, 42, 0.3);
+          background: rgba(241, 245, 249, 0.8);
           border-radius: 10px;
         }
         .pulse-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(99, 102, 241, 0.3);
+          background: rgba(99, 102, 241, 0.4);
           border-radius: 10px;
         }
         .pulse-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(99, 102, 241, 0.6);
+          background: rgba(99, 102, 241, 0.7);
         }
       ` }} />
 
@@ -786,19 +786,19 @@ function StockDetails() {
       {/* AI MARKET PULSE FLOATING BUTTON & LOOKUP POPUP */}
       <div className="fixed bottom-24 right-6 z-[200] flex flex-col items-end gap-2">
         {isPopupOpen && (
-          <div className="w-[320px] sm:w-[360px] rounded-3xl border border-slate-800/80 bg-[#050914]/95 backdrop-blur-xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.8)] animate-slide-up absolute bottom-16 right-0 mb-2">
+          <div className="w-[320px] sm:w-[360px] rounded-3xl border border-slate-200/80 bg-white/95 backdrop-blur-xl p-4 shadow-[0_20px_50px_rgba(0,0,0,0.06)] animate-slide-up absolute bottom-16 right-0 mb-2">
             {/* Header */}
-            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-800/60">
+            <div className="flex items-center justify-between pb-3 mb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 bg-indigo-500/10 rounded-lg text-indigo-400">
+                <div className="p-1.5 bg-indigo-50 rounded-lg text-indigo-600 border border-indigo-100/50">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12h5l2 8 5-16 3 10 5-2"/></svg>
                 </div>
                 <div>
-                  <h4 className="text-xs font-black text-white uppercase tracking-wider">AI Market Pulse</h4>
-                  <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest">Real-time Stock Hub</p>
+                  <h4 className="text-xs font-black text-slate-900 uppercase tracking-wider">AI Market Pulse</h4>
+                  <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Real-time Stock Hub</p>
                 </div>
               </div>
-              <span className="px-2 py-0.5 bg-indigo-500/10 text-indigo-400 rounded-full text-[8px] font-black uppercase tracking-wider">
+              <span className="px-2 py-0.5 bg-indigo-50 text-indigo-600 border border-indigo-100/50 rounded-full text-[8px] font-black uppercase tracking-wider">
                 Live
               </span>
             </div>
@@ -810,27 +810,27 @@ function StockDetails() {
                 placeholder="Filter by symbol or name..."
                 value={filterText}
                 onChange={(e) => setFilterText(e.target.value)}
-                className="w-full bg-slate-950/60 border border-slate-800/80 focus:border-indigo-500/50 rounded-xl px-3 py-1.5 text-[10px] font-medium text-white outline-none placeholder:text-slate-600 transition-all"
+                className="w-full bg-slate-50 border border-slate-200/80 focus:border-indigo-500/50 focus:bg-white rounded-xl px-3 py-1.5 text-[10px] font-medium text-slate-800 outline-none placeholder:text-slate-400 transition-all"
               />
-              <span className="absolute right-3 top-2 text-[10px] text-slate-600">🔍</span>
+              <span className="absolute right-3 top-2 text-[10px] text-slate-400">🔍</span>
             </div>
 
             {/* Table */}
             <div className="overflow-y-auto max-h-[220px] pulse-scrollbar">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-800/40 text-[9px] font-black text-slate-500 uppercase tracking-wider">
+                  <tr className="border-b border-slate-100 text-[9px] font-black text-slate-400 uppercase tracking-wider">
                     <th className="pb-2">Symbol</th>
                     <th className="pb-2 text-right">Price</th>
                     <th className="pb-2 text-right">Change</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/30">
+                <tbody className="divide-y divide-slate-100">
                   {loadingStocksList ? (
                     <tr>
                       <td colSpan="3" className="py-8 text-center">
                         <div className="inline-block w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
-                        <p className="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-2">Loading market data...</p>
+                        <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-2">Loading market data...</p>
                       </td>
                     </tr>
                   ) : allStocksList.filter(s => 
@@ -838,7 +838,7 @@ function StockDetails() {
                       s.companyName.toLowerCase().includes(filterText.toLowerCase())
                     ).length === 0 ? (
                     <tr>
-                      <td colSpan="3" className="py-8 text-center text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                      <td colSpan="3" className="py-8 text-center text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         No Stocks Found
                       </td>
                     </tr>
@@ -853,7 +853,7 @@ function StockDetails() {
                         return (
                           <tr 
                             key={stk.stockSymbol}
-                            className="hover:bg-white/[0.02] transition-colors duration-150 group/row cursor-pointer"
+                            className="hover:bg-slate-50 transition-colors duration-150 group/row cursor-pointer"
                             onClick={() => {
                               setIsPopupOpen(false);
                               navigate(`/stocks/${stk.stockSymbol}`);
@@ -862,24 +862,24 @@ function StockDetails() {
                             {/* Symbol Column */}
                             <td className="py-2.5 relative group/symbol">
                               <span 
-                                className="text-xs font-black text-indigo-400 group-hover/row:text-indigo-300 transition-colors uppercase relative cursor-help"
+                                className="text-xs font-black text-indigo-600 group-hover/row:text-indigo-700 transition-colors uppercase relative cursor-help"
                               >
                                 {stk.stockSymbol}
                                 
                                 {/* Custom Premium Tooltip */}
-                                <span className="pointer-events-none absolute left-0 bottom-full mb-1.5 opacity-0 group-hover/symbol:opacity-100 transition-all duration-200 transform translate-y-1 group-hover/symbol:translate-y-0 bg-[#020617] text-white text-[9px] font-black uppercase tracking-wider px-2 py-1.5 rounded-xl border border-slate-800 shadow-[0_10px_30px_rgba(0,0,0,0.8)] whitespace-nowrap z-50">
+                                <span className="pointer-events-none absolute left-0 bottom-full mb-1.5 opacity-0 group-hover/symbol:opacity-100 transition-all duration-200 transform translate-y-1 group-hover/symbol:translate-y-0 bg-slate-900 text-white text-[9px] font-black uppercase tracking-wider px-2 py-1.5 rounded-xl border border-slate-950 shadow-md whitespace-nowrap z-50">
                                   {stk.companyName}
                                 </span>
                               </span>
                             </td>
 
                             {/* Price Column */}
-                            <td className="py-2.5 text-right text-xs font-black text-white">
+                            <td className="py-2.5 text-right text-xs font-black text-slate-800">
                               ${stk.price ? Number(stk.price).toFixed(2) : "0.00"}
                             </td>
 
                             {/* Change Column */}
-                            <td className={`py-2.5 text-right text-xs font-black ${isNegative ? 'text-red-400' : 'text-emerald-400'}`}>
+                            <td className={`py-2.5 text-right text-xs font-black ${isNegative ? 'text-red-600' : 'text-emerald-600'}`}>
                               <span className="inline-flex items-center gap-0.5">
                                 <span>{isNegative ? '▼' : '▲'}</span>
                                 {stk.change || '0.00%'}
@@ -910,7 +910,7 @@ function StockDetails() {
             <span>PULSE</span>
           </div>
           <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5">
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500 border border-[#020617]"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-indigo-500 border border-white"></span>
           </span>
         </button>
       </div>

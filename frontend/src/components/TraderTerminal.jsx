@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllStocks, getStockDetails } from '../service/stockService';
-// import AdvancedChart from './AdvancedChart';
+import AdvancedChart from './AdvancedChart'; // Fixed: Restored the vital chart engine import
 import axios from 'axios';
 
 // Utility for formatting market cap
@@ -201,7 +201,7 @@ export default function TraderTerminal() {
               const change = stock.d !== undefined ? stock.d : 0;
               const changePercent = stock.dp !== undefined ? stock.dp : 0;
               const isPositive = change >= 0;
-              const sparklineColor = "#10b981"; // Always Emerald
+              const sparklineColor = "#10b981"; 
 
               return (
                 <div
@@ -304,7 +304,10 @@ export default function TraderTerminal() {
             <div className="flex gap-4">
               <div className="bg-slate-900/80 px-5 py-3 rounded-xl border border-slate-800 min-w-[120px]">
                 <span className="block text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Current</span>
-                <span className="text-xl font-mono font-bold text-emerald-400">$150.00</span>
+                {/* Fixed: Replaced hardcoded price string with real dynamic context value */}
+                <span className="text-xl font-mono font-bold text-emerald-400">
+                  ${selectedStock.c !== undefined ? selectedStock.c.toFixed(2) : "N/A"}
+                </span>
               </div>
               <div className="bg-slate-900/80 px-5 py-3 rounded-xl border border-slate-800 min-w-[120px] hidden sm:block">
                 <span className="block text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">Mkt Cap</span>

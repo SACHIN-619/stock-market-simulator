@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { getAllStocks, getStockDetails } from "../service/stockService";
+import { socket } from "../socket/socket";
 
 // --- ANIMATION COMPONENT ---
 const LogoAnimation = () => {
@@ -373,14 +375,16 @@ const LogoAnimation = () => {
 function Home() {
   const navigate = useNavigate();
 
-  // Simulated active stocks for landing page ticker
+  // Simulated active stocks for landing page ticker (acts as fallback/initial list)
   const [stocks, setStocks] = useState([
-    { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, sparkline: [175, 176, 175.5, 177, 178.45] },
-    { symbol: "TSLA", name: "Tesla Motors", price: 210.12, change: -2.45, isUp: false, sparkline: [215, 214, 212, 209, 210.12] },
-    { symbol: "NVDA", name: "NVIDIA Corp.", price: 485.30, change: 5.12, isUp: true, sparkline: [472, 475, 480, 482, 485.30] },
-    { symbol: "AMZN", name: "Amazon.com", price: 145.18, change: 0.85, isUp: true, sparkline: [143, 144, 144.5, 145, 145.18] },
-    { symbol: "MSFT", name: "Microsoft Corp.", price: 370.85, change: -0.15, isUp: false, sparkline: [372, 371, 373, 370.5, 370.85] }
+    { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, logo: "", sparkline: [175, 176, 175.5, 177, 178.45] },
+    { symbol: "TSLA", name: "Tesla Motors", price: 210.12, change: -2.45, isUp: false, logo: "", sparkline: [215, 214, 212, 209, 210.12] },
+    { symbol: "NVDA", name: "NVIDIA Corp.", price: 485.30, change: 5.12, isUp: true, logo: "", sparkline: [472, 475, 480, 482, 485.30] },
+    { symbol: "AMZN", name: "Amazon.com", price: 145.18, change: 0.85, isUp: true, logo: "", sparkline: [143, 144, 144.5, 145, 145.18] },
+    { symbol: "MSFT", name: "Microsoft Corp.", price: 370.85, change: -0.15, isUp: false, logo: "", sparkline: [372, 371, 373, 370.5, 370.85] }
   ]);
+
+  const mainStock = stocks[0] || { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, logo: "" };
 
   // Tab state for learning hub
   const [activeTab, setActiveTab] = useState("market");
@@ -403,7 +407,95 @@ function Home() {
     }
   }, [navigate]);
 
-  // Tick stock prices slightly every 3 seconds to feel completely alive
+  // Fetch real active stocks from API
+  useEffect(() => {
+    let active = true;
+    const fetchApiStocks = async () => {
+      try {
+        const data = await getAllStocks(1, "", 5);
+        const allStocks = data.payload || [];
+        if (allStocks.length > 0) {
+          const detailedStocks = await Promise.all(
+            allStocks.map(async (stock) => {
+              try {
+                const details = await getStockDetails(stock.stockSymbol);
+                const liveDetails = details.payload || {};
+                const pc = liveDetails.pc || liveDetails.c || 100;
+                const c = liveDetails.c || 100;
+                const diff = c - pc;
+                const sparkline = [
+                  pc,
+                  pc + diff * 0.25,
+                  pc + diff * 0.5,
+                  pc + diff * 0.75,
+                  c
+                ];
+                return {
+                  symbol: stock.stockSymbol,
+                  name: stock.companyName,
+                  logo: stock.logo,
+                  price: c,
+                  change: Number((liveDetails.dp || 0).toFixed(2)),
+                  isUp: (liveDetails.d || 0) >= 0,
+                  sparkline
+                };
+              } catch (err) {
+                console.error(`Failed to fetch details for ${stock.stockSymbol}`, err);
+                return {
+                  symbol: stock.stockSymbol,
+                  name: stock.companyName,
+                  logo: stock.logo,
+                  price: 100.00,
+                  change: 0.00,
+                  isUp: true,
+                  sparkline: [98, 99, 100, 100]
+                };
+              }
+            })
+          );
+          if (active) {
+            setStocks(detailedStocks);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to load backend stocks on Home page:", error);
+      }
+    };
+
+    fetchApiStocks();
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  // Subscribe to real-time websocket updates from backend
+  useEffect(() => {
+    const handleStockUpdates = (updatedStocks) => {
+      setStocks(prev => prev.map(stock => {
+        const update = updatedStocks.find(u => u.stockSymbol === stock.symbol);
+        if (update) {
+          const nextPrice = update.currentPrice;
+          const nextChange = update.previousClose ? Number((((nextPrice - update.previousClose) / update.previousClose) * 100).toFixed(2)) : stock.change;
+          const nextSpark = [...stock.sparkline.slice(1), nextPrice];
+          return {
+            ...stock,
+            price: nextPrice,
+            change: nextChange,
+            isUp: nextPrice >= (update.previousClose || nextPrice),
+            sparkline: nextSpark
+          };
+        }
+        return stock;
+      }));
+    };
+
+    socket.on("stockUpdates", handleStockUpdates);
+    return () => {
+      socket.off("stockUpdates", handleStockUpdates);
+    };
+  }, []);
+
+  // Tick stock prices slightly every 3 seconds to feel completely alive if WebSocket isn't updating
   useEffect(() => {
     const interval = setInterval(() => {
       setStocks(prev => prev.map(stock => {
@@ -425,7 +517,7 @@ function Home() {
   }, []);
 
   const handleMockBuy = () => {
-    const applePrice = stocks[0].price;
+    const applePrice = mainStock.price;
     const cost = applePrice * mockQuantity;
     if (cost > mockCash) {
       setMockMessage("⚠️ Insufficient mock virtual capital!");
@@ -433,12 +525,12 @@ function Home() {
     }
     setMockCash(prev => Number((prev - cost).toFixed(2)));
     setMockHoldings(prev => prev + Number(mockQuantity));
-    setMockMessage(`✅ Purchased ${mockQuantity} AAPL shares successfully!`);
+    setMockMessage(`✅ Purchased ${mockQuantity} ${mainStock.symbol} shares successfully!`);
     setTimeout(() => setMockMessage(""), 4000);
   };
 
   const handleMockSell = () => {
-    const applePrice = stocks[0].price;
+    const applePrice = mainStock.price;
     const credit = applePrice * mockQuantity;
     if (mockHoldings < mockQuantity) {
       setMockMessage("⚠️ You don't hold enough mock shares to sell!");
@@ -446,7 +538,7 @@ function Home() {
     }
     setMockCash(prev => Number((prev + credit).toFixed(2)));
     setMockHoldings(prev => prev - Number(mockQuantity));
-    setMockMessage(`✅ Sold ${mockQuantity} AAPL shares successfully!`);
+    setMockMessage(`✅ Sold ${mockQuantity} ${mainStock.symbol} shares successfully!`);
     setTimeout(() => setMockMessage(""), 4000);
   };
 
@@ -539,7 +631,7 @@ function Home() {
 
         <div className="grid md:grid-cols-3 gap-8">
           {/* Card 1 */}
-          <div className="bg-white border border-slate-100 rounded-3xl p-8 hover:shadow-md transition duration-300 space-y-4 flex flex-col justify-between">
+          <div className="bg-white border border-slate-200/85 rounded-3xl p-8 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 space-y-4 flex flex-col justify-between">
             <div className="space-y-4">
               <div className="h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-xl font-bold">
                 📈
@@ -557,7 +649,7 @@ function Home() {
           </div>
 
           {/* Card 2 */}
-          <div className="bg-white border border-slate-100 rounded-3xl p-8 hover:shadow-md transition duration-300 space-y-4 flex flex-col justify-between">
+          <div className="bg-white border border-slate-200/85 rounded-3xl p-8 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 space-y-4 flex flex-col justify-between">
             <div className="space-y-4">
               <div className="h-12 w-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 text-xl font-bold">
                 ⚡
@@ -575,7 +667,7 @@ function Home() {
           </div>
 
           {/* Card 3 */}
-          <div className="bg-white border border-slate-100 rounded-3xl p-8 hover:shadow-md transition duration-300 space-y-4 flex flex-col justify-between">
+          <div className="bg-white border border-slate-200/85 rounded-3xl p-8 shadow-xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 space-y-4 flex flex-col justify-between">
             <div className="space-y-4">
               <div className="h-12 w-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-600 text-xl font-bold">
                 📊
@@ -595,7 +687,7 @@ function Home() {
       </section>
 
       {/* LIVE simulated TICKER MARQUEE */}
-      <section className="bg-white border-y border-slate-100 py-6 overflow-hidden">
+      <section className="bg-slate-50/60 border-y border-slate-200/60 py-8 overflow-hidden">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -611,7 +703,7 @@ function Home() {
             {stocks.map((stock) => (
               <div
                 key={stock.symbol}
-                className="bg-slate-50 border border-slate-100 rounded-2xl p-4 flex flex-col justify-between hover:border-indigo-100 transition duration-300"
+                className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:shadow-md hover:border-indigo-300 hover:-translate-y-0.5 transition duration-300"
               >
                 <div className="flex items-center justify-between">
                   <div>
@@ -644,10 +736,10 @@ function Home() {
               Try It Live
             </span>
             <h2 className="text-4xl font-black text-slate-900 tracking-tight">
-              Test Drive Our Trading Simulator
+              Mock Trade with Our Simulator
             </h2>
             <p className="text-slate-500 font-semibold leading-relaxed">
-              Don't wait to register! Use this interactive mock trading terminal to execute a simulated transaction for **Apple Inc. (AAPL)**. Watch your virtual balance and holdings update instantly inside the card.
+              Don't wait to register! Use this interactive mock trading terminal to execute a simulated transaction for **{mainStock.name} ({mainStock.symbol})**. Watch your virtual balance and holdings update instantly inside the card.
             </p>
             <div className="flex items-center gap-6 pt-4 border-t border-slate-200">
               <div>
@@ -657,37 +749,41 @@ function Home() {
               <div className="h-10 w-px bg-slate-200"></div>
               <div>
                 <span className="text-[10px] text-slate-400 font-extrabold uppercase">Live Feed</span>
-                <p className="text-xl font-black text-indigo-600">AAPL Tickers</p>
+                <p className="text-xl font-black text-indigo-600">{mainStock.symbol} Tickers</p>
               </div>
             </div>
           </div>
 
           {/* INTERACTIVE CARD */}
-          <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 shadow-lg hover:shadow-xl transition duration-500 space-y-6">
+          <div className="bg-white border border-slate-200/85 rounded-[2.5rem] p-8 shadow-md hover:shadow-2xl hover:border-indigo-200/50 transition duration-500 space-y-6">
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-sm">
-                  
+                <div className="h-10 w-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-sm overflow-hidden">
+                  {mainStock.logo ? (
+                    <img src={mainStock.logo} alt={mainStock.symbol} className="h-full w-full object-contain" />
+                  ) : (
+                    mainStock.symbol[0]
+                  )}
                 </div>
                 <div>
-                  <span className="text-sm font-black text-slate-900">AAPL</span>
-                  <p className="text-[10px] text-slate-400 font-bold">Apple Inc. Terminal</p>
+                  <span className="text-sm font-black text-slate-900">{mainStock.symbol}</span>
+                  <p className="text-[10px] text-slate-400 font-bold">{mainStock.name} Terminal</p>
                 </div>
               </div>
               <div className="text-right">
-                <span className="text-xs font-extrabold text-slate-400 uppercase leading-none block">AAPL Price</span>
-                <span className="text-lg font-black text-slate-900">${stocks[0].price.toFixed(2)}</span>
+                <span className="text-xs font-extrabold text-slate-400 uppercase leading-none block">{mainStock.symbol} Price</span>
+                <span className="text-lg font-black text-slate-900">${mainStock.price.toFixed(2)}</span>
               </div>
             </div>
 
             {/* MOCK STATS */}
-            <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-2xl">
+            <div className="grid grid-cols-2 gap-4 bg-slate-50/80 border border-slate-150/40 p-4 rounded-2xl">
               <div>
                 <span className="text-[10px] text-slate-400 font-extrabold uppercase block">Mock Cash Balance</span>
                 <span className="text-lg font-black text-slate-900">${mockCash.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-400 font-extrabold uppercase block">Your AAPL Holdings</span>
+                <span className="text-[10px] text-slate-400 font-extrabold uppercase block">Your {mainStock.symbol} Holdings</span>
                 <span className="text-lg font-black text-slate-900">{mockHoldings} Shares</span>
               </div>
             </div>
@@ -718,13 +814,13 @@ function Home() {
                   onClick={handleMockBuy}
                   className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 active:scale-98 transition text-white rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-sm shadow-emerald-100"
                 >
-                  Buy AAPL
+                  Buy {mainStock.symbol}
                 </button>
                 <button
                   onClick={handleMockSell}
                   className="w-full py-4 bg-red-600 hover:bg-red-500 active:scale-98 transition text-white rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-sm shadow-red-100"
                 >
-                  Sell AAPL
+                  Sell {mainStock.symbol}
                 </button>
               </div>
 
@@ -758,8 +854,8 @@ function Home() {
             <button
               onClick={() => setActiveTab("market")}
               className={`p-5 rounded-2xl border text-left transition duration-300 cursor-pointer ${activeTab === "market"
-                  ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
-                  : "bg-white border-slate-100 hover:border-slate-200 text-slate-700"
+                ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
+                : "bg-white border-slate-200 hover:border-slate-350 hover:shadow-sm text-slate-700"
                 }`}
             >
               <span className="text-[10px] font-extrabold uppercase tracking-widest block opacity-75 mb-1">
@@ -771,8 +867,8 @@ function Home() {
             <button
               onClick={() => setActiveTab("short")}
               className={`p-5 rounded-2xl border text-left transition duration-300 cursor-pointer ${activeTab === "short"
-                  ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
-                  : "bg-white border-slate-100 hover:border-slate-200 text-slate-700"
+                ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
+                : "bg-white border-slate-200 hover:border-slate-350 hover:shadow-sm text-slate-700"
                 }`}
             >
               <span className="text-[10px] font-extrabold uppercase tracking-widest block opacity-75 mb-1">
@@ -784,8 +880,8 @@ function Home() {
             <button
               onClick={() => setActiveTab("risk")}
               className={`p-5 rounded-2xl border text-left transition duration-300 cursor-pointer ${activeTab === "risk"
-                  ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
-                  : "bg-white border-slate-100 hover:border-slate-200 text-slate-700"
+                ? "bg-indigo-600 border-indigo-600 text-white shadow-md shadow-indigo-100"
+                : "bg-white border-slate-200 hover:border-slate-350 hover:shadow-sm text-slate-700"
                 }`}
             >
               <span className="text-[10px] font-extrabold uppercase tracking-widest block opacity-75 mb-1">
@@ -796,7 +892,7 @@ function Home() {
           </div>
 
           {/* TAB DISPLAY CARD */}
-          <div className="lg:col-span-2 bg-white border border-slate-150 rounded-[2.5rem] p-8 md:p-10 flex flex-col justify-between">
+          <div className="lg:col-span-2 bg-white border border-slate-200 rounded-[2.5rem] shadow-sm hover:shadow-md transition-all duration-300 p-8 md:p-10 flex flex-col justify-between">
             {activeTab === "market" && (
               <div className="space-y-6">
                 <div className="flex items-center justify-between">

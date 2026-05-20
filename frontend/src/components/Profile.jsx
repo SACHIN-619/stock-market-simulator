@@ -10,20 +10,34 @@ function Profile() {
 
   const [showSettings, setShowSettings] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [formData, setFormData] = useState({ username: "", email: "", password: "", currentPassword: "", profileImage: "" });
+  const [imageError, setImageError] = useState(false); // Fix for avatar fallback logic
+  const [formData, setFormData] = useState({ 
+    username: "", 
+    email: "", 
+    password: "", 
+    currentPassword: "", 
+    profileImage: "" 
+  });
+
+  // Centralized function to sync form state with official user state
+  const resetFormToUser = (userData) => {
+    if (!userData) return;
+    setFormData({
+      username: userData.username || "",
+      email: userData.email || "",
+      password: "",
+      currentPassword: "",
+      profileImage: userData.profileImage || ""
+    });
+    setImageError(false);
+  };
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const res = await api.get("/auth/profile");
         setUser(res.data.payload);
-        setFormData({ 
-          username: res.data.payload.username, 
-          email: res.data.payload.email, 
-          password: "",
-          currentPassword: "",
-          profileImage: res.data.payload.profileImage || ""
-        });
+        resetFormToUser(res.data.payload);
       } catch (err) {
         console.error("Profile Fetch Error:", err);
       } finally {
@@ -33,12 +47,18 @@ function Profile() {
     fetchProfile();
   }, []);
 
+  const handleCloseModal = () => {
+    setShowSettings(false);
+    setIsEditing(false);
+    resetFormToUser(user); // Fixed: Reset form states back to current database values
+  };
+
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
       const res = await api.put("/auth/update-profile", formData);
       setUser(res.data.payload);
-      setFormData(prev => ({ ...prev, password: "", currentPassword: "" }));
+      resetFormToUser(res.data.payload);
       setIsEditing(false);
       alert("Profile updated successfully!");
     } catch (err) {
@@ -61,6 +81,7 @@ function Profile() {
       });
       setUser(res.data.payload);
       setFormData(prev => ({ ...prev, profileImage: res.data.payload.profileImage }));
+      setImageError(false);
       alert("Profile image updated!");
     } catch (err) {
       console.error(err);
@@ -77,6 +98,7 @@ function Profile() {
       const res = await api.delete("/auth/remove-image");
       setUser(res.data.payload);
       setFormData(prev => ({ ...prev, profileImage: "" }));
+      setImageError(false);
       alert("Profile image removed");
     } catch (err) {
       console.error(err);
@@ -86,7 +108,13 @@ function Profile() {
     }
   };
 
-  if (loading) return <div className="p-10"><Skeleton className="h-64 w-full bg-white border border-slate-100 rounded-[2.5rem] shadow-xs" /></div>;
+  if (loading) {
+    return (
+      <div className="p-10">
+        <Skeleton className="h-64 w-full bg-white border border-slate-100 rounded-[2.5rem] shadow-xs" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-10 animate-fade-in pb-20">
@@ -133,21 +161,16 @@ function Profile() {
                 onClick={() => document.getElementById('profileUpload').click()}
                 className="w-24 h-24 rounded-3xl bg-indigo-50 border-2 border-indigo-100/50 overflow-hidden flex items-center justify-center text-4xl shadow-md shadow-indigo-100/10 relative cursor-pointer group/avatar flex-shrink-0"
               >
-                {user?.profileImage ? (
+                {user?.profileImage && !imageError ? (
                   <img 
                     src={user.profileImage.startsWith('http') ? user.profileImage : `http://localhost:5000/${user.profileImage.replace(/^\/+/, '')}`} 
                     alt="Profile" 
                     className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.target.style.display = 'none';
-                      e.target.nextSibling.style.display = 'flex';
-                    }}
+                    onError={() => setImageError(true)} // Fixed DOM manipulation bug
                   />
                 ) : (
                   <span className="text-indigo-500">👤</span>
                 )}
-                {/* Fallback span for when image fails */}
-                <span className="hidden text-indigo-500">👤</span>
                 <div className="absolute inset-0 bg-slate-900/40 flex items-center justify-center opacity-0 group-hover/avatar:opacity-100 transition duration-300">
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                 </div>
@@ -242,6 +265,7 @@ function Profile() {
               <div className="flex items-center gap-2">
                 {/* EDIT BUTTON */}
                 <button 
+                  type="button"
                   onClick={() => setIsEditing(!isEditing)}
                   className={`p-2 rounded-lg transition-colors cursor-pointer ${isEditing ? 'text-indigo-600 bg-indigo-50 border border-indigo-100' : 'text-slate-400 hover:bg-slate-50'}`}
                   title="Edit Details"
@@ -251,7 +275,8 @@ function Profile() {
 
                 {/* CLOSE BUTTON */}
                 <button 
-                  onClick={() => { setShowSettings(false); setIsEditing(false); }}
+                  type="button"
+                  onClick={handleCloseModal} // Fixed modal closure reset handle
                   className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded-lg transition-colors cursor-pointer"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
@@ -273,7 +298,6 @@ function Profile() {
                   />
                 </div>
 
-
                 {/* EMAIL */}
                 <div className="space-y-1.5">
                   <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">Email Address</label>
@@ -292,8 +316,8 @@ function Profile() {
                     <label className="text-[9px] font-black text-indigo-600 uppercase tracking-widest px-1">Current Password</label>
                     <input 
                       type="password" 
-                      required={formData.password.length > 0}
-                      placeholder="Required to save new password"
+                      required={formData.password.length > 0 || formData.username !== user?.username || formData.email !== user?.email}
+                      placeholder="Required to save critical changes"
                       value={formData.currentPassword}
                       onChange={(e) => setFormData({...formData, currentPassword: e.target.value})}
                       className="w-full bg-indigo-50/20 border border-indigo-200 rounded-xl px-4 py-3 text-sm font-bold text-indigo-700 focus:bg-white focus:border-indigo-500 outline-none transition shadow-sm"

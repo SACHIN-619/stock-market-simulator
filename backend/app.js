@@ -31,8 +31,9 @@ app.use(helmet({
     contentSecurityPolicy: {
         directives: {
             defaultSrc: ["'self'"],
-            imgSrc: ["'self'", "data:", "http://localhost:5000", "http://127.0.0.1:5000"],
-            connectSrc: ["'self'", "http://localhost:5000", "http://127.0.0.1:5000"],
+            // Relaxed CSP for production (allowing Vercel and any HTTPS domain)
+            imgSrc: ["'self'", "data:", "http://localhost:5000", "http://127.0.0.1:5000", "https://res.cloudinary.com", "https://*.vercel.app", "https:"],
+            connectSrc: ["'self'", "http://localhost:5000", "http://127.0.0.1:5000", "https://*.vercel.app", "https:"],
         }
     }
 }));
@@ -51,7 +52,7 @@ app.use(cookieParser());
 // CORS — Explicit origins only
 // ──────────────────────────────────────────────
 app.use(cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173"],
+    origin: ["http://localhost:5173", "http://127.0.0.1:5173", process.env.CLIENT_URL].filter(Boolean),
     credentials: true,
 }));
 

@@ -60,6 +60,11 @@ function AIWatchlistInsights() {
         const symbol = inputSymbol.trim().toUpperCase();
         if (!symbol) return;
 
+        if (!/^[A-Z.]{1,10}$/.test(symbol)) {
+            flash(setError, "incorrect symbol name");
+            return;
+        }
+
         setAdding(true);
         setError("");
         try {
@@ -158,9 +163,9 @@ function AIWatchlistInsights() {
                 <input
                     type="text"
                     value={inputSymbol}
-                    onChange={e => setInput(e.target.value.toUpperCase().replace(/[^A-Z]/g, ""))}
+                    onChange={e => setInput(e.target.value.toUpperCase().replace(/[^A-Z.]/g, ""))}
                     placeholder="Add ticker e.g. AAPL"
-                    maxLength={6}
+                    maxLength={10}
                     className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-bold text-slate-800 placeholder:text-slate-400 focus:outline-none focus:border-indigo-500/40 focus:bg-white transition-all uppercase tracking-widest"
                 />
                 <button

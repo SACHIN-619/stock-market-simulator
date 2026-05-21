@@ -69,8 +69,10 @@ export const loginUser = async (req, res, next) => {
         // ── Secure cookie ──
         res.cookie("token", signedToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            // secure: process.env.NODE_ENV === "production",
+            // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: !!process.env.CLIENT_URL,
+            sameSite: process.env.CLIENT_URL ? "none" : "lax",
             maxAge: 60 * 60 * 1000, // 1 hour in ms
         });
 

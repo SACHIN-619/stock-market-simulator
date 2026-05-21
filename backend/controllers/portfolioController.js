@@ -61,11 +61,20 @@ export const getPortfolio = async (req, res, next) => {
     // 5. Fetch live prices + compute metrics
     await Promise.all(
       filteredPortfolio.map(async (stock) => {
-        const response = await axios.get(
-          `https://finnhub.io/api/v1/quote?symbol=${stock.stockSymbol}&token=${process.env.FINNHUB_API_KEY}`
-        );
+        try {
+          const response = await axios.get(
+            `https://finnhub.io/api/v1/quote?symbol=${stock.stockSymbol}&token=${process.env.FINNHUB_API_KEY}`
+          );
 
-        stock.currentPrice = response.data.c;
+          if (response.data && typeof response.data.c === "number" && response.data.c > 0) {
+            stock.currentPrice = response.data.c;
+          } else {
+            stock.currentPrice = stock.totalInvestment / stock.ownedQuantity || 0;
+          }
+        } catch (err) {
+          console.error(`Finnhub API rate limited or failed for ${stock.stockSymbol}:`, err.message);
+          stock.currentPrice = stock.totalInvestment / stock.ownedQuantity || 0;
+        }
 
         // Current total value
         stock.currentValue =
@@ -80,8 +89,9 @@ export const getPortfolio = async (req, res, next) => {
           stock.currentValue - stock.totalInvestment;
 
         // Profit %
-        stock.profitPercent =
-          (stock.profitLoss / stock.totalInvestment) * 100;
+        stock.profitPercent = stock.totalInvestment > 0
+          ? (stock.profitLoss / stock.totalInvestment) * 100
+          : 0;
       })
     );
 
@@ -97,6 +107,58 @@ export const getPortfolio = async (req, res, next) => {
     const totalProfit =
       (totalCurrentValue + walletBalance) - 100000;
 
+    // 6.5. Generate dynamic growth history from transactions
+    const growthHistory = [];
+    if (transactions.length > 0) {
+      let currentCash = 100000; // starting cash
+      const holdings = {};
+      const lastPrice = {};
+
+      // Add starting baseline point (1 day before first transaction)
+      const firstTxTime = new Date(transactions[0].createdAt);
+      const startingTime = new Date(firstTxTime.getTime() - 24 * 60 * 60 * 1000);
+      growthHistory.push({
+        date: startingTime.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        value: 100000
+      });
+
+      transactions.forEach((tx) => {
+        const symbol = tx.stockSymbol;
+        lastPrice[symbol] = tx.pricePerShare;
+
+        if (tx.transactionType === "BUY") {
+          currentCash -= tx.totalAmount;
+          holdings[symbol] = (holdings[symbol] || 0) + tx.quantity;
+        } else if (tx.transactionType === "SELL") {
+          currentCash += tx.totalAmount;
+          holdings[symbol] = (holdings[symbol] || 0) - tx.quantity;
+        }
+
+        // Calculate portfolio holdings value at the time of this transaction using last recorded prices
+        let holdingsValue = 0;
+        Object.keys(holdings).forEach((s) => {
+          holdingsValue += holdings[s] * (lastPrice[s] || 0);
+        });
+
+        const netWorth = currentCash + holdingsValue;
+        growthHistory.push({
+          date: new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+          value: Math.round(netWorth * 100) / 100
+        });
+      });
+
+      // Add current point with live prices
+      let currentHoldingsValue = 0;
+      filteredPortfolio.forEach((stock) => {
+        currentHoldingsValue += stock.currentValue;
+      });
+      const currentNetWorth = walletBalance + currentHoldingsValue;
+      growthHistory.push({
+        date: "Today",
+        value: Math.round(currentNetWorth * 100) / 100
+      });
+    }
+
     // 7. Send response
     res.status(200).json({
       message: "User Portfolio",
@@ -107,6 +169,7 @@ export const getPortfolio = async (req, res, next) => {
         walletBalance,
       },
       payload: filteredPortfolio,
+      growthHistory,
     });
 
   } catch (error) {

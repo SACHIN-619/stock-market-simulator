@@ -61,7 +61,7 @@ const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    const token = sessionStorage.getItem("token");
     if (token && token !== "undefined" && token !== "null") {
       config.headers["Authorization"] = `Bearer ${token}`;
       config.headers["x-auth-token"] = token;
@@ -77,7 +77,7 @@ api.interceptors.response.use(
     const status = error.response?.status;
     if (status === 401) {
       console.warn("401 Unauthorized — token may be missing or expired");
-      const token = localStorage.getItem("token");
+      const token = sessionStorage.getItem("token");
       if (!token) {
         window.location.href = "/signin";
       }

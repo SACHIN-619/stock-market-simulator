@@ -16,7 +16,7 @@ import { Sparkline } from "./TraderTerminal";
 function Stocks() {
   const navigate = useNavigate();
 
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
 
   // STOCK DATA
   const [stocks, setStocks] = useState([]);

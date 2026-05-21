@@ -45,7 +45,7 @@ function StockDetails() {
   const [walletBalance, setWalletBalance] = useState(0);
   const { addToast } = useToast();
 
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
   const historicalSectionRef = useRef(null);
 
   // AI MARKET PULSE POPUP STATES

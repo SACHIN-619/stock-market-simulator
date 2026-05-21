@@ -2,11 +2,11 @@
 import { Navigate } from "react-router-dom";
 
 function ProtectedRoute({ children, allowedRoles }) {
-  const role = localStorage.getItem("role"); // Use role as the proof of login
-  const expiry = localStorage.getItem("sessionExpiry");
+  const role = sessionStorage.getItem("role"); // Use role as the proof of login
+  const expiry = sessionStorage.getItem("sessionExpiry");
 
   if (!role || (expiry && Date.now() > Number(expiry))) {
-    localStorage.clear();
+    sessionStorage.clear();
     return <Navigate to="/signin" />;
   }
 

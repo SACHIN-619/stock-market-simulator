@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import axios from "axios";
+import api from "../service/api";
 import AdvancedChart from "./AdvancedChart";
 import AITradeSignals from "./ai/AITradeSignals";
 
@@ -25,8 +25,8 @@ const ProTerminal = () => {
     const fetchChartData = async () => {
       setLoading(true);
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/historical/history/${stockSymbol.toUpperCase()}?range=${range}`
+        const response = await api.get(
+          `/historical/history/${stockSymbol.toUpperCase()}?range=${range}`
         );
         
         // Fixed: Simplified and clean normalized payload check

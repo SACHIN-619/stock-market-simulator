@@ -8,7 +8,7 @@ import AIChatPanel from "./ai/AIChatPanel";
 function Root() {
   const navigate = useNavigate();
   const location = useLocation();
-  const role = sessionStorage.getItem("role");
+  const role = localStorage.getItem("role");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 

@@ -315,18 +315,8 @@ function AdminDashboard() {
                       !user.isUserActive ? 'border-red-100 bg-red-50/20' : 'border-slate-100 hover:border-blue-100'
                     }`}
                   >
-                    {/* Status Badge - Absolute Positioned to free up header space (only show Blocked status) */}
-                    {!user.isUserActive && (
-                      <div className="absolute right-6 top-6">
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-650">
-                          <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                          Blocked
-                        </span>
-                      </div>
-                    )}
-
-                    {/* User Info Header - Spacious Layout with dynamic padding to avoid badge overlap when blocked */}
-                    <div className={`mb-6 flex items-center gap-4 transition-opacity ${user.isUserActive ? '' : 'pr-16'} ${!user.isUserActive ? 'opacity-30 grayscale' : 'opacity-100'}`}>
+                    {/* User Info Header */}
+                    <div className={`mb-6 flex items-center gap-4 transition-opacity ${!user.isUserActive ? 'opacity-30 grayscale' : 'opacity-100'}`}>
                       <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-slate-50 border border-slate-200 text-lg font-black text-blue-600 group-hover:scale-105 transition-transform duration-300">
                         {user.username.charAt(0).toLowerCase()}
                       </div>
@@ -523,24 +513,24 @@ function AdminDashboard() {
                       {/* Stock Stats (Dimmed when inactive) */}
                       <div className={`flex-1 space-y-3 mb-6 text-sm transition-opacity ${!stock.isActive ? 'opacity-30 grayscale' : 'opacity-100'}`}>
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-455 font-semibold">Current Price</span>
-                          <span className="font-extrabold text-slate-800">
+                          <span className="text-slate-600 font-semibold">Current Price</span>
+                          <span className="font-extrabold text-slate-900">
                             {stock.c ? `$${stock.c.toFixed(2)}` : 'N/A'}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-455 font-semibold">Change</span>
-                          <span className={`font-extrabold ${stock.d >= 0 ? 'text-emerald-650' : 'text-red-550'}`}>
+                          <span className="text-slate-600 font-semibold">Change</span>
+                          <span className={`font-extrabold ${typeof stock.d === 'number' ? (stock.d >= 0 ? 'text-emerald-600' : 'text-red-600') : 'text-slate-900'}`}>
                             {stock.d ? `${stock.d >= 0 ? '+' : ''}${stock.d.toFixed(2)} (${stock.dp.toFixed(2)}%)` : 'N/A'}
                           </span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-455 font-semibold">Prev Close</span>
-                          <span className="text-slate-600 font-semibold">{stock.pc ? `$${stock.pc.toFixed(2)}` : 'N/A'}</span>
+                          <span className="text-slate-600 font-semibold">Prev Close</span>
+                          <span className="text-slate-500 font-semibold">{stock.pc ? `$${stock.pc.toFixed(2)}` : 'N/A'}</span>
                         </div>
                         <div className="flex items-center justify-between">
-                          <span className="text-slate-455 font-semibold">Day High/Low</span>
-                          <span className="text-slate-655 font-bold">{stock.h ? `$${stock.h.toFixed(2)} / $${stock.l.toFixed(2)}` : 'N/A'}</span>
+                          <span className="text-slate-600 font-semibold">Day High/Low</span>
+                          <span className="text-slate-900 font-bold">{stock.h ? `$${stock.h.toFixed(2)} / $${stock.l.toFixed(2)}` : 'N/A'}</span>
                         </div>
                       </div>
 
@@ -627,7 +617,7 @@ function AdminDashboard() {
                             </td>
                             <td className="px-8 py-5 text-center">
                               <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border ${
-                                act.action.includes('DELETE') ? 'bg-red-50 text-red-650 border-red-100' :
+                                act.action.includes('DELETE') ? 'bg-red-50 text-red-600 border-red-100' :
                                 act.action.includes('ADD') ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
                                 'bg-blue-50 text-blue-600 border-blue-100'
                               }`}>
@@ -635,7 +625,7 @@ function AdminDashboard() {
                               </span>
                             </td>
                             <td className="px-8 py-5">
-                              <p className="text-slate-650 font-medium italic">"{act.details}"</p>
+                              <p className="text-slate-600 font-medium italic">"{act.details}"</p>
                             </td>
                           </tr>
                         ))
@@ -757,7 +747,7 @@ function AdminDashboard() {
                            </div>
                            <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm transition duration-300 hover:-translate-y-0.5">
                              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total P/L</p>
-                             <h3 className={`text-xl font-black flex items-center ${modalData.summary.totalProfit >= 0 ? 'text-emerald-600' : 'text-red-550'}`}>
+                             <h3 className={`text-xl font-black flex items-center ${modalData.summary.totalProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                                {modalData.summary.totalProfit >= 0 ? '+' : ''}
                                <span className="mr-1 font-black">$</span>
                                {formatCurrency(modalData.summary.totalProfit)}
@@ -783,10 +773,10 @@ function AdminDashboard() {
                                  modalData.portfolio.map((stock) => (
                                    <tr key={stock.stockSymbol} className="hover:bg-slate-50/50 transition-colors">
                                      <td className="px-6 py-4 font-black text-slate-800">{stock.stockSymbol}</td>
-                                     <td className="px-6 py-4 font-bold text-slate-650">{stock.ownedQuantity}</td>
+                                     <td className="px-6 py-4 font-bold text-slate-600">{stock.ownedQuantity}</td>
                                      <td className="px-6 py-4 font-semibold text-slate-700">{formatCurrency(stock.avgPrice)}</td>
                                      <td className="px-6 py-4 font-semibold text-slate-700">{formatCurrency(stock.currentPrice)}</td>
-                                     <td className={`px-6 py-4 font-extrabold ${stock.profitLoss >= 0 ? 'text-emerald-650' : 'text-red-550'}`}>
+                                     <td className={`px-6 py-4 font-extrabold ${stock.profitLoss >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
                                        {stock.profitLoss >= 0 ? '+' : ''}{formatCurrency(stock.profitLoss)} ({stock.profitPercent.toFixed(2)}%)
                                      </td>
                                    </tr>

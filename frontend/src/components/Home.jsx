@@ -379,7 +379,7 @@ function Home() {
   const [stocks, setStocks] = useState([
     { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, logo: "", sparkline: [175, 176, 175.5, 177, 178.45] },
     { symbol: "TSLA", name: "Tesla Motors", price: 210.12, change: -2.45, isUp: false, logo: "", sparkline: [215, 214, 212, 209, 210.12] },
-    { symbol: "NVDA", name: "NVIDIA Corp.", price: 485.30, change: 5.12, isUp: true, logo: "", sparkline: [472, 475, 480, 482, 485.30] },
+    { symbol: "NVDA", name: "NVIDIA Corp.", price: 485.30, change: 5.12, isUp: true, logo: "", sparkline: [472, 475, 470, 482, 485.30] },
     { symbol: "AMZN", name: "Amazon.com", price: 145.18, change: 0.85, isUp: true, logo: "", sparkline: [143, 144, 144.5, 145, 145.18] },
     { symbol: "MSFT", name: "Microsoft Corp.", price: 370.85, change: -0.15, isUp: false, logo: "", sparkline: [372, 371, 373, 370.5, 370.85] }
   ]);
@@ -396,7 +396,7 @@ function Home() {
   const [mockMessage, setMockMessage] = useState("");
 
   useEffect(() => {
-    const role = sessionStorage.getItem("role");
+    const role = localStorage.getItem("role");
 
     if (role === "trader") {
       navigate("/portfolio", { replace: true });
@@ -472,10 +472,11 @@ function Home() {
   useEffect(() => {
     const handleStockUpdates = (updatedStocks) => {
       setStocks(prev => prev.map(stock => {
-        const update = updatedStocks.find(u => u.stockSymbol === stock.symbol);
+        const update = updatedStocks.find(u => (u.stockSymbol || u.symbol)?.toUpperCase() === stock.symbol.toUpperCase());
         if (update) {
-          const nextPrice = update.currentPrice;
-          const nextChange = update.previousClose ? Number((((nextPrice - update.previousClose) / update.previousClose) * 100).toFixed(2)) : stock.change;
+          const nextPrice = update.currentPrice || update.price || stock.price;
+          const prevClose = update.previousClose || stock.price;
+          const nextChange = prevClose ? Number((((nextPrice - prevClose) / prevClose) * 100).toFixed(2)) : stock.change;
           const nextSpark = [...stock.sparkline.slice(1), nextPrice];
           return {
             ...stock,
@@ -624,7 +625,7 @@ function Home() {
           <h2 className="text-4xl font-black text-slate-900 tracking-tight">
             Institutional-Grade Trading Tools
           </h2>
-          <p className="text-slate-500 font-semibold leading-relaxed">
+          <p className="text-slate-500 text-sm font-semibold leading-relaxed">
             Gain full understanding of active stock exchanges, standard order execution policies, and risk profiling before committing actual hard-earned funds.
           </p>
         </div>

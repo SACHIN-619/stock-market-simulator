@@ -119,7 +119,7 @@ function Leaderboard() {
           {/* SECOND */}
           <div className="rounded-[2.5rem] border border-slate-100 bg-white p-8 order-2 lg:order-1 hover:-translate-y-1 transition duration-300 shadow-sm">
             <div className="text-center">
-              <div className="text-5xl mb-4 animate-bounce">🥈</div>
+              <div className="text-5xl mb-4">🥈</div>
               <h2 className="text-xl font-black text-slate-900 tracking-tight">
                 {leaders[1]?.username}
               </h2>

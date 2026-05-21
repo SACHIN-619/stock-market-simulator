@@ -295,7 +295,8 @@ function StockDetails() {
         addToast(`No data found for ${compareSymbol.toUpperCase()}`, "error");
       }
     } catch (err) {
-      addToast("Error fetching comparison data", "error");
+      const errorMsg = err.response?.data?.message || "Error fetching comparison data";
+      addToast(errorMsg, "error");
     } finally {
       setLoadingCompare(false);
     }

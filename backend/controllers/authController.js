@@ -3,6 +3,8 @@ const { sign } = jwt;
 import { hash, compare } from "bcryptjs";
 import { userModel } from "../models/UserModel.js";
 import { uploadToCloudinary, deleteFromCloudinary } from "../config/cloudinaryUpload.js";
+import fs from "fs/promises";
+import path from "path";
 
 // ──────────────────────────────────────────────
 // REGISTER USER
@@ -194,22 +196,61 @@ export const uploadProfileImage = async (req, res, next) => {
 
         const userId = req.user.id;
 
-        // Find existing user to clean up their old profile image if it exists on Cloudinary
+        // Find existing user to clean up their old profile image
         const user = await userModel.findById(userId);
         if (!user) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Delete old profile image from Cloudinary if it exists
-        if (user.profileImage && user.profileImage.includes("cloudinary.com")) {
-            await deleteFromCloudinary(user.profileImage);
+        const isCloudinaryConfigured = !!(process.env.CLOUDINARY_CLOUD_NAME && 
+                                         process.env.CLOUDINARY_API_KEY && 
+                                         process.env.CLOUDINARY_API_SECRET);
+
+        let fileUrl = "";
+
+        if (isCloudinaryConfigured) {
+            // Delete old profile image from Cloudinary if it exists
+            if (user.profileImage && user.profileImage.includes("cloudinary.com")) {
+                await deleteFromCloudinary(user.profileImage);
+            }
+            // Also clean up any old local image if it exists
+            if (user.profileImage && user.profileImage.includes("/uploads/profiles/")) {
+                try {
+                    const oldFilename = user.profileImage.split("/uploads/profiles/").pop();
+                    const oldFilePath = path.join(process.cwd(), "uploads", "profiles", oldFilename);
+                    await fs.unlink(oldFilePath);
+                } catch (err) {
+                    console.error("Failed to delete old local profile image:", err);
+                }
+            }
+
+            // Upload new image buffer to Cloudinary
+            const result = await uploadToCloudinary(req.file.buffer);
+            fileUrl = result.secure_url;
+        } else {
+            // FALLBACK: Local Filesystem Storage
+            // Delete old profile image from local storage if it exists
+            if (user.profileImage && user.profileImage.includes("/uploads/profiles/")) {
+                try {
+                    const oldFilename = user.profileImage.split("/uploads/profiles/").pop();
+                    const oldFilePath = path.join(process.cwd(), "uploads", "profiles", oldFilename);
+                    await fs.unlink(oldFilePath);
+                } catch (err) {
+                    console.error("Failed to delete old local profile image:", err);
+                }
+            }
+
+            const uploadsDir = path.join(process.cwd(), "uploads", "profiles");
+            await fs.mkdir(uploadsDir, { recursive: true });
+
+            const filename = `profile-${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(req.file.originalname) || ".jpg"}`;
+            const filePath = path.join(uploadsDir, filename);
+
+            await fs.writeFile(filePath, req.file.buffer);
+            fileUrl = `${req.protocol}://${req.get("host")}/uploads/profiles/${filename}`;
         }
 
-        // Upload new image buffer to Cloudinary
-        const result = await uploadToCloudinary(req.file.buffer);
-        const fileUrl = result.secure_url;
-
-        // Save new Cloudinary URL in the database
+        // Save new URL in the database
         user.profileImage = fileUrl;
         await user.save();
 
@@ -237,9 +278,23 @@ export const removeProfileImage = async (req, res, next) => {
             return res.status(404).json({ message: "User not found" });
         }
 
-        // Delete profile image from Cloudinary if it exists
-        if (user.profileImage && user.profileImage.includes("cloudinary.com")) {
-            await deleteFromCloudinary(user.profileImage);
+        const isCloudinaryConfigured = !!(process.env.CLOUDINARY_CLOUD_NAME && 
+                                         process.env.CLOUDINARY_API_KEY && 
+                                         process.env.CLOUDINARY_API_SECRET);
+
+        // Delete profile image if it exists
+        if (user.profileImage) {
+            if (user.profileImage.includes("cloudinary.com") && isCloudinaryConfigured) {
+                await deleteFromCloudinary(user.profileImage);
+            } else if (user.profileImage.includes("/uploads/profiles/")) {
+                try {
+                    const oldFilename = user.profileImage.split("/uploads/profiles/").pop();
+                    const oldFilePath = path.join(process.cwd(), "uploads", "profiles", oldFilename);
+                    await fs.unlink(oldFilePath);
+                } catch (err) {
+                    console.error("Failed to delete local profile image:", err);
+                }
+            }
         }
 
         user.profileImage = "";

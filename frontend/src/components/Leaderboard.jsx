@@ -218,8 +218,17 @@ function Leaderboard() {
                     {trader.score}
                   </div>
 
-                  <div className={`font-semibold ${trader.totalProfit >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
-                    {trader.totalProfit >= 0 ? "+" : ""}${trader.totalProfit?.toFixed(2)}
+                  {/* UPDATED PROFIT/LOSS CODE */}
+                  <div
+                    className={`font-semibold ${
+                      trader.totalProfit >= 0
+                        ? "text-emerald-600"
+                        : "text-rose-600"
+                    }`}
+                  >
+                    {trader.totalProfit >= 0
+                      ? `+$${trader.totalProfit?.toFixed(2)}`
+                      : `-$${Math.abs(trader.totalProfit)?.toFixed(2)}`}
                   </div>
 
                   <div className="font-bold text-slate-600">

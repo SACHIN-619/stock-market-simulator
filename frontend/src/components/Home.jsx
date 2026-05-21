@@ -380,7 +380,7 @@ function Home() {
   const [stocks, setStocks] = useState([
     { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, logo: "", sparkline: [175, 176, 175.5, 177, 178.45] },
     { symbol: "TSLA", name: "Tesla Motors", price: 210.12, change: -2.45, isUp: false, logo: "", sparkline: [215, 214, 212, 209, 210.12] },
-    { symbol: "NVDA", name: "NVIDIA Corp.", price: 485.30, change: 5.12, isUp: true, logo: "", sparkline: [472, 475, 480, 482, 485.30] },
+    { symbol: "NVDA", name: "NVIDIA Corp.", price: 485.30, change: 5.12, isUp: true, logo: "", sparkline: [472, 475, 470, 482, 485.30] },
     { symbol: "AMZN", name: "Amazon.com", price: 145.18, change: 0.85, isUp: true, logo: "", sparkline: [143, 144, 144.5, 145, 145.18] },
     { symbol: "MSFT", name: "Microsoft Corp.", price: 370.85, change: -0.15, isUp: false, logo: "", sparkline: [372, 371, 373, 370.5, 370.85] }
   ]);
@@ -469,20 +469,22 @@ function Home() {
     };
   }, []);
 
-  // Subscribe to real-time websocket updates from backend
+  // Connect to realtime Socket.io updates to keep prices fully synchronized and live!
   useEffect(() => {
-    const handleStockUpdates = (updatedStocks) => {
+    const handleStockUpdates = (updatedList) => {
+      if (!updatedList || !Array.isArray(updatedList)) return;
       setStocks(prev => prev.map(stock => {
-        const update = updatedStocks.find(u => u.stockSymbol === stock.symbol);
+        const update = updatedList.find(u => (u.stockSymbol || u.symbol)?.toUpperCase() === stock.symbol.toUpperCase());
         if (update) {
-          const nextPrice = update.currentPrice;
-          const nextChange = update.previousClose ? Number((((nextPrice - update.previousClose) / update.previousClose) * 100).toFixed(2)) : stock.change;
-          const nextSpark = [...stock.sparkline.slice(1), nextPrice];
+          const currentPrice = update.currentPrice || update.price;
+          const prevClose = update.previousClose || stock.price;
+          const newChange = Number((((currentPrice - prevClose) / prevClose) * 100).toFixed(2));
+          const nextSpark = [...stock.sparkline.slice(1), currentPrice];
           return {
             ...stock,
-            price: nextPrice,
-            change: nextChange,
-            isUp: nextPrice >= (update.previousClose || nextPrice),
+            price: currentPrice,
+            change: newChange,
+            isUp: newChange >= 0,
             sparkline: nextSpark
           };
         }
@@ -616,6 +618,7 @@ function Home() {
         </div>
       </section>
 
+
       {/* CORE CAPABILITIES GRID */}
       <section className="py-24 px-6 md:px-16 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
@@ -692,12 +695,12 @@ function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
               <span className="text-xs uppercase font-extrabold text-slate-400 tracking-widest">
-                Simulated Market Feed
+                Market Feed
               </span>
             </div>
-            <span className="text-[10px] text-slate-400 font-bold">Ticks live every 3s</span>
+            <span className="text-[10px] text-slate-400 font-bold">Latest Market Prices</span>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -728,7 +731,6 @@ function Home() {
           </div>
         </div>
       </section>
-
       {/* INTERACTIVE MOCK TERMINAL DEMO */}
       <section className="py-24 bg-slate-50 border-y border-slate-100 px-6 md:px-16">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">

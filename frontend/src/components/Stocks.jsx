@@ -510,16 +510,16 @@ function Stocks() {
 
                     {/* INFO */}
                     <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h2 className="text-xl font-black text-slate-900">
-                          {stock.stockSymbol}
-                        </h2>
-                        {stock.exchange && (
-                          <span className="px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-widest bg-blue-50 text-blue-600 rounded-md border border-blue-100">
+                      <h2 className="text-xl font-black text-slate-900">
+                        {stock.stockSymbol}
+                      </h2>
+                      {stock.exchange && (
+                        <div className="mt-1">
+                          <span className="inline-block px-2 py-0.5 text-[8px] font-extrabold uppercase tracking-widest bg-blue-50 text-blue-600 rounded-md border border-blue-100" title={stock.exchange}>
                             {stock.exchange}
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
 
                       <p className="mt-1 text-xs text-slate-400 font-semibold truncate max-w-[150px]" title={stock.companyName}>
                         {stock.companyName}

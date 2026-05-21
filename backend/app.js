@@ -51,8 +51,24 @@ app.use(cookieParser());
 // ──────────────────────────────────────────────
 // CORS — Explicit origins only
 // ──────────────────────────────────────────────
+// CORS — Dynamic origin check: allow localhost AND any *.vercel.app frontend
+const ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+    // Add specific production frontend URL here if known:
+    process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(cors({
-    origin: ["http://localhost:5173", "http://127.0.0.1:5173", process.env.CLIENT_URL].filter(Boolean),
+    origin: (origin, callback) => {
+        // Allow requests with no origin (mobile apps, curl, Postman)
+        if (!origin) return callback(null, true);
+        // Allow any Vercel preview or production deployment
+        if (ALLOWED_ORIGINS.includes(origin) || /\.vercel\.app$/.test(origin)) {
+            return callback(null, true);
+        }
+        return callback(new Error(`CORS: Origin ${origin} not allowed`));
+    },
     credentials: true,
 }));
 
@@ -90,6 +106,11 @@ const generalLimiter = rateLimit({
 
 // Apply general limiter to all routes
 app.use(generalLimiter);
+
+// Root path handler
+app.get("/", (req, res) => {
+    res.status(200).json({ status: "online", message: "Stock Market Simulator API is running!" });
+});
 
 // ──────────────────────────────────────────────
 // ROUTES

@@ -45,7 +45,7 @@ function StockDetails() {
   const [walletBalance, setWalletBalance] = useState(0);
   const { addToast } = useToast();
 
-  const role = sessionStorage.getItem("role");
+  const role = localStorage.getItem("role");
   const historicalSectionRef = useRef(null);
 
   // AI MARKET PULSE POPUP STATES
@@ -766,7 +766,7 @@ function StockDetails() {
                       </div>
                       <div className="space-y-1">
                         <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{item.label}</p>
-                        <p className="text-xs font-black text-slate-800 uppercase truncate max-w-[120px]">{item.value || "N/A"}</p>
+                        <p className="text-xs font-black text-slate-800 uppercase" title={item.value || "N/A"}>{item.value || "N/A"}</p>
                       </div>
                     </div>
                   ))}

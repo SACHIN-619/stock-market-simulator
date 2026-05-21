@@ -40,6 +40,7 @@ export default function AdvancedChart({ chartData, range, mainSymbol, compareDat
         textColor: '#64748b',
         fontSize: 10,
         fontFamily: 'Inter, sans-serif',
+        attributionLogo: false,
       },
       grid: {
         vertLines: { color: '#f1f5f9' },
@@ -200,12 +201,6 @@ export default function AdvancedChart({ chartData, range, mainSymbol, compareDat
   return (
     <div className="relative w-full h-full flex flex-col min-w-0 overflow-hidden bg-white">
       <div ref={chartContainerRef} className="flex-1 w-full h-full min-w-0" />
-      <div className="absolute bottom-4 right-4 z-20 pointer-events-none">
-        <div className="flex items-center gap-2 bg-slate-50/90 backdrop-blur-xs px-3 py-1.5 rounded-full border border-slate-200 shadow-xs">
-          <div className="w-2 h-2 rounded-full bg-indigo-600 animate-pulse"></div>
-          <span className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.2em]">{mainSymbol}</span>
-        </div>
-      </div>
     </div>
   );
 }

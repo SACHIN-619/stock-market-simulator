@@ -7,23 +7,23 @@ export function AuthProvider({ children }) {
 
   // load token once
   useEffect(() => {
-    const storedToken = sessionStorage.getItem("token");
+    const storedToken = localStorage.getItem("token");
     setToken(storedToken);
   }, []);
 
   const login = (tokenValue) => {
-    sessionStorage.setItem("token", tokenValue);
+    localStorage.setItem("token", tokenValue);
     // JWT expires in 1 hour (3600 seconds)
-    sessionStorage.setItem("sessionExpiry", Date.now() + 3600 * 1000);
+    localStorage.setItem("sessionExpiry", Date.now() + 3600 * 1000);
     setToken(tokenValue); // 🔥 instant UI update
   };
 
   const logout = () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("role");
-    sessionStorage.removeItem("username");
-    sessionStorage.removeItem("userId");
-    sessionStorage.removeItem("sessionExpiry");
+    localStorage.removeItem("token");
+    localStorage.removeItem("role");
+    localStorage.removeItem("username");
+    localStorage.removeItem("userId");
+    localStorage.removeItem("sessionExpiry");
     setToken(null);
   };
 

@@ -315,16 +315,39 @@ function AdminDashboard() {
                       !user.isUserActive ? 'border-red-100 bg-red-50/20' : 'border-slate-100 hover:border-blue-100'
                     }`}
                   >
+                    {/* Status Badge */}
+                    <div className="absolute right-4 top-4">
+                      {user.isUserActive ? (
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-600">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                          Active
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1.5 rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-650">
+                          <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                          Blocked
+                        </span>
+                      )}
+                    </div>
+
                     {/* User Info Header */}
-                    <div className={`mb-6 flex items-center gap-4 transition-opacity ${!user.isUserActive ? 'opacity-30 grayscale' : 'opacity-100'}`}>
-                      <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-slate-50 border border-slate-200 text-lg font-black text-blue-600 group-hover:scale-105 transition-transform duration-300">
-                        {user.username.charAt(0).toLowerCase()}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <h3 className="text-lg font-extrabold text-slate-900 truncate" title={user.username}>
+                    <div className="mb-6 flex items-center gap-4">
+                      {user.profileImage ? (
+                        <img 
+                          src={user.profileImage.startsWith('http') ? user.profileImage : `http://localhost:5000/${user.profileImage.replace(/^\/+/, '')}`} 
+                          alt={user.username} 
+                          className={`h-12 w-12 rounded-xl object-cover border border-slate-200/60 ${!user.isUserActive ? 'grayscale opacity-50' : ''}`} 
+                        />
+                      ) : (
+                        <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-xl font-bold text-white shadow-inner ${!user.isUserActive ? 'from-red-500 to-rose-600' : ''}`}>
+                          {user.username.charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="min-w-0 flex-1 pr-16">
+                        <h3 className="text-lg font-extrabold text-slate-900 line-clamp-1" title={user.username}>
                           {user.username}
                         </h3>
-                        <p className="text-xs font-semibold text-slate-400 truncate" title={user.email}>
+                        <p className="text-xs font-semibold text-slate-450 line-clamp-1" title={user.email}>
                           {user.email}
                         </p>
                       </div>
@@ -334,21 +357,21 @@ function AdminDashboard() {
                     <div className="mb-4 h-px w-full bg-slate-100"></div>
 
                     {/* User Stats with Premium Custom SVG Icons */}
-                    <div className={`flex-1 space-y-4 mb-6 transition-opacity ${!user.isUserActive ? 'opacity-30 grayscale' : 'opacity-100'}`}>
+                    <div className={`flex-1 space-y-3 mb-6 text-sm transition-opacity ${!user.isUserActive ? 'opacity-30 grayscale' : 'opacity-100'}`}>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-400 font-semibold flex items-center gap-2">
+                        <span className="text-slate-600 font-semibold flex items-center gap-2">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-slate-400">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3" />
                           </svg>
                           Wallet Balance
                         </span>
-                        <span className="font-extrabold text-slate-900 flex items-center gap-1.5">
-                          <CoinIcon className="w-4 h-4" />
+                        <span className="font-extrabold text-slate-900 flex items-center gap-0.5">
+                          <CoinIcon className="w-auto h-auto" />
                           {formatCurrency(user.walletBalance)}
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-400 font-semibold flex items-center gap-2">
+                        <span className="text-slate-600 font-semibold flex items-center gap-2">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-slate-400">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
                           </svg>
@@ -359,13 +382,13 @@ function AdminDashboard() {
                         </span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-sm text-slate-400 font-semibold flex items-center gap-2">
+                        <span className="text-slate-600 font-semibold flex items-center gap-2">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className="w-4 h-4 text-slate-400">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
                           </svg>
                           Joined Date
                         </span>
-                        <span className="text-sm font-semibold text-slate-600">
+                        <span className="text-sm font-semibold text-slate-500">
                           {formatDate(user.createdAt)}
                         </span>
                       </div>
@@ -375,20 +398,32 @@ function AdminDashboard() {
                     <div className="flex flex-col gap-2 mt-auto">
                       <button
                         onClick={() => openUserDetails(user)}
-                        className={`w-full rounded-xl py-2.5 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${!user.isUserActive ? 'bg-slate-100 text-slate-400 border-slate-200' : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900 hover:border-slate-300'}`}
+                        className={`w-full rounded-xl py-2.5 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${
+                          !user.isUserActive 
+                            ? 'bg-slate-100 text-slate-400 border-slate-200 hover:bg-slate-150/80 hover:border-slate-250' 
+                            : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900 hover:border-slate-300'
+                        }`}
                       >
                         View Details
                       </button>
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleToggleStatus(user)}
-                          className={`flex-1 rounded-xl py-2 text-xs font-bold transition border cursor-pointer ${user.isUserActive ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100' : 'bg-blue-600 text-white border-blue-500 hover:bg-blue-700 shadow-sm shadow-blue-600/10'}`}
+                          className={`flex-1 rounded-xl py-2 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${
+                            user.isUserActive 
+                              ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100/80 hover:border-amber-250' 
+                              : 'bg-[#E0EFFF] text-[#1D4ED8] border-[#BCD6F2] hover:bg-[#E0EFFF]/80 hover:border-[#96C0EE] font-black'
+                          }`}
                         >
                           {user.isUserActive ? "Block" : "Unblock"}
                         </button>
                         <button
                           onClick={() => handleDelete(user._id)}
-                          className={`flex-1 rounded-xl py-2 text-xs font-bold transition border cursor-pointer ${!user.isUserActive ? 'bg-red-50 text-red-650 border-red-100 hover:bg-red-100' : 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100'}`}
+                          className={`flex-1 rounded-xl py-2 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${
+                            !user.isUserActive 
+                              ? 'bg-red-50/80 text-red-650 border-red-200 hover:bg-red-100/80 hover:border-red-250' 
+                              : 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100/85 hover:border-red-250'
+                          }`}
                         >
                           Delete
                         </button>

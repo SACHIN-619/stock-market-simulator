@@ -10,6 +10,19 @@ export const getStockHistory = async (req, res) => {
       const { symbol } = req.params;
       const range = req.query.range || "1D";
       console.log(`[Historical] Fetching ${symbol} for range: ${range}`);
+
+      // Verify that the requested stock exists in the database
+      const stock = await stockModel.findOne({
+         stockSymbol: symbol.toUpperCase()
+      });
+
+      if (!stock) {
+         return res.status(404).json({
+            success: false,
+            message: `Stock "${symbol.toUpperCase()}" is not registered in the simulator.`
+         });
+      }
+
       const cacheKey = `history_v3_${symbol}_${range}`; // Bumped to v3 to clear any old OHLC cache
 
       // 1. CHECK CACHE

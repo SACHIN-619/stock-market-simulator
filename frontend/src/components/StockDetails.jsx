@@ -45,7 +45,7 @@ function StockDetails() {
   const [walletBalance, setWalletBalance] = useState(0);
   const { addToast } = useToast();
 
-  const role = localStorage.getItem("role");
+  const role = sessionStorage.getItem("role");
   const historicalSectionRef = useRef(null);
 
   // AI MARKET PULSE POPUP STATES
@@ -295,7 +295,8 @@ function StockDetails() {
         addToast(`No data found for ${compareSymbol.toUpperCase()}`, "error");
       }
     } catch (err) {
-      addToast("Error fetching comparison data", "error");
+      const errorMsg = err.response?.data?.message || "Error fetching comparison data";
+      addToast(errorMsg, "error");
     } finally {
       setLoadingCompare(false);
     }

@@ -123,7 +123,7 @@ export const getUserPortfolio = async (req, res, next) => {
       return res.status(404).json({ message: "User not found" });
     }
 
-    const transactions = await transactionModel.find({ userId });
+    const transactions = await transactionModel.find({ userId }).sort({ createdAt: 1 });
 
     // Set default wallet balance if missing or if it's a new user with 0 transactions and 0 balance
     if (user.walletBalance === undefined || user.walletBalance === null || (user.walletBalance === 0 && transactions.length === 0)) {
@@ -179,6 +179,58 @@ export const getUserPortfolio = async (req, res, next) => {
       totalCurrentValue += stock.currentValue;
     });
 
+    // Generate dynamic growth history from transactions
+    const growthHistory = [];
+    if (transactions.length > 0) {
+      let currentCash = 100000; // starting cash
+      const holdings = {};
+      const lastPrice = {};
+
+      // Add starting baseline point (1 day before first transaction)
+      const firstTxTime = new Date(transactions[0].createdAt);
+      const startingTime = new Date(firstTxTime.getTime() - 24 * 60 * 60 * 1000);
+      growthHistory.push({
+        date: startingTime.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        value: 100000
+      });
+
+      transactions.forEach((tx) => {
+        const symbol = tx.stockSymbol;
+        lastPrice[symbol] = tx.pricePerShare;
+
+        if (tx.transactionType === "BUY") {
+          currentCash -= tx.totalAmount;
+          holdings[symbol] = (holdings[symbol] || 0) + tx.quantity;
+        } else if (tx.transactionType === "SELL") {
+          currentCash += tx.totalAmount;
+          holdings[symbol] = (holdings[symbol] || 0) - tx.quantity;
+        }
+
+        // Calculate portfolio holdings value at the time of this transaction using last recorded prices
+        let holdingsValue = 0;
+        Object.keys(holdings).forEach((s) => {
+          holdingsValue += holdings[s] * (lastPrice[s] || 0);
+        });
+
+        const netWorth = currentCash + holdingsValue;
+        growthHistory.push({
+          date: new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+          value: Math.round(netWorth * 100) / 100
+        });
+      });
+
+      // Add current point with live prices
+      let currentHoldingsValue = 0;
+      filteredPortfolio.forEach((stock) => {
+        currentHoldingsValue += stock.currentValue;
+      });
+      const currentNetWorth = user.walletBalance + currentHoldingsValue;
+      growthHistory.push({
+        date: "Today",
+        value: Math.round(currentNetWorth * 100) / 100
+      });
+    }
+
     res.status(200).json({
       summary: {
         totalInvestment,
@@ -187,6 +239,7 @@ export const getUserPortfolio = async (req, res, next) => {
         walletBalance: user.walletBalance,
       },
       payload: filteredPortfolio,
+      growthHistory,
       message: "Portfolio fetched",
     });
   } catch (error) {

@@ -5,9 +5,9 @@ import WatchlistBell from "./WatchlistBell";
 function Navbar() {
   const navigate = useNavigate();
 
-  const role     = localStorage.getItem("role");
-  const userId   = localStorage.getItem("userId");     // set on login
-  const username = localStorage.getItem("username");
+  const role     = sessionStorage.getItem("role");
+  const userId   = sessionStorage.getItem("userId");     // set on login
+  const username = sessionStorage.getItem("username");
 
   const handleLogout = async () => {
     try {
@@ -15,9 +15,9 @@ function Navbar() {
     } catch (error) {
       console.error("Logout Error:", error.response?.data || error.message);
     } finally {
-      localStorage.removeItem("role");
-      localStorage.removeItem("username");
-      localStorage.removeItem("userId");
+      sessionStorage.removeItem("role");
+      sessionStorage.removeItem("username");
+      sessionStorage.removeItem("userId");
       navigate("/signin");
     }
   };

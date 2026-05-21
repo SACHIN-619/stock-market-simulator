@@ -8,7 +8,7 @@ function Dashboard() {
   const [stocks, setStocks] = useState([]);
   const [portfolio, setPortfolio] = useState(null);
   const [loading, setLoading] = useState(true);
-  const username = localStorage.getItem("username");
+  const username = sessionStorage.getItem("username");
 
   useEffect(() => {
     const fetchData = async () => {

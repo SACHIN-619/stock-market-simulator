@@ -11,6 +11,7 @@ ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, PointE
 function Portfolio() {
   const [portfolio, setPortfolio] = useState([]);
   const [summary, setSummary] = useState(null);
+  const [growthHistory, setGrowthHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -21,6 +22,7 @@ function Portfolio() {
         const res = await api.get("/portfolio");
         setPortfolio(res.data.payload || []);
         setSummary(res.data.summary || null);
+        setGrowthHistory(res.data.growthHistory || []);
       } catch (err) {
         setError(err.response?.data?.message || "Unable to load portfolio");
       } finally {
@@ -47,11 +49,11 @@ function Portfolio() {
   };
 
   const growthData = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    labels: growthHistory.map(item => item.date),
     datasets: [{
       fill: true,
       label: 'Portfolio Value',
-      data: [10000, 10500, 10200, 11000, 11800, (summary?.totalCurrentValue || 0) + 10000],
+      data: growthHistory.map(item => item.value),
       borderColor: '#6366f1',
       borderWidth: 3,
       backgroundColor: 'rgba(99, 102, 241, 0.05)',
@@ -113,57 +115,93 @@ function Portfolio() {
         {/* GROWTH CHART */}
         <div className="lg:col-span-2 glass-card p-8 rounded-[2.5rem] space-y-6">
           <h2 className="text-lg font-black text-slate-900">Growth Analysis</h2>
-          <div className="h-[300px]">
-            <Line data={growthData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { family: 'Inter', weight: 'bold', size: 10 } } }, y: { grid: { color: 'rgba(226, 232, 240, 0.6)' }, ticks: { color: '#94a3b8', font: { family: 'Inter', weight: 'bold', size: 10 } } } } }} />
-          </div>
+          {growthHistory.length > 0 ? (
+            <div className="h-[300px]">
+              <Line data={growthData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { family: 'Inter', weight: 'bold', size: 10 } } }, y: { grid: { color: 'rgba(226, 232, 240, 0.6)' }, ticks: { color: '#94a3b8', font: { family: 'Inter', weight: 'bold', size: 10 } } } } }} />
+            </div>
+          ) : (
+            <div className="h-[300px] flex flex-col items-center justify-center text-center space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-500 border border-indigo-100 shadow-2xs">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0 0 20.25 18V6A2.25 2.25 0 0 0 18 3.75H6A2.25 2.25 0 0 0 3.75 6v12A2.25 2.25 0 0 0 6 20.25Z" />
+                </svg>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">No Performance History</h3>
+                <p className="text-xs text-slate-450 font-semibold max-w-sm leading-relaxed">
+                  Your portfolio performance and growth analytics will generate dynamically once you complete your first trade.
+                </p>
+              </div>
+              <Link to="/stocks" className="rounded-xl bg-indigo-650 hover:bg-indigo-750 text-white px-5 py-2 text-xs font-black uppercase tracking-wider transition shadow-2xs cursor-pointer">
+                Browse Stocks
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* ASSET ALLOCATION */}
         <div className="glass-card p-8 rounded-[2.5rem] flex flex-col">
           <h2 className="text-lg font-black text-slate-900 mb-8">Asset Allocation</h2>
           
-          <div className="flex-1 flex flex-col items-center justify-center">
-            {/* CHART AREA */}
-            <div className="relative w-full max-w-[240px] aspect-square flex items-center justify-center">
-              <Doughnut 
-                data={donutData} 
-                options={{ 
-                  cutout: '84%', 
-                  plugins: { 
-                    legend: { display: false },
-                    tooltip: {
-                      backgroundColor: '#ffffff',
-                      titleColor: '#0f172a',
-                      bodyColor: '#334155',
-                      borderColor: '#e2e8f0',
-                      borderWidth: 1,
-                      titleFont: { size: 13, weight: 'bold', family: 'Inter' },
-                      bodyFont: { size: 12, family: 'Inter' },
-                      padding: 12,
-                      cornerRadius: 12,
-                      displayColors: true,
-                      boxPadding: 4,
-                      callbacks: {
-                        label: (context) => {
-                          const value = context.raw;
-                          const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                          const percentage = ((value / total) * 100).toFixed(1);
-                          return ` $${value.toLocaleString()} (${percentage}%)`;
+          {portfolio.length > 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center">
+              {/* CHART AREA */}
+              <div className="relative w-full max-w-[240px] aspect-square flex items-center justify-center">
+                <Doughnut 
+                  data={donutData} 
+                  options={{ 
+                    cutout: '84%', 
+                    plugins: { 
+                      legend: { display: false },
+                      tooltip: {
+                        backgroundColor: '#ffffff',
+                        titleColor: '#0f172a',
+                        bodyColor: '#334155',
+                        borderColor: '#e2e8f0',
+                        borderWidth: 1,
+                        titleFont: { size: 13, weight: 'bold', family: 'Inter' },
+                        bodyFont: { size: 12, family: 'Inter' },
+                        padding: 12,
+                        cornerRadius: 12,
+                        displayColors: true,
+                        boxPadding: 4,
+                        callbacks: {
+                          label: (context) => {
+                            const value = context.raw;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return ` $${value.toLocaleString()} (${percentage}%)`;
+                          }
                         }
                       }
-                    }
-                  } 
-                }} 
-              />
-              <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total P/L</p>
-                <p className={`text-3xl font-black flex items-center tracking-tighter ${summary?.totalProfit >= 0 ? "text-emerald-500" : "text-red-500"}`}>
-                  {summary?.totalProfit < 0 ? "-" : ""}${Math.abs(summary?.totalProfit || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
-                </p>
-                <div className={`w-6 h-0.5 rounded-full mt-2 ${summary?.totalProfit >= 0 ? "bg-emerald-500/20" : "bg-red-500/20"}`} />
+                    } 
+                  }} 
+                />
+                <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">Total P/L</p>
+                  <p className={`text-3xl font-black flex items-center tracking-tighter ${summary?.totalProfit >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+                    {summary?.totalProfit < 0 ? "-" : ""}${Math.abs(summary?.totalProfit || 0).toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                  </p>
+                  <div className={`w-6 h-0.5 rounded-full mt-2 ${summary?.totalProfit >= 0 ? "bg-emerald-500/20" : "bg-red-500/20"}`} />
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex-1 flex flex-col items-center justify-center text-center p-6 space-y-4">
+              <div className="w-14 h-14 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-100">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor" className="w-6 h-6">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 10.5H21A7.5 7.5 0 0 0 13.5 3v7.5Z" />
+                </svg>
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-wider">Empty Allocation</h3>
+                <p className="text-xs text-slate-450 font-semibold leading-relaxed">
+                  Your asset distribution ring is empty because you do not own any equities.
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 

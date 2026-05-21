@@ -69,15 +69,17 @@ export const loginUser = async (req, res, next) => {
         // ── Secure cookie ──
         res.cookie("token", signedToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+            // secure: process.env.NODE_ENV === "production",
+            // sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: !!process.env.CLIENT_URL,
+            sameSite: process.env.CLIENT_URL ? "none" : "lax",
             maxAge: 60 * 60 * 1000, // 1 hour in ms
         });
 
         // Remove password before sending
         const { password: _pw, ...userPayload } = user;
 
-        res.status(200).json({ message: "Login success", payload: userPayload });
+        res.status(200).json({ message: "Login success", token: signedToken, payload: userPayload });
     } catch (err) {
         next(err);
     }
@@ -91,7 +93,7 @@ export const logoutUser = async (req, res, next) => {
         res.clearCookie("token", {
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
-            sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
+            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
         });
         res.status(200).json({ message: "Logout success" });
     } catch (err) {

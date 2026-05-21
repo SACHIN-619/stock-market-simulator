@@ -33,11 +33,11 @@ function Signin() {
         return;
       }
 
-      // 🔥 IMPORTANT: use context login instead of sessionStorage directly
+      // 🔥 IMPORTANT: use context login instead of localStorage directly
       login(res.data.token);
-      sessionStorage.setItem("role", role);
-      sessionStorage.setItem("username", user.username);
-      sessionStorage.setItem("userId", user._id || user.id || "");   // for socket targeting
+      localStorage.setItem("role", role);
+      localStorage.setItem("username", user.username);
+      localStorage.setItem("userId", user._id || user.id || "");   // for socket targeting
 
       alert("Login Successful");
 

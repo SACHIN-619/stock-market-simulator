@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllStocks, getStockDetails } from '../service/stockService';
 import AdvancedChart from './AdvancedChart'; // Fixed: Restored the vital chart engine import
-import axios from 'axios';
+import api from '../service/api';
 
 // Utility for formatting market cap
 const formatMarketCap = (num) => {
@@ -21,7 +21,7 @@ export const Sparkline = ({ symbol, color = "#10b981" }) => {
     let isMounted = true;
     const fetchHistory = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/historical/history/${symbol}?range=1W`);
+        const response = await api.get(`/historical/history/${symbol}?range=1W`);
         let data = response.data.data || response.data || [];
         // Filter out invalid data and normalize price/close
         data = data.map(d => ({ ...d, close: d.price || d.close }))
@@ -131,8 +131,8 @@ export default function TraderTerminal() {
     const fetchChartData = async () => {
       setLoadingChart(true);
       try {
-        const response = await axios.get(
-          `http://localhost:5000/api/historical/history/${selectedStock.stockSymbol.toUpperCase()}?range=${range}`
+        const response = await api.get(
+          `/historical/history/${selectedStock.stockSymbol.toUpperCase()}?range=${range}`
         );
         if (response.data && response.data.success) {
           setChartData(response.data.data);

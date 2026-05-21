@@ -15,7 +15,7 @@ const api = axios.create({
 // Perfect for injecting temporary runtime headers or loading indicators before an API request leaves the browser.
 api.interceptors.request.use(
    (config) => {
-      const token = sessionStorage.getItem("token");
+      const token = localStorage.getItem("token");
       if (token && token !== "undefined") {
          config.headers.Authorization = `Bearer ${token}`;
       }

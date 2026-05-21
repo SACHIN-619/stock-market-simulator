@@ -396,7 +396,7 @@ function Home() {
   const [mockMessage, setMockMessage] = useState("");
 
   useEffect(() => {
-    const role = sessionStorage.getItem("role");
+    const role = localStorage.getItem("role");
 
     if (role === "trader") {
       navigate("/portfolio", { replace: true });

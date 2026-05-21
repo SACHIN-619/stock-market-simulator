@@ -61,21 +61,11 @@ export const getPortfolio = async (req, res, next) => {
     // 5. Fetch live prices + compute metrics
     await Promise.all(
       filteredPortfolio.map(async (stock) => {
-        try {
-          const response = await axios.get(
-            `https://finnhub.io/api/v1/quote?symbol=${stock.stockSymbol}&token=${process.env.FINNHUB_API_KEY}`
-          );
-          
-          if (response.data && response.data.error) {
-            throw new Error(response.data.error);
-          }
-          
-          stock.currentPrice = response.data.c || 0;
-        } catch (apiError) {
-          console.error(`Finnhub API Error for ${stock.stockSymbol}:`, apiError.message);
-          // Fallback to average buy price if API limits are hit or request fails
-          stock.currentPrice = stock.totalInvestment / stock.ownedQuantity;
-        }
+        const response = await axios.get(
+          `https://finnhub.io/api/v1/quote?symbol=${stock.stockSymbol}&token=${process.env.FINNHUB_API_KEY}`
+        );
+
+        stock.currentPrice = response.data.c;
 
         // Current total value
         stock.currentValue =
@@ -90,9 +80,8 @@ export const getPortfolio = async (req, res, next) => {
           stock.currentValue - stock.totalInvestment;
 
         // Profit %
-        stock.profitPercent = stock.totalInvestment > 0
-          ? (stock.profitLoss / stock.totalInvestment) * 100
-          : 0;
+        stock.profitPercent =
+          (stock.profitLoss / stock.totalInvestment) * 100;
       })
     );
 

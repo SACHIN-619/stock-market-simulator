@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../service/api";
 import { getAllStocks, getStockDetails } from "../service/stockService";
 import { socket } from "../socket/socket";
-
+import { Sparkline } from "./TraderTerminal";
 // --- ANIMATION COMPONENT ---
 const LogoAnimation = () => {
   const emerald500 = "#10b981";
@@ -373,19 +372,23 @@ const LogoAnimation = () => {
   );
 };
 
+const FALLBACK_STOCKS = [
+  { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, logo: "", sparkline: [175, 176, 175.5, 177, 178.45] },
+  { symbol: "TSLA", name: "Tesla Motors", price: 210.12, change: -2.45, isUp: false, logo: "", sparkline: [215, 214, 212, 209, 210.12] },
+  { symbol: "NVDA", name: "NVIDIA Corp.", price: 485.30, change: 5.12, isUp: true, logo: "", sparkline: [472, 475, 470, 482, 485.30] },
+  { symbol: "AMZN", name: "Amazon.com", price: 145.18, change: 0.85, isUp: true, logo: "", sparkline: [143, 144, 144.5, 145, 145.18] },
+  { symbol: "MSFT", name: "Microsoft Corp.", price: 370.85, change: -0.15, isUp: false, logo: "", sparkline: [372, 371, 373, 370.5, 370.85] }
+];
+
 function Home() {
   const navigate = useNavigate();
 
-  // Simulated active stocks for landing page ticker (acts as fallback/initial list)
-  const [stocks, setStocks] = useState([
-    { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, logo: "", sparkline: [175, 176, 175.5, 177, 178.45] },
-    { symbol: "TSLA", name: "Tesla Motors", price: 210.12, change: -2.45, isUp: false, logo: "", sparkline: [215, 214, 212, 209, 210.12] },
-    { symbol: "NVDA", name: "NVIDIA Corp.", price: 485.30, change: 5.12, isUp: true, logo: "", sparkline: [472, 475, 470, 482, 485.30] },
-    { symbol: "AMZN", name: "Amazon.com", price: 145.18, change: 0.85, isUp: true, logo: "", sparkline: [143, 144, 144.5, 145, 145.18] },
-    { symbol: "MSFT", name: "Microsoft Corp.", price: 370.85, change: -0.15, isUp: false, logo: "", sparkline: [372, 371, 373, 370.5, 370.85] }
-  ]);
+  // Stocks state loaded dynamically from API or falling back to defaults
+  const [stocks, setStocks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUsingFallback, setIsUsingFallback] = useState(false);
 
-  const mainStock = stocks[0] || { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, logo: "" };
+  const mainStock = stocks[0] || { symbol: "AAPL", name: "Apple Inc.", price: 178.45, change: 1.25, isUp: true, logo: "", sparkline: [175, 176, 175.5, 177, 178.45] };
 
   // Tab state for learning hub
   const [activeTab, setActiveTab] = useState("market");
@@ -442,24 +445,35 @@ function Home() {
                 };
               } catch (err) {
                 console.error(`Failed to fetch details for ${stock.stockSymbol}`, err);
-                return {
-                  symbol: stock.stockSymbol,
-                  name: stock.companyName,
-                  logo: stock.logo,
-                  price: 100.00,
-                  change: 0.00,
-                  isUp: true,
-                  sparkline: [98, 99, 100, 100]
-                };
+                return null; // Return null so we can filter out failed fetches
               }
             })
           );
           if (active) {
-            setStocks(detailedStocks);
+            const validStocks = detailedStocks.filter(s => s !== null);
+            if (validStocks.length > 0) {
+              setStocks(validStocks);
+              setIsUsingFallback(false);
+            } else {
+              setStocks(FALLBACK_STOCKS);
+              setIsUsingFallback(true);
+            }
+            setIsLoading(false);
+          }
+        } else {
+          if (active) {
+            setStocks(FALLBACK_STOCKS);
+            setIsUsingFallback(true);
+            setIsLoading(false);
           }
         }
       } catch (error) {
         console.error("Failed to load backend stocks on Home page:", error);
+        if (active) {
+          setStocks(FALLBACK_STOCKS);
+          setIsUsingFallback(true);
+          setIsLoading(false);
+        }
       }
     };
 
@@ -469,22 +483,23 @@ function Home() {
     };
   }, []);
 
-  // Connect to realtime Socket.io updates to keep prices fully synchronized and live!
+  // Subscribe to real-time websocket updates from backend
   useEffect(() => {
-    const handleStockUpdates = (updatedList) => {
-      if (!updatedList || !Array.isArray(updatedList)) return;
+    const handleStockUpdates = (updatedStocks) => {
+      if (isUsingFallback) return;
+
       setStocks(prev => prev.map(stock => {
-        const update = updatedList.find(u => (u.stockSymbol || u.symbol)?.toUpperCase() === stock.symbol.toUpperCase());
+        const update = updatedStocks.find(u => (u.stockSymbol || u.symbol)?.toUpperCase() === stock.symbol.toUpperCase());
         if (update) {
-          const currentPrice = update.currentPrice || update.price;
+          const nextPrice = update.currentPrice || update.price || stock.price;
           const prevClose = update.previousClose || stock.price;
-          const newChange = Number((((currentPrice - prevClose) / prevClose) * 100).toFixed(2));
-          const nextSpark = [...stock.sparkline.slice(1), currentPrice];
+          const nextChange = prevClose ? Number((((nextPrice - prevClose) / prevClose) * 100).toFixed(2)) : stock.change;
+          const nextSpark = [...stock.sparkline.slice(1), nextPrice];
           return {
             ...stock,
-            price: currentPrice,
-            change: newChange,
-            isUp: newChange >= 0,
+            price: nextPrice,
+            change: nextChange,
+            isUp: nextPrice >= (update.previousClose || nextPrice),
             sparkline: nextSpark
           };
         }
@@ -496,10 +511,12 @@ function Home() {
     return () => {
       socket.off("stockUpdates", handleStockUpdates);
     };
-  }, []);
+  }, [isUsingFallback]);
 
-  // Tick stock prices slightly every 3 seconds to feel completely alive if WebSocket isn't updating
+  // Tick stock prices slightly every 3 seconds ONLY if we are using local fallbacks
   useEffect(() => {
+    if (!isUsingFallback) return;
+
     const interval = setInterval(() => {
       setStocks(prev => prev.map(stock => {
         const factor = (Math.random() - 0.5) * 0.4;
@@ -517,7 +534,7 @@ function Home() {
       }));
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [isUsingFallback]);
 
   const handleMockBuy = () => {
     const applePrice = mainStock.price;
@@ -545,33 +562,7 @@ function Home() {
     setTimeout(() => setMockMessage(""), 4000);
   };
 
-  const renderSparkline = (points, isUp) => {
-    const min = Math.min(...points);
-    const max = Math.max(...points);
-    const range = max - min === 0 ? 1 : max - min;
-    const width = 80;
-    const height = 24;
-    const strokeColor = isUp ? "#10b981" : "#ef4444";
 
-    const pathPoints = points.map((p, idx) => {
-      const x = (idx / (points.length - 1)) * width;
-      const y = height - ((p - min) / range) * height;
-      return `${x},${y}`;
-    }).join(" ");
-
-    return (
-      <svg width={width} height={height} className="overflow-visible">
-        <polyline
-          fill="none"
-          stroke={strokeColor}
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          points={pathPoints}
-        />
-      </svg>
-    );
-  };
 
   return (
     <div className="bg-[#F8FAFC] text-slate-800 overflow-x-hidden min-h-screen">
@@ -617,7 +608,6 @@ function Home() {
           <LogoAnimation />
         </div>
       </section>
-
 
       {/* CORE CAPABILITIES GRID */}
       <section id="about-section" className="py-24 px-6 md:px-16 max-w-7xl mx-auto scroll-mt-20">
@@ -695,42 +685,65 @@ function Home() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500"></span>
+              <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
               <span className="text-xs uppercase font-extrabold text-slate-400 tracking-widest">
-                Market Feed
+                Simulated Market Feed
               </span>
             </div>
-            <span className="text-[10px] text-slate-400 font-bold">Latest Market Prices</span>
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-            {stocks.map((stock) => (
-              <div
-                key={stock.symbol}
-                className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:shadow-md hover:border-indigo-300 hover:-translate-y-0.5 transition duration-300"
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="text-sm font-black text-slate-900">{stock.symbol}</span>
-                    <p className="text-[10px] text-slate-400 font-bold leading-none">{stock.name}</p>
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs animate-pulse"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-2 w-1/2">
+                      <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                      <div className="h-3 bg-slate-200/80 rounded w-1/2"></div>
+                    </div>
+                    <div className="h-5 bg-slate-200 rounded w-12"></div>
                   </div>
-                  <span
-                    className={`text-xs font-black px-2 py-0.5 rounded-md ${stock.isUp ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
-                      }`}
-                  >
-                    {stock.isUp ? "+" : ""}{stock.change}%
-                  </span>
+                  <div className="flex items-end justify-between mt-6">
+                    <div className="h-6 bg-slate-200 rounded w-16"></div>
+                    <div className="h-6 bg-slate-200 rounded w-20"></div>
+                  </div>
                 </div>
+              ))
+            ) : (
+              stocks.map((stock) => (
+                <div
+                  key={stock.symbol}
+                  className="bg-white border border-slate-200/80 rounded-2xl p-4 flex flex-col justify-between shadow-xs hover:shadow-md hover:border-indigo-300 hover:-translate-y-0.5 transition duration-300"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="text-sm font-black text-slate-900">{stock.symbol}</span>
+                      <p className="text-[10px] text-slate-400 font-bold leading-none">{stock.name}</p>
+                    </div>
+                    <span
+                      className={`text-xs font-black px-2 py-0.5 rounded-md ${stock.isUp ? "bg-emerald-50 text-emerald-600" : "bg-red-50 text-red-600"
+                        }`}
+                    >
+                      {stock.isUp ? "+" : ""}{stock.change}%
+                    </span>
+                  </div>
 
-                <div className="flex items-end justify-between mt-4">
-                  <span className="text-base font-black text-slate-900">${stock.price.toFixed(2)}</span>
-                  {renderSparkline(stock.sparkline, stock.isUp)}
+                  <div className="flex items-end justify-between mt-4">
+                    <span className="text-base font-black text-slate-900">${stock.price.toFixed(2)}</span>
+                    <div className="w-20">
+                      <Sparkline symbol={stock.symbol} color={stock.isUp ? "#10b981" : "#ef4444"} />
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </div>
       </section>
+
       {/* INTERACTIVE MOCK TERMINAL DEMO */}
       <section className="py-24 bg-slate-50 border-y border-slate-100 px-6 md:px-16">
         <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
@@ -758,82 +771,122 @@ function Home() {
           </div>
 
           {/* INTERACTIVE CARD */}
-          <div className="bg-white border border-slate-200/85 rounded-[2.5rem] p-8 shadow-md hover:shadow-2xl hover:border-indigo-200/50 transition duration-500 space-y-6">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-sm overflow-hidden">
-                  {mainStock.logo ? (
-                    <img src={mainStock.logo} alt={mainStock.symbol} className="h-full w-full object-contain" />
-                  ) : (
-                    mainStock.symbol[0]
-                  )}
+          {isLoading ? (
+            <div className="bg-white border border-slate-200/85 rounded-[2.5rem] p-8 shadow-md space-y-6 animate-pulse w-full">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 bg-slate-200 rounded-xl"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-slate-200 rounded w-12"></div>
+                    <div className="h-3 bg-slate-200 rounded w-20"></div>
+                  </div>
+                </div>
+                <div className="space-y-2 text-right">
+                  <div className="h-3 bg-slate-200 rounded w-16 ml-auto"></div>
+                  <div className="h-5 bg-slate-200 rounded w-20 ml-auto"></div>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 bg-slate-50/80 border border-slate-150/40 p-4 rounded-2xl">
+                <div className="space-y-2">
+                  <div className="h-3 bg-slate-200 rounded w-24"></div>
+                  <div className="h-5 bg-slate-200 rounded w-20"></div>
+                </div>
+                <div className="space-y-2">
+                  <div className="h-3 bg-slate-200 rounded w-24"></div>
+                  <div className="h-5 bg-slate-200 rounded w-16"></div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <div className="h-4 bg-slate-200 rounded w-20"></div>
+                  <div className="h-8 bg-slate-200 rounded w-24"></div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="h-12 bg-slate-200 rounded-2xl"></div>
+                  <div className="h-12 bg-slate-200 rounded-2xl"></div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white border border-slate-200/85 rounded-[2.5rem] p-8 shadow-md hover:shadow-2xl hover:border-indigo-200/50 transition duration-500 space-y-6">
+              <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-10 bg-slate-900 rounded-xl flex items-center justify-center text-white font-black text-sm overflow-hidden">
+                    {mainStock.logo ? (
+                      <img src={mainStock.logo} alt={mainStock.symbol} className="h-full w-full object-contain" />
+                    ) : (
+                      mainStock.symbol[0]
+                    )}
+                  </div>
+                  <div>
+                    <span className="text-sm font-black text-slate-900">{mainStock.symbol}</span>
+                    <p className="text-[10px] text-slate-400 font-bold">{mainStock.name} Terminal</p>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <span className="text-xs font-extrabold text-slate-400 uppercase leading-none block">{mainStock.symbol} Price</span>
+                  <span className="text-lg font-black text-slate-900">${mainStock.price.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* MOCK STATS */}
+              <div className="grid grid-cols-2 gap-4 bg-slate-50/80 border border-slate-150/40 p-4 rounded-2xl">
+                <div>
+                  <span className="text-[10px] text-slate-400 font-extrabold uppercase block">Mock Cash Balance</span>
+                  <span className="text-lg font-black text-slate-900">${mockCash.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
                 </div>
                 <div>
-                  <span className="text-sm font-black text-slate-900">{mainStock.symbol}</span>
-                  <p className="text-[10px] text-slate-400 font-bold">{mainStock.name} Terminal</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-extrabold text-slate-400 uppercase leading-none block">{mainStock.symbol} Price</span>
-                <span className="text-lg font-black text-slate-900">${mainStock.price.toFixed(2)}</span>
-              </div>
-            </div>
-
-            {/* MOCK STATS */}
-            <div className="grid grid-cols-2 gap-4 bg-slate-50/80 border border-slate-150/40 p-4 rounded-2xl">
-              <div>
-                <span className="text-[10px] text-slate-400 font-extrabold uppercase block">Mock Cash Balance</span>
-                <span className="text-lg font-black text-slate-900">${mockCash.toLocaleString("en-US", { minimumFractionDigits: 2 })}</span>
-              </div>
-              <div>
-                <span className="text-[10px] text-slate-400 font-extrabold uppercase block">Your {mainStock.symbol} Holdings</span>
-                <span className="text-lg font-black text-slate-900">{mockHoldings} Shares</span>
-              </div>
-            </div>
-
-            {/* MOCK INTERACTION CONTROL */}
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-black text-slate-600">Trading Quantity</label>
-                <div className="flex items-center border border-slate-200 rounded-xl">
-                  <button
-                    onClick={() => setMockQuantity(prev => Math.max(1, prev - 5))}
-                    className="px-3 py-1.5 hover:bg-slate-50 font-black text-sm transition text-slate-500"
-                  >
-                    -
-                  </button>
-                  <span className="px-4 font-black text-sm text-slate-800">{mockQuantity}</span>
-                  <button
-                    onClick={() => setMockQuantity(prev => prev + 5)}
-                    className="px-3 py-1.5 hover:bg-slate-50 font-black text-sm transition text-slate-500"
-                  >
-                    +
-                  </button>
+                  <span className="text-[10px] text-slate-400 font-extrabold uppercase block">Your {mainStock.symbol} Holdings</span>
+                  <span className="text-lg font-black text-slate-900">{mockHoldings} Shares</span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={handleMockBuy}
-                  className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 active:scale-98 transition text-white rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-sm shadow-emerald-100"
-                >
-                  Buy {mainStock.symbol}
-                </button>
-                <button
-                  onClick={handleMockSell}
-                  className="w-full py-4 bg-red-600 hover:bg-red-500 active:scale-98 transition text-white rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-sm shadow-red-100"
-                >
-                  Sell {mainStock.symbol}
-                </button>
-              </div>
+              {/* MOCK INTERACTION CONTROL */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black text-slate-600">Trading Quantity</label>
+                  <div className="flex items-center border border-slate-200 rounded-xl">
+                    <button
+                      onClick={() => setMockQuantity(prev => Math.max(1, prev - 5))}
+                      className="px-3 py-1.5 hover:bg-slate-50 font-black text-sm transition text-slate-500"
+                    >
+                      -
+                    </button>
+                    <span className="px-4 font-black text-sm text-slate-800">{mockQuantity}</span>
+                    <button
+                      onClick={() => setMockQuantity(prev => prev + 5)}
+                      className="px-3 py-1.5 hover:bg-slate-50 font-black text-sm transition text-slate-500"
+                    >
+                      +
+                    </button>
+                  </div>
+                </div>
 
-              {mockMessage && (
-                <p className="text-center text-xs font-bold transition duration-300 animate-fade-in text-slate-600">
-                  {mockMessage}
-                </p>
-              )}
+                <div className="grid grid-cols-2 gap-4">
+                  <button
+                    onClick={handleMockBuy}
+                    className="w-full py-4 bg-emerald-600 hover:bg-emerald-500 active:scale-98 transition text-white rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-sm shadow-emerald-100"
+                  >
+                    Buy {mainStock.symbol}
+                  </button>
+                  <button
+                    onClick={handleMockSell}
+                    className="w-full py-4 bg-red-600 hover:bg-red-500 active:scale-98 transition text-white rounded-2xl font-black text-xs uppercase tracking-widest cursor-pointer shadow-sm shadow-red-100"
+                  >
+                    Sell {mainStock.symbol}
+                  </button>
+                </div>
+
+                {mockMessage && (
+                  <p className="text-center text-xs font-bold transition duration-300 animate-fade-in text-slate-600">
+                    {mockMessage}
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 

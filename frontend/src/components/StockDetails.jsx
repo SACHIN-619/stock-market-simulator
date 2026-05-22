@@ -292,9 +292,13 @@ function StockDetails() {
         setCompareData(response.data.data);
         setIsComparing(true);
       } else {
+        setCompareData(null);
+        setIsComparing(false);
         addToast(`No data found for ${compareSymbol.toUpperCase()}`, "error");
       }
     } catch (err) {
+      setCompareData(null);
+      setIsComparing(false);
       const errorMsg = err.response?.data?.message || "Error fetching comparison data";
       addToast(errorMsg, "error");
     } finally {
@@ -664,7 +668,14 @@ function StockDetails() {
                               type="text"
                               placeholder="COMPARE..."
                               value={compareSymbol}
-                              onChange={(e) => setCompareSymbol(e.target.value)}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                setCompareSymbol(val);
+                                if (!val) {
+                                  setCompareData(null);
+                                  setIsComparing(false);
+                                }
+                              }}
                               className="bg-transparent px-4 py-2 text-[10px] font-black tracking-[0.2em] text-slate-700 outline-none w-28 md:w-36 transition-all placeholder:text-slate-400 uppercase"
                             />
                             <button

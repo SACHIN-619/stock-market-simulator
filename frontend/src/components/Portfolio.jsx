@@ -48,12 +48,23 @@ function Portfolio() {
     }]
   };
 
+  // Deduplicate growth history by date, keeping the last value for each date
+  const processedGrowthHistory = [];
+  const seenDates = new Set();
+  for (let i = growthHistory.length - 1; i >= 0; i--) {
+    const item = growthHistory[i];
+    if (!seenDates.has(item.date)) {
+      seenDates.add(item.date);
+      processedGrowthHistory.unshift(item);
+    }
+  }
+
   const growthData = {
-    labels: growthHistory.map(item => item.date),
+    labels: processedGrowthHistory.map(item => item.date),
     datasets: [{
       fill: true,
       label: 'Portfolio Value',
-      data: growthHistory.map(item => item.value),
+      data: processedGrowthHistory.map(item => item.value),
       borderColor: '#6366f1',
       borderWidth: 3,
       backgroundColor: 'rgba(99, 102, 241, 0.05)',
@@ -117,7 +128,43 @@ function Portfolio() {
           <h2 className="text-lg font-black text-slate-900">Growth Analysis</h2>
           {growthHistory.length > 0 ? (
             <div className="h-[300px]">
-              <Line data={growthData} options={{ responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { family: 'Inter', weight: 'bold', size: 10 } } }, y: { grid: { color: 'rgba(226, 232, 240, 0.6)' }, ticks: { color: '#94a3b8', font: { family: 'Inter', weight: 'bold', size: 10 } } } } }} />
+              <Line 
+                data={growthData} 
+                options={{ 
+                  responsive: true, 
+                  maintainAspectRatio: false, 
+                  plugins: { 
+                    legend: { display: false } 
+                  }, 
+                  scales: { 
+                    x: { 
+                      grid: { display: false }, 
+                      ticks: { 
+                        color: '#94a3b8', 
+                        font: { 
+                          family: 'Inter', 
+                          weight: 'bold', 
+                          size: 10 
+                        },
+                        maxTicksLimit: 8,
+                        maxRotation: 0,
+                        minRotation: 0
+                      } 
+                    }, 
+                    y: { 
+                      grid: { color: 'rgba(226, 232, 240, 0.6)' }, 
+                      ticks: { 
+                        color: '#94a3b8', 
+                        font: { 
+                          family: 'Inter', 
+                          weight: 'bold', 
+                          size: 10 
+                        } 
+                      } 
+                    } 
+                  } 
+                }} 
+              />
             </div>
           ) : (
             <div className="h-[300px] flex flex-col items-center justify-center text-center space-y-4">

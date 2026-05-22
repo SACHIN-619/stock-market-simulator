@@ -1,13 +1,44 @@
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import api from "../service/api";
 import WatchlistBell from "./WatchlistBell";
 
 function Navbar() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const role     = sessionStorage.getItem("role");
   const userId   = sessionStorage.getItem("userId");     // set on login
   const username = sessionStorage.getItem("username");
+
+  const handleHomeClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } else {
+      navigate("/");
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }, 100);
+    }
+  };
+
+  const handleAboutClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      const element = document.getElementById("about-section");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById("about-section");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 150);
+    }
+  };
 
   const handleLogout = async () => {
     try {
@@ -21,6 +52,7 @@ function Navbar() {
       navigate("/signin");
     }
   };
+
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-4 
@@ -61,11 +93,25 @@ function Navbar() {
         {/* ── WATCHLIST BELL (traders only) ── */}
         {role === "trader" && <WatchlistBell userId={userId} />}
 
+        <button
+          onClick={handleHomeClick}
+          className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
+        >
+          Home
+        </button>
+
+        <button
+          onClick={handleAboutClick}
+          className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
+        >
+          About
+        </button>
+
         {!role ? (
           <div className="flex items-center gap-3">
             <NavLink
               to="/signin"
-              className="px-5 py-2 text-sm font-medium text-slate-500 hover:text-slate-800 transition-colors"
+              className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors"
             >
               Sign In
             </NavLink>

@@ -755,7 +755,7 @@ function Home() {
               Mock Trade with Our Simulator
             </h2>
             <p className="text-slate-500 font-semibold leading-relaxed">
-              Don't wait to register! Use this interactive mock trading terminal to execute a simulated transaction for **{mainStock.name} ({mainStock.symbol})**. Watch your virtual balance and holdings update instantly inside the card.
+              Don't wait to register! Use this interactive mock trading terminal to execute a simulated transaction for <strong className="font-bold text-slate-900">{mainStock.name} ({mainStock.symbol})</strong>. Watch your virtual balance and holdings update instantly inside the card.
             </p>
             <div className="flex items-center gap-6 pt-4 border-t border-slate-200">
               <div>
@@ -847,17 +847,17 @@ function Home() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-black text-slate-600">Trading Quantity</label>
-                  <div className="flex items-center border border-slate-200 rounded-xl">
+                  <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50 shadow-sm">
                     <button
                       onClick={() => setMockQuantity(prev => Math.max(1, prev - 5))}
-                      className="px-3 py-1.5 hover:bg-slate-50 font-black text-sm transition text-slate-500"
+                      className="px-4 py-2 hover:bg-slate-200 active:bg-slate-300 font-black text-sm transition-colors text-slate-600 cursor-pointer"
                     >
                       -
                     </button>
-                    <span className="px-4 font-black text-sm text-slate-800">{mockQuantity}</span>
+                    <span className="px-4 font-black text-sm text-slate-900 bg-white py-2 border-x border-slate-200 min-w-[3.5rem] text-center">{mockQuantity}</span>
                     <button
                       onClick={() => setMockQuantity(prev => prev + 5)}
-                      className="px-3 py-1.5 hover:bg-slate-50 font-black text-sm transition text-slate-500"
+                      className="px-4 py-2 hover:bg-slate-200 active:bg-slate-300 font-black text-sm transition-colors text-slate-600 cursor-pointer"
                     >
                       +
                     </button>
@@ -880,9 +880,13 @@ function Home() {
                 </div>
 
                 {mockMessage && (
-                  <p className="text-center text-xs font-bold transition duration-300 animate-fade-in text-slate-600">
+                  <div className={`text-center text-xs font-bold transition duration-300 animate-fade-in px-4 py-3 rounded-xl inline-block w-full shadow-sm ${
+                    mockMessage.includes("⚠️") 
+                      ? "bg-amber-50 text-amber-600 border border-amber-100" 
+                      : "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                  }`}>
                     {mockMessage}
-                  </p>
+                  </div>
                 )}
               </div>
             </div>
@@ -959,7 +963,7 @@ function Home() {
                 </div>
                 <h3 className="text-2xl font-black text-slate-900">How Order Execution Behaves</h3>
                 <p className="text-slate-500 font-semibold leading-relaxed">
-                  A **Market Order** executes immediately at whatever price is active in the matching log. While simple, high volatility can cause slippage. A **Limit Order** lets you specify an absolute maximum purchase price or minimum selling threshold, protecting your capital.
+                  A <strong className="font-bold text-slate-900">Market Order</strong> executes immediately at whatever price is active in the matching log. While simple, high volatility can cause slippage. A <strong className="font-bold text-slate-900">Limit Order</strong> lets you specify an absolute maximum purchase price or minimum selling threshold, protecting your capital.
                 </p>
                 <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
                   <span className="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Order Math</span>

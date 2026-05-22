@@ -485,6 +485,16 @@ function StockDetails() {
                 </div>
               </div>
 
+              {!stock.isActive && (
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-150 text-amber-850 text-[10px] font-semibold leading-relaxed flex items-start gap-2.5 animate-fadeIn">
+                  <span className="text-base select-none">⚠️</span>
+                  <div>
+                    <span className="font-extrabold uppercase block mb-0.5">Asset Deactivated</span>
+                    This stock is currently inactive. Buying is disabled, but you can sell any existing holdings you own to liquidate your position.
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 {/* STATS */}
                 <div className="p-5 rounded-3xl bg-slate-50/50 border border-slate-100 flex flex-col justify-between h-full">
@@ -529,9 +539,9 @@ function StockDetails() {
 
               <div className="flex gap-4 pb-2">
                 <button
-                  disabled={trading || (quantity * livePrice) > walletBalance}
+                  disabled={trading || !stock.isActive || (quantity * livePrice) > walletBalance}
                   onClick={() => handleTrade("BUY")}
-                  className={`flex-1 rounded-2xl py-4 text-xs font-bold transition-all shadow-md uppercase tracking-widest cursor-pointer ${((quantity * livePrice) > walletBalance) ? 'bg-slate-100 text-slate-400 cursor-not-allowed opacity-50' : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-600/10'}`}
+                  className={`flex-1 rounded-2xl py-4 text-xs font-bold transition-all shadow-md uppercase tracking-widest cursor-pointer ${(!stock.isActive || (quantity * livePrice) > walletBalance) ? 'bg-slate-100 text-slate-400 cursor-not-allowed opacity-50' : 'bg-indigo-600 text-white hover:bg-indigo-500 shadow-indigo-600/10'}`}
                 >
                   {trading ? "..." : "Buy Asset"}
                 </button>
@@ -574,16 +584,23 @@ function StockDetails() {
 
                     <div className="flex items-center gap-6">
                       <h1 className="text-5xl lg:text-6xl font-black text-slate-900 tracking-tighter uppercase leading-none">{stock.stockSymbol}</h1>
-                      <div className="flex flex-col">
-                        {stock.change && (
-                          <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black w-fit mb-0.5 flex items-center gap-1 ${stock.change.includes('-')
-                            ? 'bg-red-50 text-red-600 border border-red-100/50'
-                            : 'bg-emerald-50 text-emerald-600 border border-emerald-100/50'
-                            }`}>
-                            <span>{stock.change.includes('-') ? '▼' : '▲'}</span>
-                            {stock.change}
-                          </span>
-                        )}
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          {stock.change && (
+                            <span className={`px-2 py-0.5 rounded-lg text-[9px] font-black w-fit flex items-center gap-1 ${stock.change.includes('-')
+                              ? 'bg-red-50 text-red-600 border border-red-100/50'
+                              : 'bg-emerald-50 text-emerald-600 border border-emerald-100/50'
+                              }`}>
+                              <span>{stock.change.includes('-') ? '▼' : '▲'}</span>
+                              {stock.change}
+                            </span>
+                          )}
+                          {!stock.isActive && (
+                            <span className="px-2 py-0.5 rounded-lg text-[9px] font-black w-fit bg-red-50 text-red-600 border border-red-150 flex items-center gap-1 animate-fadeIn">
+                              <span>⚠️</span> INACTIVE
+                            </span>
+                          )}
+                        </div>
                         <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase truncate max-w-[150px]">{stock.companyName}</p>
                       </div>
                     </div>

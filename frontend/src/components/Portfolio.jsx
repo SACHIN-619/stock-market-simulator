@@ -266,12 +266,13 @@ function Portfolio() {
                 <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Avg Price</th>
                 <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Current Price</th>
                 <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Profit / Loss</th>
+                <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {portfolio.length === 0 ? (
                 <tr>
-                  <td className="px-8 py-10 text-center text-slate-400 font-medium" colSpan="5">
+                  <td className="px-8 py-10 text-center text-slate-400 font-medium" colSpan="6">
                     No active positions. <Link to="/stocks" className="text-indigo-600 hover:underline">Start trading</Link>
                   </td>
                 </tr>
@@ -304,6 +305,14 @@ function Portfolio() {
                       <div className={`text-[10px] font-bold flex items-center justify-end gap-1 ${stock.profitLoss >= 0 ? "text-emerald-500/60" : "text-red-500/60"}`}>
                         {stock.profitPercent?.toFixed(2)}%
                       </div>
+                    </td>
+                    <td className="px-8 py-6 text-right">
+                      <Link
+                        to={`/stocks/${stock.stockSymbol}`}
+                        className="rounded-xl bg-indigo-50 border border-indigo-100 px-4 py-2 text-xs font-bold text-indigo-600 transition hover:bg-indigo-600 hover:text-white cursor-pointer inline-flex items-center gap-1 active:scale-95 shadow-xs"
+                      >
+                        Trade
+                      </Link>
                     </td>
                   </tr>
                 ))

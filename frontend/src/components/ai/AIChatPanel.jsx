@@ -216,14 +216,24 @@ function parseContent(text) {
 function TypingIndicator() {
   return (
     <div className="flex justify-start items-end gap-2">
-      <div
-        className="w-5 h-5 bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-[8px] font-black text-white flex-shrink-0 mb-1 ml-1 mt-1 shadow-sm"
-        style={{
-          clipPath:
-            "polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%)",
-        }}
-      >
-        AI
+      <div className="relative flex-shrink-0 mb-1 ml-1 mt-1">
+        <div className="w-7 h-7 rounded-full bg-white border border-slate-100 shadow-[0_1px_4px_rgba(0,0,0,0.04)] flex items-center justify-center">
+          <div className="w-5 h-5 bg-blue-500/10 rounded-full flex items-center justify-center animate-pulse">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="text-blue-500"
+            >
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+            </svg>
+          </div>
+        </div>
       </div>
 
       <div className="flex items-center gap-3 rounded-2xl rounded-tl-xs px-5 py-3.5 bg-slate-50 border border-slate-200/60 shadow-xs">
@@ -270,14 +280,24 @@ function MessageBubble({ msg }) {
             YOU
           </div>
         ) : (
-          <div
-            className="w-5 h-5 bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-[8px] font-black text-white flex-shrink-0 mb-1 ml-1 mt-1 shadow-sm"
-            style={{
-              clipPath:
-                "polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%)",
-            }}
-          >
-            AI
+          <div className="relative flex-shrink-0 mb-1 ml-1 mt-1">
+            <div className="w-7 h-7 rounded-full bg-white border border-slate-100 shadow-[0_1px_4px_rgba(0,0,0,0.04)] flex items-center justify-center">
+              <div className="w-5 h-5 bg-blue-500/10 rounded-full flex items-center justify-center">
+                <svg
+                  width="12"
+                  height="12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-blue-500"
+                >
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                </svg>
+              </div>
+            </div>
           </div>
         )}
 
@@ -440,14 +460,24 @@ function AIChatPanel({ onClose, isFloating = false }) {
       {/* Header */}
       <div className="border-b border-slate-100 px-6 py-4.5 flex items-center justify-between bg-white flex-shrink-0">
         <div className="flex items-center gap-3">
-          <div
-            className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shadow-sm"
-            style={{
-              clipPath:
-                "polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%)",
-            }}
-          >
-            <span className="text-white font-black text-[10px]">AI</span>
+          <div className="relative flex-shrink-0">
+            <div className="w-8 h-8 rounded-full bg-white border border-slate-100 shadow-[0_1.5px_6px_rgba(0,0,0,0.04)] flex items-center justify-center">
+              <div className="w-6 h-6 bg-blue-500/10 rounded-full flex items-center justify-center">
+                <svg
+                  width="13"
+                  height="13"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="text-blue-500"
+                >
+                  <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+                </svg>
+              </div>
+            </div>
           </div>
 
           <div>

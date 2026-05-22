@@ -93,19 +93,23 @@ function Navbar() {
         {/* ── WATCHLIST BELL (traders only) ── */}
         {role === "trader" && <WatchlistBell userId={userId} />}
 
-        <button
-          onClick={handleHomeClick}
-          className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
-        >
-          Home
-        </button>
+        {location.pathname === "/" && (
+          <>
+            <button
+              onClick={handleHomeClick}
+              className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
+            >
+              Home
+            </button>
 
-        <button
-          onClick={handleAboutClick}
-          className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
-        >
-          About
-        </button>
+            <button
+              onClick={handleAboutClick}
+              className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
+            >
+              About
+            </button>
+          </>
+        )}
 
         {!role ? (
           <div className="flex items-center gap-3">

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   getAllUsersForAdmin,
   toggleUserStatus,
@@ -25,6 +25,11 @@ function AdminDashboard() {
   const [stocksLoading, setStocksLoading] = useState(false);
   const [userSearch, setUserSearch] = useState("");
   const [userPage, setUserPage] = useState(1);
+  const [userStatusFilter, setUserStatusFilter] = useState("all"); // 'all' | 'active' | 'blocked'
+  const [showFilters, setShowFilters] = useState(false);
+  const [stockStatusFilter, setStockStatusFilter] = useState("all"); // 'all' | 'active' | 'inactive'
+  const [stockExchangeFilter, setStockExchangeFilter] = useState("all");
+  const [showStockFilters, setShowStockFilters] = useState(false);
   const [stockSearch, setStockSearch] = useState("");
   const [totalActiveStocks, setTotalActiveStocks] = useState(0);
 
@@ -186,10 +191,38 @@ function AdminDashboard() {
     setSelectedUser(null);
   };
 
-  const filteredUsers = users.filter(u =>
-    u.username.toLowerCase().includes(userSearch.toLowerCase()) ||
-    u.email.toLowerCase().includes(userSearch.toLowerCase())
-  ).sort((a, b) => (b.isUserActive === a.isUserActive ? 0 : b.isUserActive ? 1 : -1));
+  const uniqueStockExchanges = useMemo(() => {
+    return [...new Set(stocks.map((s) => s.exchange).filter(Boolean))];
+  }, [stocks]);
+
+  const filteredStocks = useMemo(() => {
+    let filtered = [...stocks];
+
+    // STATUS FILTER
+    if (stockStatusFilter === "active") {
+      filtered = filtered.filter((stock) => stock.isActive);
+    } else if (stockStatusFilter === "inactive") {
+      filtered = filtered.filter((stock) => !stock.isActive);
+    }
+
+    // EXCHANGE FILTER
+    if (stockExchangeFilter !== "all") {
+      filtered = filtered.filter(
+        (stock) => stock.exchange?.toLowerCase() === stockExchangeFilter.toLowerCase()
+      );
+    }
+
+    return filtered;
+  }, [stocks, stockStatusFilter, stockExchangeFilter]);
+
+  const filteredUsers = users.filter(u => {
+    const matchesSearch = u.username.toLowerCase().includes(userSearch.toLowerCase()) ||
+                          u.email.toLowerCase().includes(userSearch.toLowerCase());
+    const matchesStatus = userStatusFilter === "all" ||
+                          (userStatusFilter === "active" && u.isUserActive) ||
+                          (userStatusFilter === "blocked" && !u.isUserActive);
+    return matchesSearch && matchesStatus;
+  }).sort((a, b) => (b.isUserActive === a.isUserActive ? 0 : b.isUserActive ? 1 : -1));
 
   const totalUserPages = Math.ceil(filteredUsers.length / 8) || 1;
 
@@ -295,6 +328,17 @@ function AdminDashboard() {
                   />
                 </div>
 
+                <button
+                  onClick={() => setShowFilters(!showFilters)}
+                  className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+                    showFilters
+                      ? "border-blue-500 text-blue-600 bg-blue-50/50 shadow-sm"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600"
+                  }`}
+                >
+                  ⚙️ Filters
+                </button>
+
                 <div className="hidden sm:block">
                   <div className="rounded-2xl border border-slate-100 bg-white px-6 py-4 shadow-sm backdrop-blur-md whitespace-nowrap">
                     <p className="text-[10px] uppercase tracking-widest text-slate-400 font-black">Total Traders</p>
@@ -303,6 +347,86 @@ function AdminDashboard() {
                 </div>
               </div>
             </div>
+
+            {/* FILTER PANEL */}
+            {showFilters && (
+              <div className="mb-8 glass-card rounded-2xl border border-slate-100 bg-white p-5 shadow-sm space-y-5 animate-fade-in">
+                <h2 className="text-lg font-black text-slate-900">
+                  Filter Traders
+                </h2>
+
+                <div className="space-y-4">
+                  {/* STATUS FILTER */}
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Status</p>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => {
+                          setUserStatusFilter("all");
+                          setUserPage(1);
+                        }}
+                        className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer flex items-center gap-1.5
+                        ${userStatusFilter === "all"
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-600/10"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          }`}
+                      >
+                        All
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
+                          userStatusFilter === "all"
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-200 text-slate-500"
+                        }`}>
+                          {users.length}
+                        </span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setUserStatusFilter("active");
+                          setUserPage(1);
+                        }}
+                        className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer flex items-center gap-1.5
+                        ${userStatusFilter === "active"
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-600/10"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          }`}
+                      >
+                        Active
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
+                          userStatusFilter === "active"
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-200 text-slate-500"
+                        }`}>
+                          {users.filter(u => u.isUserActive).length}
+                        </span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setUserStatusFilter("blocked");
+                          setUserPage(1);
+                        }}
+                        className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer flex items-center gap-1.5
+                        ${userStatusFilter === "blocked"
+                            ? "bg-red-500 text-white shadow-md shadow-red-500/10"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                          }`}
+                      >
+                        Blocked
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
+                          userStatusFilter === "blocked"
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-200 text-slate-500"
+                        }`}>
+                          {users.filter(u => !u.isUserActive).length}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Users Grid */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -315,21 +439,6 @@ function AdminDashboard() {
                       !user.isUserActive ? 'border-red-100 bg-red-50/20' : 'border-slate-100 hover:border-blue-100'
                     }`}
                   >
-                    {/* Status Badge */}
-                    <div className="absolute right-4 top-4">
-                      {user.isUserActive ? (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-600">
-                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                          Active
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1.5 rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-650">
-                          <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                          Blocked
-                        </span>
-                      )}
-                    </div>
-
                     {/* User Info Header */}
                     <div className="mb-6 flex items-center gap-4">
                       {user.profileImage ? (
@@ -343,7 +452,7 @@ function AdminDashboard() {
                           {user.username.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <div className="min-w-0 flex-1 pr-16">
+                      <div className="min-w-0 flex-1 pr-2">
                         <h3 className="text-lg font-extrabold text-slate-900 line-clamp-1" title={user.username}>
                           {user.username}
                         </h3>
@@ -467,9 +576,7 @@ function AdminDashboard() {
                   Stocks <span className="text-blue-600">Dashboard</span>
                 </h1>
                 <p className="mt-2 text-slate-550 font-semibold">Market overview and stock management</p>
-              </div>
-
-              <div className="flex items-center gap-4 flex-1 max-w-2xl justify-end">
+              </div>              <div className="flex items-center gap-4 flex-1 max-w-2xl justify-end">
                 <div className="relative flex-1 max-w-md">
                   <input
                     type="text"
@@ -483,6 +590,17 @@ function AdminDashboard() {
                   />
                 </div>
 
+                <button
+                  onClick={() => setShowStockFilters(!showStockFilters)}
+                  className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
+                    showStockFilters
+                      ? "border-blue-500 text-blue-600 bg-blue-50/50 shadow-sm"
+                      : "border-slate-200 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600"
+                  }`}
+                >
+                  ⚙️ Filters
+                </button>
+
                 <div className="hidden sm:block">
                   <div className="rounded-2xl border border-slate-100 bg-white px-6 py-4 shadow-sm backdrop-blur-md whitespace-nowrap">
                     <p className="text-[10px] uppercase tracking-widest text-slate-400 font-black">Total Active</p>
@@ -492,6 +610,122 @@ function AdminDashboard() {
               </div>
             </div>
 
+            {/* FILTER PANEL */}
+            {showStockFilters && (
+              <div className="mb-8 glass-card rounded-2xl border border-slate-100 bg-white p-5 shadow-sm space-y-5 animate-fade-in">
+                <h2 className="text-lg font-black text-slate-900">
+                  Filter Stocks
+                </h2>
+
+                <div className="space-y-4">
+                  {/* STATUS FILTER */}
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Status</p>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => {
+                          setStockStatusFilter("all");
+                          setStockPage(1);
+                        }}
+                        className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer flex items-center gap-1.5
+                        ${stockStatusFilter === "all"
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-600/10"
+                            : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+                          }`}
+                      >
+                        All
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
+                          stockStatusFilter === "all"
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-250 text-slate-500"
+                        }`}>
+                          {stocks.length}
+                        </span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setStockStatusFilter("active");
+                          setStockPage(1);
+                        }}
+                        className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer flex items-center gap-1.5
+                        ${stockStatusFilter === "active"
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-600/10"
+                            : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+                          }`}
+                      >
+                        Active
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
+                          stockStatusFilter === "active"
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-250 text-slate-500"
+                        }`}>
+                          {stocks.filter(s => s.isActive).length}
+                        </span>
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setStockStatusFilter("inactive");
+                          setStockPage(1);
+                        }}
+                        className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer flex items-center gap-1.5
+                        ${stockStatusFilter === "inactive"
+                            ? "bg-red-500 text-white shadow-md shadow-red-500/10"
+                            : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+                          }`}
+                      >
+                        Inactive
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
+                          stockStatusFilter === "inactive"
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-250 text-slate-500"
+                        }`}>
+                          {stocks.filter(s => !s.isActive).length}
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* EXCHANGE FILTER */}
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Exchange</p>
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => {
+                          setStockExchangeFilter("all");
+                          setStockPage(1);
+                        }}
+                        className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer
+                        ${stockExchangeFilter === "all"
+                            ? "bg-blue-600 text-white shadow-md shadow-blue-600/10"
+                            : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+                          }`}
+                      >
+                        All Exchanges
+                      </button>
+                      {uniqueStockExchanges.map((ex) => (
+                        <button
+                          key={ex}
+                          onClick={() => {
+                            setStockExchangeFilter(ex);
+                            setStockPage(1);
+                          }}
+                          className={`rounded-xl px-4 py-2 text-xs font-bold transition cursor-pointer
+                          ${stockExchangeFilter === ex
+                              ? "bg-blue-600 text-white shadow-md shadow-blue-600/10"
+                              : "bg-slate-100 text-slate-650 hover:bg-slate-200"
+                            }`}
+                        >
+                          {ex}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Stocks Grid */}
             {stocksLoading ? (
               <div className="flex items-center justify-center p-20">
@@ -499,82 +733,109 @@ function AdminDashboard() {
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {[...stocks]
-                  .sort((a, b) => (b.isActive === a.isActive ? 0 : b.isActive ? 1 : -1))
-                  .map((stock) => (
-                    <div
-                      key={stock._id}
-                      className={`group relative flex flex-col overflow-hidden rounded-[2rem] border bg-white p-6 shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-md ${
-                        !stock.isActive ? 'border-red-100 bg-red-50/20' : 'border-slate-100 hover:border-blue-100'
-                      }`}
-                    >
-                      {/* Status Badge */}
-                      <div className="absolute right-4 top-4">
-                        {stock.isActive ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-600">
-                            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
-                            Active
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-600">
-                            <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                            Inactive
-                          </span>
-                        )}
-                      </div>
+                {filteredStocks.length > 0 ? (
+                  [...filteredStocks]
+                    .sort((a, b) => (b.isActive === a.isActive ? 0 : b.isActive ? 1 : -1))
+                    .map((stock) => (
+                      <div
+                        key={stock._id}
+                        className={`group relative flex flex-col overflow-hidden rounded-[2rem] border bg-white p-6 shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-md ${
+                          !stock.isActive ? 'border-red-100 bg-red-50/20' : 'border-slate-100 hover:border-blue-100'
+                        }`}
+                      >
+                        {/* Status Badge */}
+                        <div className="absolute right-4 top-4">
+                          {stock.isActive ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-100 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-600">
+                              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+                              Active
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-red-100 bg-red-50 px-2.5 py-1 text-xs font-bold text-red-650">
+                              <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
+                              Inactive
+                            </span>
+                          )}
+                        </div>
 
-                      {/* Stock Info Header */}
-                      <div className="mb-6 flex items-center gap-4">
-                        {stock.logo ? (
-                          <img src={stock.logo} alt={stock.stockSymbol} className={`h-12 w-12 rounded-xl object-contain ${!stock.isActive ? 'grayscale opacity-50' : ''}`} />
-                        ) : (
-                          <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-xl font-bold text-white shadow-inner ${!stock.isActive ? 'from-red-500 to-rose-600' : ''}`}>
-                            {stock.stockSymbol.charAt(0)}
+                        {/* Stock Info Header */}
+                        <div className="mb-6 flex items-center gap-4">
+                          {stock.logo ? (
+                            <img src={stock.logo} alt={stock.stockSymbol} className={`h-12 w-12 rounded-xl object-contain ${!stock.isActive ? 'grayscale opacity-50' : ''}`} />
+                          ) : (
+                            <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-xl font-bold text-white shadow-inner ${!stock.isActive ? 'from-red-500 to-rose-600' : ''}`}>
+                              {stock.stockSymbol.charAt(0)}
+                            </div>
+                          )}
+                          <div>
+                            <h3 className="text-lg font-extrabold text-slate-900 line-clamp-1">
+                              {stock.stockSymbol}
+                            </h3>
+                            <p className="text-xs font-semibold text-slate-450 line-clamp-1">
+                              {stock.companyName}
+                            </p>
                           </div>
-                        )}
-                        <div>
-                          <h3 className="text-lg font-extrabold text-slate-900 line-clamp-1">
-                            {stock.stockSymbol}
-                          </h3>
-                          <p className="text-xs font-semibold text-slate-450 line-clamp-1">
-                            {stock.companyName}
-                          </p>
+                        </div>
+
+                        {/* Divider */}
+                        <div className="mb-4 h-px w-full bg-slate-100"></div>
+
+                        {/* Stock Stats (Dimmed when inactive) */}
+                        <div className={`flex-1 space-y-3 mb-6 text-sm transition-opacity ${!stock.isActive ? 'opacity-30 grayscale' : 'opacity-100'}`}>
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-600 font-semibold">Current Price</span>
+                            <span className="font-extrabold text-slate-900">
+                              {stock.c ? `$${stock.c.toFixed(2)}` : 'N/A'}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-600 font-semibold">Change</span>
+                            <span className={`font-extrabold ${typeof stock.d === 'number' ? (stock.d >= 0 ? 'text-emerald-600' : 'text-red-650') : 'text-slate-900'}`}>
+                              {stock.d ? `${stock.d >= 0 ? '+' : ''}${stock.d.toFixed(2)} (${stock.dp.toFixed(2)}%)` : 'N/A'}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-600 font-semibold">Prev Close</span>
+                            <span className="text-slate-500 font-semibold">{stock.pc ? `$${stock.pc.toFixed(2)}` : 'N/A'}</span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-slate-600 font-semibold">Day High/Low</span>
+                            <span className="text-slate-900 font-bold">{stock.h ? `$${stock.h.toFixed(2)} / $${stock.l.toFixed(2)}` : 'N/A'}</span>
+                          </div>
+                        </div>
+
+                        {/* Actions (Optional or just info) */}
+                        <div className="mt-auto text-[10px] text-slate-400 text-center font-bold">
+                          Last updated: {stock.t ? new Date(stock.t * 1000).toLocaleTimeString() : 'N/A'}
                         </div>
                       </div>
-
-                      {/* Divider */}
-                      <div className="mb-4 h-px w-full bg-slate-100"></div>
-
-                      {/* Stock Stats (Dimmed when inactive) */}
-                      <div className={`flex-1 space-y-3 mb-6 text-sm transition-opacity ${!stock.isActive ? 'opacity-30 grayscale' : 'opacity-100'}`}>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-600 font-semibold">Current Price</span>
-                          <span className="font-extrabold text-slate-900">
-                            {stock.c ? `$${stock.c.toFixed(2)}` : 'N/A'}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-600 font-semibold">Change</span>
-                          <span className={`font-extrabold ${typeof stock.d === 'number' ? (stock.d >= 0 ? 'text-emerald-600' : 'text-red-600') : 'text-slate-900'}`}>
-                            {stock.d ? `${stock.d >= 0 ? '+' : ''}${stock.d.toFixed(2)} (${stock.dp.toFixed(2)}%)` : 'N/A'}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-600 font-semibold">Prev Close</span>
-                          <span className="text-slate-500 font-semibold">{stock.pc ? `$${stock.pc.toFixed(2)}` : 'N/A'}</span>
-                        </div>
-                        <div className="flex items-center justify-between">
-                          <span className="text-slate-600 font-semibold">Day High/Low</span>
-                          <span className="text-slate-900 font-bold">{stock.h ? `$${stock.h.toFixed(2)} / $${stock.l.toFixed(2)}` : 'N/A'}</span>
-                        </div>
-                      </div>
-
-                      {/* Actions (Optional or just info) */}
-                      <div className="mt-auto text-[10px] text-slate-400 text-center font-bold">
-                        Last updated: {stock.t ? new Date(stock.t * 1000).toLocaleTimeString() : 'N/A'}
-                      </div>
+                    ))
+                ) : (
+                  <div className="col-span-full rounded-[2.5rem] border border-slate-100 bg-white py-20 text-center shadow-xs w-full">
+                    <div className="text-5xl">
+                      🔍
                     </div>
-                  ))}
+
+                    <h2 className="mt-4 text-2xl font-black text-slate-900">
+                      No Stocks Found
+                    </h2>
+
+                    <p className="mt-2 text-slate-550 font-semibold">
+                      Try changing search or filters
+                    </p>
+
+                    <button
+                      onClick={() => {
+                        setStockSearch("");
+                        setStockStatusFilter("all");
+                        setStockExchangeFilter("all");
+                      }}
+                      className="mt-4 text-blue-600 font-bold hover:underline cursor-pointer"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

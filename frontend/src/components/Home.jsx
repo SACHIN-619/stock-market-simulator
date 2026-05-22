@@ -610,7 +610,7 @@ function Home() {
       </section>
 
       {/* CORE CAPABILITIES GRID */}
-      <section className="py-24 px-6 md:px-16 max-w-7xl mx-auto">
+      <section id="about-section" className="py-24 px-6 md:px-16 max-w-7xl mx-auto scroll-mt-20">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <span className="text-xs font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-full">
             Simulator Ecosystem

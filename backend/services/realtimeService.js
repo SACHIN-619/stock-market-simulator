@@ -7,15 +7,7 @@ import { stockCache } from "./cacheService.js";
 // ==========================================
 const livePrices = {};
 
-// ==========================================
-// GENERATE SMALL FLUCTUATION
-// ==========================================
-const fluctuatePrice = (price) => {
-   // 4% max fluctuation
-   const percentageChange = (Math.random() - 0.5) * 0.04;
-   const newPrice = price + (price * percentageChange);
-   return Number(newPrice.toFixed(2));
-};
+
 
 // ==========================================
 // GET RANDOM INITIAL PRICE
@@ -39,13 +31,7 @@ export const getLiveStockUpdates = async () => {
 
             // RETURN CACHE IF EXISTS (Prevents Finnhub rate limits)
             if (cachedData) {
-               // We add a tiny artificial fluctuation to the cached data to simulate active trading 
-               // even when pulling from the cache, making the UI look alive!
-               const fluctuatedPrice = fluctuatePrice(cachedData.currentPrice);
-               return {
-                  ...cachedData,
-                  currentPrice: fluctuatedPrice
-               };
+               return cachedData;
             }
 
             try {
@@ -78,9 +64,6 @@ export const getLiveStockUpdates = async () => {
                if (!livePrices[stock.stockSymbol]) {
                   livePrices[stock.stockSymbol] = generateInitialPrice();
                }
-
-               // Fluctuate the price
-               livePrices[stock.stockSymbol] = fluctuatePrice(livePrices[stock.stockSymbol]);
 
                return {
                   stockSymbol: stock.stockSymbol,

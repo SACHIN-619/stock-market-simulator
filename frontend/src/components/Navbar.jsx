@@ -40,6 +40,24 @@ function Navbar() {
     }
   };
 
+  const handleLearnClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      const element = document.getElementById("learn-section");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById("learn-section");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 150);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await api.get("/auth/logout");
@@ -107,6 +125,13 @@ function Navbar() {
               className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
             >
               About
+            </button>
+
+            <button
+              onClick={handleLearnClick}
+              className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
+            >
+              Learn
             </button>
           </>
         )}

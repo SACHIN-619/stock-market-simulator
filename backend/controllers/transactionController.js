@@ -6,6 +6,7 @@ import { stockModel } from "../models/StockModel.js";
 import { userModel } from "../models/UserModel.js";
 
 import { stockCache } from "../services/cacheService.js";
+import { clearCachedAIResponse } from "../services/ai/aiCacheService.js";
 
 import { config } from "dotenv";
 config();
@@ -109,6 +110,9 @@ export const buyStock = async (req, res, next) => {
             totalAmount,
         });
 
+        // Immediately invalidate AI Cache for real-time analysis updates
+        clearCachedAIResponse(userId);
+
         res.status(201).json({
             message: "Stock purchased successfully",
             updatedWalletBalance: user.walletBalance,
@@ -181,6 +185,9 @@ export const sellStock = async (req, res, next) => {
             pricePerShare: currentPrice,
             totalAmount,
         });
+
+        // Immediately invalidate AI Cache for real-time analysis updates
+        clearCachedAIResponse(userId);
 
         res.status(201).json({
             message: "Stock sold successfully",

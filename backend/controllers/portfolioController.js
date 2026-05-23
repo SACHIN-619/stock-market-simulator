@@ -126,12 +126,13 @@ export const getPortfolio = async (req, res, next) => {
         const symbol = tx.stockSymbol;
         lastPrice[symbol] = tx.pricePerShare;
 
+        const amount = tx.totalAmount || (tx.quantity * tx.pricePerShare) || 0;
         if (tx.transactionType === "BUY") {
-          currentCash -= tx.totalAmount;
-          holdings[symbol] = (holdings[symbol] || 0) + tx.quantity;
+          currentCash -= amount;
+          holdings[symbol] = (holdings[symbol] || 0) + (tx.quantity || 0);
         } else if (tx.transactionType === "SELL") {
-          currentCash += tx.totalAmount;
-          holdings[symbol] = (holdings[symbol] || 0) - tx.quantity;
+          currentCash += amount;
+          holdings[symbol] = (holdings[symbol] || 0) - (tx.quantity || 0);
         }
 
         // Calculate portfolio holdings value at the time of this transaction using last recorded prices
@@ -144,7 +145,7 @@ export const getPortfolio = async (req, res, next) => {
         const txDate = tx.createdAt ? new Date(tx.createdAt) : new Date();
         growthHistory.push({
           date: isNaN(txDate.getTime()) ? "Unknown" : txDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-          value: Math.round(netWorth * 100) / 100
+          value: isNaN(netWorth) ? 0 : Math.round(netWorth * 100) / 100
         });
       });
 

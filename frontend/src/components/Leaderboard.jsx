@@ -8,6 +8,7 @@ function Leaderboard() {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchLeaderboard = async () => {
     try {
@@ -87,6 +88,12 @@ function Leaderboard() {
       </div>
     );
   }
+
+  const filteredLeaders = leaders
+    .map((trader, idx) => ({ ...trader, originalRank: idx + 1 }))
+    .filter((trader) =>
+      trader.username?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   return (
     <div className="min-h-screen bg-[#F4F5F0] text-slate-800 px-6 py-8">
@@ -177,10 +184,19 @@ function Leaderboard() {
 
       {/* TABLE */}
       <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm">
-        <div className="overflow-x-auto">
+        <div className="p-6 border-b border-slate-100 bg-white">
+          <input
+            type="text"
+            placeholder="Search trader..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full sm:w-80 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition focus:bg-white focus:border-indigo-500"
+          />
+        </div>
+        <div className="overflow-x-auto max-h-[640px] custom-scrollbar relative">
           <div className="min-w-[800px]">
             {/* Header row */}
-            <div className="grid grid-cols-6 border-b border-slate-100 bg-slate-50/70 px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <div className="sticky top-0 z-10 grid grid-cols-6 border-b border-slate-100 bg-slate-50/90 backdrop-blur-md px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
               <div>Rank</div>
               <div>Trader</div>
               <div>Score</div>
@@ -191,14 +207,19 @@ function Leaderboard() {
 
             {/* Content rows */}
             <div className="divide-y divide-slate-100">
-              {leaders.map((trader, index) => (
-                <div
-                  key={trader._id}
-                  className="grid grid-cols-6 items-center px-8 py-6 transition hover:bg-slate-50/40 duration-200"
-                >
-                  <div className="font-black text-slate-900 text-base">
-                    #{index + 1}
-                  </div>
+              {filteredLeaders.length === 0 ? (
+                <div className="px-8 py-12 text-center text-slate-400 font-medium">
+                  No traders found matching your search.
+                </div>
+              ) : (
+                filteredLeaders.map((trader) => (
+                  <div
+                    key={trader._id}
+                    className="grid grid-cols-6 items-center px-8 py-6 transition hover:bg-slate-50/40 duration-200"
+                  >
+                    <div className="font-black text-slate-900 text-base">
+                      #{trader.originalRank}
+                    </div>
 
                   <div className="flex items-center gap-4">
                     <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 border border-indigo-100 text-sm font-black text-indigo-600">
@@ -241,7 +262,8 @@ function Leaderboard() {
                     </span>
                   </div>
                 </div>
-              ))}
+              ))
+            )}
             </div>
           </div>
         </div>

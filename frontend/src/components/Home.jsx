@@ -630,9 +630,9 @@ function Home() {
               <div className="h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-xl font-bold">
                 📈
               </div>
-              <h3 className="text-xl font-black text-slate-900">Technical Candlestick Charts</h3>
+              <h3 className="text-xl font-black text-slate-900">Technical Stock Charts</h3>
               <p className="text-slate-500 text-sm font-semibold leading-relaxed">
-                Full-featured candlestick rendering mapping simulated high/low intervals, moving averages, and real price logs.
+                Full-featured stock rendering mapping simulated high/low intervals, moving averages, and real price logs.
               </p>
             </div>
             <ul className="text-xs font-bold text-slate-400 space-y-2 pt-4">
@@ -648,7 +648,7 @@ function Home() {
               <div className="h-12 w-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 text-xl font-bold">
                 ⚡
               </div>
-              <h3 className="text-xl font-black text-slate-900">Dynamic Matching Engine</h3>
+              <h3 className="text-xl font-black text-slate-900">Dynamic Trade Execution Engine</h3>
               <p className="text-slate-500 text-sm font-semibold leading-relaxed">
                 Experience instantaneous market execution or set customizable target limit thresholds for sophisticated automated buying/selling.
               </p>

@@ -1,7 +1,7 @@
-Finnova — Complete Project Architecture
+StockKing — Complete Project Architecture
 Overview
 ┌────────────────────────────────────────────────────────────┐
-│                  FINNOVA ARCHITECTURE                      │
+│                  STOCKKING ARCHITECTURE                      │
 │                                                            │
 │  Browser (React)  ──HTTP──►  Express Server (Node.js)     │
 │  localhost:5173   ◄──JSON──  localhost:5000               │

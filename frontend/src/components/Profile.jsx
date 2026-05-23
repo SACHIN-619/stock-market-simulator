@@ -227,7 +227,7 @@ function Profile() {
         {/* WALLET SUMMARY */}
         <aside>
           <div className="glass-card p-8 rounded-[2.5rem] bg-gradient-to-br from-indigo-500/5 via-white to-white border border-indigo-100 shadow-sm space-y-6">
-            <h3 className="text-xl font-black text-slate-900 tracking-tight">Finnova Virtual Wallet</h3>
+            <h3 className="text-xl font-black text-slate-900 tracking-tight">StockKing Virtual Wallet</h3>
             <div className="space-y-6">
               <div className="space-y-1">
                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Available Credits</p>

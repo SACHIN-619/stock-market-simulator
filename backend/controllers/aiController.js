@@ -1,8 +1,10 @@
 import { userModel } from "../models/UserModel.js";
 import { transactionModel } from "../models/transactionModel.js";
+import { stockModel } from "../models/StockModel.js";
 import { analyzePortfolioWithAI } from "../services/ai/aiPortfolioAnalyzer.js";
 import { generateStructuredJSON } from "../services/ai/aiGeminiService.js";
 import { getCachedAIResponse, setCachedAIResponse } from "../services/ai/aiCacheService.js";
+import { calculateUserMetrics } from "../services/metricsService.js";
 import axios from "axios";
 
 // ──────────────────────────────────────────────
@@ -31,6 +33,12 @@ export const getAiSuggestions = async (req, res) => {
         const transactions = await transactionModel
             .find({ userId })
             .sort({ createdAt: -1 })
+            .lean();
+
+        // ── FETCH AVAILABLE TRADABLE STOCKS ──
+        const availableStocks = await stockModel
+            .find({ isActive: true })
+            .select("stockSymbol companyName sector availableQuantity")
             .lean();
 
         // ── BUILD REAL USER PROFILE (reads actual DB fields — not hardcoded) ──
@@ -128,11 +136,20 @@ export const getAiSuggestions = async (req, res) => {
             }
         }));
 
+        // ── UNIFIED PORTFOLIO PERFORMANCE METRICS ──
+        const currentPrices = {};
+        for (const m of marketData) {
+            currentPrices[m.symbol] = m.currentPrice;
+        }
+        const performanceMetrics = calculateUserMetrics(user, transactions, currentPrices);
+
         // ── AI ANALYSIS ──
         const aiResult = await analyzePortfolioWithAI({
             userProfile,
             portfolioData,
             marketData,
+            performanceMetrics,
+            availableStocks,
         });
 
         // Detect if AI returned real data vs fallback (fallback has confidenceScore=0 and empty tradeSignals)
@@ -142,18 +159,30 @@ export const getAiSuggestions = async (req, res) => {
         setCachedAIResponse(userId, aiResult, isRealAIResponse);
 
         // ── BUILD COMPATIBILITY SHIM (supports both AiSuggestions.jsx + AICommandCenter.jsx) ──
-        // AiSuggestions.jsx reads: summary, riskWarning, marketSentiment (string), portfolioHealth.diversificationScore
-        // AICommandCenter.jsx reads: executiveSummary, riskAnalysis.warning, marketSentiment.label (object)
         const payload = {
             ...aiResult,
+            // Expose the raw quantitative metrics directly for advanced features
+            performanceMetrics: {
+                totalProfit: performanceMetrics.totalProfit,
+                roi: performanceMetrics.roi,
+                winRate: performanceMetrics.winRate,
+                sharpeRatio: performanceMetrics.sharpeRatio,
+                sortinoRatio: performanceMetrics.sortinoRatio,
+                diversificationScore: performanceMetrics.diversificationScore,
+                concentrationRisk: performanceMetrics.concentrationRisk,
+                tradeVolatility: performanceMetrics.tradeVolatility,
+                consistencyScore: performanceMetrics.consistencyScore,
+                activityScore: performanceMetrics.activityScore,
+                compositeScore: performanceMetrics.compositeScore,
+            },
             // Legacy fields for AiSuggestions.jsx
             summary: aiResult.executiveSummary,
             riskWarning: aiResult.riskAnalysis?.warning || "",
-            traderScore: aiResult.traderScore || 0,
+            traderScore: performanceMetrics.compositeScore, // unified score
             marketSentiment: aiResult.marketSentiment?.label || "NEUTRAL",  // string for old page
             portfolioHealth: {
-                diversificationScore: aiResult.portfolioScore?.diversification || 0,
-                concentrationRisk: aiResult.portfolioScore?.concentration || "LOW",
+                diversificationScore: performanceMetrics.diversificationScore, // unified diversification
+                concentrationRisk: performanceMetrics.concentrationRisk,
             },
             suggestions: aiResult.suggestions || [],
             // Keep the nested object too for AICommandCenter.jsx

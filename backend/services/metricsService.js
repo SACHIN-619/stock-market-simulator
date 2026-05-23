@@ -138,8 +138,12 @@ export const calculateUserMetrics = (user, transactions, currentPrices) => {
         roiScore = 50 * Math.exp(0.03 * roi);
     }
 
-    // Sharpe Ratio Score (scaled maps: -2.5 to +2.5 -> 0 to 100)
-    const sharpeScore = Math.min(100, Math.max(0, 50 + sharpeRatio * 20));
+    // Sharpe Ratio Score
+    // If they have never sold, they have no realized Sharpe ratio. Set to a lower baseline (20)
+    // so inactive or buy-only users do not gain a default-neutral (50) point advantage over active traders.
+    const sharpeScore = totalSells > 0
+        ? Math.min(100, Math.max(0, 50 + sharpeRatio * 20))
+        : (transactions.length > 0 ? 20 : 0);
 
     // Win Rate Score
     const winRateScore = winRate; // 0 to 100
@@ -152,12 +156,17 @@ export const calculateUserMetrics = (user, transactions, currentPrices) => {
     const activityScore = Math.min(100, totalTrades * 2);
 
     // Composite Performance Score
-    const compositeScore = Math.round(
+    let compositeScore = Math.round(
         roiScore * 0.40 +
         sharpeScore * 0.25 +
         winRateScore * 0.20 +
         divScore * 0.15
     );
+
+    // Inactive traders who have never made a trade get 0!
+    if (totalTrades === 0) {
+        compositeScore = 0;
+    }
 
     // Consistency score (volatility penalty)
     const consistencyScore = totalSells > 0 ? Math.max(0, 100 - tradeVolatility) : 0;

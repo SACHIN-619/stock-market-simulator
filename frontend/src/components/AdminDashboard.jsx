@@ -217,10 +217,10 @@ function AdminDashboard() {
 
   const filteredUsers = users.filter(u => {
     const matchesSearch = u.username.toLowerCase().includes(userSearch.toLowerCase()) ||
-                          u.email.toLowerCase().includes(userSearch.toLowerCase());
+      u.email.toLowerCase().includes(userSearch.toLowerCase());
     const matchesStatus = userStatusFilter === "all" ||
-                          (userStatusFilter === "active" && u.isUserActive) ||
-                          (userStatusFilter === "blocked" && !u.isUserActive);
+      (userStatusFilter === "active" && u.isUserActive) ||
+      (userStatusFilter === "blocked" && !u.isUserActive);
     return matchesSearch && matchesStatus;
   }).sort((a, b) => (b.isUserActive === a.isUserActive ? 0 : b.isUserActive ? 1 : -1));
 
@@ -253,7 +253,7 @@ function AdminDashboard() {
 
       {/* Sidebar */}
       <div className={`transition-all duration-300 ${isAdminCollapsed ? "w-20" : "w-64"} bg-[#EFEFEA] border-r border-slate-200/30 flex flex-col sticky top-16 h-[calc(100vh-64px)] z-20 overflow-y-auto`}>
-        
+
         {/* Toggle Button */}
         <div className={`px-4 py-4 flex ${isAdminCollapsed ? "justify-center" : "justify-end"}`}>
           <button
@@ -271,19 +271,18 @@ function AdminDashboard() {
 
         <nav className="flex-1 px-4 space-y-2">
           {[
-            { key: 'users', label: 'Traders', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> },
-            { key: 'stocks', label: 'Stocks', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m3 17 6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg> },
-            { key: 'history', label: 'Activity', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> },
+            { key: 'users', label: 'Traders', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></svg> },
+            { key: 'stocks', label: 'Stocks', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="m3 17 6-6 4 4 8-8" /><path d="M17 7h4v4" /></svg> },
+            { key: 'history', label: 'Activity', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg> },
           ].map(item => (
             <button
               key={item.key}
               onClick={() => setActiveMenu(item.key)}
               title={item.label}
-              className={`w-full flex items-center ${isAdminCollapsed ? 'justify-center' : 'gap-4'} px-4 py-3 rounded-xl transition-all border cursor-pointer ${
-                activeMenu === item.key
+              className={`w-full flex items-center ${isAdminCollapsed ? 'justify-center' : 'gap-4'} px-4 py-3 rounded-xl transition-all border cursor-pointer ${activeMenu === item.key
                   ? 'bg-[#E0EFFF] text-[#1D4ED8] border-[#BCD6F2] font-black shadow-2xs'
                   : 'text-slate-550 hover:bg-[#E4E5DF] hover:text-slate-800 border-transparent font-semibold'
-              }`}
+                }`}
             >
               <div className="shrink-0 w-5 h-5">{item.icon}</div>
               {!isAdminCollapsed && <span className="font-bold text-sm tracking-tight">{item.label}</span>}
@@ -330,11 +329,10 @@ function AdminDashboard() {
 
                 <button
                   onClick={() => setShowFilters(!showFilters)}
-                  className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
-                    showFilters
+                  className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${showFilters
                       ? "border-blue-500 text-blue-600 bg-blue-50/50 shadow-sm"
                       : "border-slate-200 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600"
-                  }`}
+                    }`}
                 >
                   ⚙️ Filters
                 </button>
@@ -372,11 +370,10 @@ function AdminDashboard() {
                           }`}
                       >
                         All
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
-                          userStatusFilter === "all"
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${userStatusFilter === "all"
                             ? "bg-white/20 text-white"
                             : "bg-slate-200 text-slate-500"
-                        }`}>
+                          }`}>
                           {users.length}
                         </span>
                       </button>
@@ -393,11 +390,10 @@ function AdminDashboard() {
                           }`}
                       >
                         Active
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
-                          userStatusFilter === "active"
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${userStatusFilter === "active"
                             ? "bg-white/20 text-white"
                             : "bg-slate-200 text-slate-500"
-                        }`}>
+                          }`}>
                           {users.filter(u => u.isUserActive).length}
                         </span>
                       </button>
@@ -414,11 +410,10 @@ function AdminDashboard() {
                           }`}
                       >
                         Blocked
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
-                          userStatusFilter === "blocked"
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${userStatusFilter === "blocked"
                             ? "bg-white/20 text-white"
                             : "bg-slate-200 text-slate-500"
-                        }`}>
+                          }`}>
                           {users.filter(u => !u.isUserActive).length}
                         </span>
                       </button>
@@ -435,17 +430,16 @@ function AdminDashboard() {
                 .map((user) => (
                   <div
                     key={user._id}
-                    className={`group relative flex flex-col overflow-hidden rounded-[2rem] border bg-white p-6 shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-md ${
-                      !user.isUserActive ? 'border-red-100 bg-red-50/20' : 'border-slate-100 hover:border-blue-100'
-                    }`}
+                    className={`group relative flex flex-col overflow-hidden rounded-[2rem] border bg-white p-6 shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-md ${!user.isUserActive ? 'border-red-100 bg-red-50/20' : 'border-slate-100 hover:border-blue-100'
+                      }`}
                   >
                     {/* User Info Header */}
                     <div className="mb-6 flex items-center gap-4">
                       {user.profileImage ? (
-                        <img 
-                          src={user.profileImage.startsWith('http') ? user.profileImage : `http://localhost:5000/${user.profileImage.replace(/^\/+/, '')}`} 
-                          alt={user.username} 
-                          className={`h-12 w-12 rounded-xl object-cover border border-slate-200/60 ${!user.isUserActive ? 'grayscale opacity-50' : ''}`} 
+                        <img
+                          src={user.profileImage.startsWith('http') ? user.profileImage : `http://localhost:5000/${user.profileImage.replace(/^\/+/, '')}`}
+                          alt={user.username}
+                          className={`h-12 w-12 rounded-xl object-cover border border-slate-200/60 ${!user.isUserActive ? 'grayscale opacity-50' : ''}`}
                         />
                       ) : (
                         <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 text-xl font-bold text-white shadow-inner ${!user.isUserActive ? 'from-red-500 to-rose-600' : ''}`}>
@@ -507,32 +501,29 @@ function AdminDashboard() {
                     <div className="flex flex-col gap-2 mt-auto">
                       <button
                         onClick={() => openUserDetails(user)}
-                        className={`w-full rounded-xl py-2.5 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${
-                          !user.isUserActive 
-                            ? 'bg-slate-100 text-slate-400 border-slate-200 hover:bg-slate-150/80 hover:border-slate-250' 
+                        className={`w-full rounded-xl py-2.5 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${!user.isUserActive
+                            ? 'bg-slate-100 text-slate-400 border-slate-200 hover:bg-slate-150/80 hover:border-slate-250'
                             : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100 hover:text-slate-900 hover:border-slate-300'
-                        }`}
+                          }`}
                       >
                         View Details
                       </button>
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleToggleStatus(user)}
-                          className={`flex-1 rounded-xl py-2 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${
-                            user.isUserActive 
-                              ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100/80 hover:border-amber-250' 
+                          className={`flex-1 rounded-xl py-2 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${user.isUserActive
+                              ? 'bg-amber-50 text-amber-600 border-amber-200 hover:bg-amber-100/80 hover:border-amber-250'
                               : 'bg-[#E0EFFF] text-[#1D4ED8] border-[#BCD6F2] hover:bg-[#E0EFFF]/80 hover:border-[#96C0EE] font-black'
-                          }`}
+                            }`}
                         >
                           {user.isUserActive ? "Block" : "Unblock"}
                         </button>
                         <button
                           onClick={() => handleDelete(user._id)}
-                          className={`flex-1 rounded-xl py-2 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${
-                            !user.isUserActive 
-                              ? 'bg-red-50/80 text-red-650 border-red-200 hover:bg-red-100/80 hover:border-red-250' 
+                          className={`flex-1 rounded-xl py-2 text-xs font-black uppercase tracking-wider transition border cursor-pointer ${!user.isUserActive
+                              ? 'bg-red-50/80 text-red-650 border-red-200 hover:bg-red-100/80 hover:border-red-250'
                               : 'bg-red-50 text-red-500 border-red-200 hover:bg-red-100/85 hover:border-red-250'
-                          }`}
+                            }`}
                         >
                           Delete
                         </button>
@@ -592,11 +583,10 @@ function AdminDashboard() {
 
                 <button
                   onClick={() => setShowStockFilters(!showStockFilters)}
-                  className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${
-                    showStockFilters
+                  className={`rounded-xl border px-4 py-2.5 text-sm font-semibold transition-all cursor-pointer flex items-center gap-2 ${showStockFilters
                       ? "border-blue-500 text-blue-600 bg-blue-50/50 shadow-sm"
                       : "border-slate-200 bg-white text-slate-700 hover:border-blue-500 hover:text-blue-600"
-                  }`}
+                    }`}
                 >
                   ⚙️ Filters
                 </button>
@@ -634,11 +624,10 @@ function AdminDashboard() {
                           }`}
                       >
                         All
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
-                          stockStatusFilter === "all"
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${stockStatusFilter === "all"
                             ? "bg-white/20 text-white"
                             : "bg-slate-250 text-slate-500"
-                        }`}>
+                          }`}>
                           {stocks.length}
                         </span>
                       </button>
@@ -655,11 +644,10 @@ function AdminDashboard() {
                           }`}
                       >
                         Active
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
-                          stockStatusFilter === "active"
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${stockStatusFilter === "active"
                             ? "bg-white/20 text-white"
                             : "bg-slate-250 text-slate-500"
-                        }`}>
+                          }`}>
                           {stocks.filter(s => s.isActive).length}
                         </span>
                       </button>
@@ -676,11 +664,10 @@ function AdminDashboard() {
                           }`}
                       >
                         Inactive
-                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${
-                          stockStatusFilter === "inactive"
+                        <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-extrabold ${stockStatusFilter === "inactive"
                             ? "bg-white/20 text-white"
                             : "bg-slate-250 text-slate-500"
-                        }`}>
+                          }`}>
                           {stocks.filter(s => !s.isActive).length}
                         </span>
                       </button>
@@ -739,9 +726,8 @@ function AdminDashboard() {
                     .map((stock) => (
                       <div
                         key={stock._id}
-                        className={`group relative flex flex-col overflow-hidden rounded-[2rem] border bg-white p-6 shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-md ${
-                          !stock.isActive ? 'border-red-100 bg-red-50/20' : 'border-slate-100 hover:border-blue-100'
-                        }`}
+                        className={`group relative flex flex-col overflow-hidden rounded-[2rem] border bg-white p-6 shadow-xs transition duration-300 hover:-translate-y-1 hover:shadow-md ${!stock.isActive ? 'border-red-100 bg-red-50/20' : 'border-slate-100 hover:border-blue-100'
+                          }`}
                       >
                         {/* Status Badge */}
                         <div className="absolute right-4 top-4">
@@ -912,11 +898,10 @@ function AdminDashboard() {
                               </div>
                             </td>
                             <td className="px-8 py-5 text-center">
-                              <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border ${
-                                act.action.includes('DELETE') ? 'bg-red-50 text-red-600 border-red-100' :
-                                act.action.includes('ADD') ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
-                                'bg-blue-50 text-blue-600 border-blue-100'
-                              }`}>
+                              <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border ${act.action.includes('DELETE') ? 'bg-red-50 text-red-600 border-red-100' :
+                                  act.action.includes('ADD') ? 'bg-emerald-50 text-emerald-600 border-emerald-100' :
+                                    'bg-blue-50 text-blue-600 border-blue-100'
+                                }`}>
                                 {act.action.replace(/_/g, ' ').replace('TOGGLE ', '')}
                               </span>
                             </td>
@@ -1024,64 +1009,64 @@ function AdminDashboard() {
 
                     {/* PORTFOLIO TAB */}
                     {modalTab === "portfolio" && (
-                       <div>
-                         {/* Portfolio Summary */}
-                         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-                           <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm transition duration-300 hover:-translate-y-0.5">
-                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total Investment</p>
-                             <h3 className="text-xl font-black text-slate-900 flex items-center">
-                               <span className="mr-1 text-slate-900 font-black">$</span>
-                               {formatCurrency(modalData.summary.totalInvestment)}
-                             </h3>
-                           </div>
-                           <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm transition duration-300 hover:-translate-y-0.5">
-                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Current Value</p>
-                             <h3 className="text-xl font-black text-slate-900 flex items-center">
-                               <span className="mr-1 text-slate-900 font-black">$</span>
-                               {formatCurrency(modalData.summary.totalCurrentValue)}
-                             </h3>
-                           </div>
-                           <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm transition duration-300 hover:-translate-y-0.5">
-                             <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total P/L</p>
-                             <h3 className={`text-xl font-black flex items-center ${modalData.summary.totalProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                               {modalData.summary.totalProfit >= 0 ? '+' : ''}
-                               <span className="mr-1 font-black">$</span>
-                               {formatCurrency(modalData.summary.totalProfit)}
-                             </h3>
-                           </div>
-                         </div>
+                      <div>
+                        {/* Portfolio Summary */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+                          <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm transition duration-300 hover:-translate-y-0.5">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total Investment</p>
+                            <h3 className="text-xl font-black text-slate-900 flex items-center">
+                              <span className="mr-1 text-slate-900 font-black">$</span>
+                              {formatCurrency(modalData.summary.totalInvestment)}
+                            </h3>
+                          </div>
+                          <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm transition duration-300 hover:-translate-y-0.5">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Current Value</p>
+                            <h3 className="text-xl font-black text-slate-900 flex items-center">
+                              <span className="mr-1 text-slate-900 font-black">$</span>
+                              {formatCurrency(modalData.summary.totalCurrentValue)}
+                            </h3>
+                          </div>
+                          <div className="bg-white border border-slate-100 rounded-2xl p-5 shadow-sm transition duration-300 hover:-translate-y-0.5">
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Total P/L</p>
+                            <h3 className={`text-xl font-black flex items-center ${modalData.summary.totalProfit >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                              {modalData.summary.totalProfit >= 0 ? '+' : ''}
+                              <span className="mr-1 font-black">$</span>
+                              {formatCurrency(modalData.summary.totalProfit)}
+                            </h3>
+                          </div>
+                        </div>
 
-                         <div className="overflow-x-auto rounded-[1.5rem] border border-slate-100 shadow-2xs">
-                           <table className="w-full text-left border-collapse text-sm">
-                             <thead>
-                               <tr className="bg-slate-50/75 border-b border-slate-100">
-                                 <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Symbol</th>
-                                 <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Owned Qty</th>
-                                 <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Avg Buy</th>
-                                 <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Current Price</th>
-                                 <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">P/L</th>
-                               </tr>
-                             </thead>
-                             <tbody className="divide-y divide-slate-100">
-                               {modalData.portfolio.length === 0 ? (
-                                 <tr><td colSpan="5" className="text-center py-6 text-slate-400 font-bold uppercase text-xs">No active holdings.</td></tr>
-                               ) : (
-                                 modalData.portfolio.map((stock) => (
-                                   <tr key={stock.stockSymbol} className="hover:bg-slate-50/50 transition-colors">
-                                     <td className="px-6 py-4 font-black text-slate-800">{stock.stockSymbol}</td>
-                                     <td className="px-6 py-4 font-bold text-slate-600">{stock.ownedQuantity}</td>
-                                     <td className="px-6 py-4 font-semibold text-slate-700">{formatCurrency(stock.avgPrice)}</td>
-                                     <td className="px-6 py-4 font-semibold text-slate-700">{formatCurrency(stock.currentPrice)}</td>
-                                     <td className={`px-6 py-4 font-extrabold ${stock.profitLoss >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
-                                       {stock.profitLoss >= 0 ? '+' : ''}{formatCurrency(stock.profitLoss)} ({stock.profitPercent.toFixed(2)}%)
-                                     </td>
-                                   </tr>
-                                 ))
-                               )}
-                             </tbody>
-                           </table>
-                         </div>
-                       </div>
+                        <div className="overflow-x-auto rounded-[1.5rem] border border-slate-100 shadow-2xs">
+                          <table className="w-full text-left border-collapse text-sm">
+                            <thead>
+                              <tr className="bg-slate-50/75 border-b border-slate-100">
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Symbol</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Owned Qty</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Avg Buy</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Current Price</th>
+                                <th className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">P/L</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-100">
+                              {modalData.portfolio.length === 0 ? (
+                                <tr><td colSpan="5" className="text-center py-6 text-slate-400 font-bold uppercase text-xs">No active holdings.</td></tr>
+                              ) : (
+                                modalData.portfolio.map((stock) => (
+                                  <tr key={stock.stockSymbol} className="hover:bg-slate-50/50 transition-colors">
+                                    <td className="px-6 py-4 font-black text-slate-800">{stock.stockSymbol}</td>
+                                    <td className="px-6 py-4 font-bold text-slate-600">{stock.ownedQuantity}</td>
+                                    <td className="px-6 py-4 font-semibold text-slate-700">{formatCurrency(stock.avgPrice)}</td>
+                                    <td className="px-6 py-4 font-semibold text-slate-700">{formatCurrency(stock.currentPrice)}</td>
+                                    <td className={`px-6 py-4 font-extrabold ${stock.profitLoss >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                                      {stock.profitLoss >= 0 ? '+' : ''}{formatCurrency(stock.profitLoss)} ({stock.profitPercent.toFixed(2)}%)
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
                     )}
 
                   </div>

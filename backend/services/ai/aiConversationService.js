@@ -11,6 +11,7 @@ export const generateAIChatResponse = async ({
     portfolioData = [],
     marketData    = [],
     marketTrends = [],
+    performanceMetrics = {},
 }) => {
     try {
         // Persist user message first
@@ -63,6 +64,7 @@ SYSTEM RULES & TONE
 5. **Format**: Use **bold** for symbols ($AAPL), numbers, and key terms. Use bullet points (- ) and headings (## ).
 6. **Live Data**: Reference the RSI, real-time prices, and news provided below. If data is missing for a ticker, mention it professionally.
 7. **Constraints**: Maximum 4 paragraphs. Never hallucinate. Warn about risks prominently.
+8. **Performance Metrics Integration**: Proactively reference and analyze the user's unified **ROI**, **Sharpe Ratio**, **Sortino Ratio**, **Win Rate**, **Diversification HHI**, and **Composite Leaderboard Score** provided in the TRADER PERFORMANCE METRICS section. Answer their questions accurately regarding these metrics.
 
 ═══════════════════════════════
 TRADER PROFILE (LIVE)
@@ -73,6 +75,19 @@ TRADER PROFILE (LIVE)
 - Investment Goal: **${userProfile.goal}**
 - Time Horizon:    **${userProfile.timeHorizon}**
 - Total Positions: ${userProfile.totalHoldings}
+
+═══════════════════════════════
+TRADER PERFORMANCE METRICS (UNIFIED CALCULATIONS)
+═══════════════════════════════
+- Total Profit: ${performanceMetrics.totalProfit != null ? "$" + Number(performanceMetrics.totalProfit.toFixed(2)).toLocaleString() : "N/A"}
+- Percentage ROI: ${performanceMetrics.roi != null ? performanceMetrics.roi.toFixed(2) + "%" : "N/A"}
+- True Win Rate: ${performanceMetrics.winRate != null ? performanceMetrics.winRate.toFixed(1) + "%" : "N/A"}
+- Realized Sharpe Ratio: ${performanceMetrics.sharpeRatio != null ? performanceMetrics.sharpeRatio.toFixed(2) : "N/A"}
+- Realized Sortino Ratio: ${performanceMetrics.sortinoRatio != null ? performanceMetrics.sortinoRatio.toFixed(2) : "N/A"}
+- Diversification Score: ${performanceMetrics.diversificationScore != null ? performanceMetrics.diversificationScore.toFixed(0) + "/100" : "N/A"}
+- Concentration Risk: ${performanceMetrics.concentrationRisk || "N/A"}
+- Volatility Penalty Score: ${performanceMetrics.tradeVolatility != null ? performanceMetrics.tradeVolatility.toFixed(2) + "%" : "N/A"}
+- Composite Leaderboard Score: ${performanceMetrics.compositeScore || "N/A"}
 
 ═══════════════════════════════
 PORTFOLIO SNAPSHOT

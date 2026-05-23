@@ -11,6 +11,8 @@ function Profile() {
   const [showSettings, setShowSettings] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [imageError, setImageError] = useState(false); // Fix for avatar fallback logic
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
   const [formData, setFormData] = useState({ 
     username: "", 
     email: "", 
@@ -50,6 +52,8 @@ function Profile() {
   const handleCloseModal = () => {
     setShowSettings(false);
     setIsEditing(false);
+    setShowCurrentPassword(false);
+    setShowNewPassword(false);
     resetFormToUser(user); // Fixed: Reset form states back to current database values
   };
 
@@ -227,12 +231,14 @@ function Profile() {
         {/* WALLET SUMMARY */}
         <aside>
           <div className="glass-card p-8 rounded-[2.5rem] bg-gradient-to-br from-indigo-500/5 via-white to-white border border-indigo-100 shadow-sm space-y-6">
-            <h3 className="text-xl font-black text-slate-900 tracking-tight">Finnova Virtual Wallet</h3>
+            <h3 className="text-xl font-black text-slate-900 tracking-tight">
+              Stock<span className="text-blue-600">king</span> Virtual Wallet
+            </h3>
             <div className="space-y-6">
               <div className="space-y-1">
                 <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest">Available Credits</p>
-                <h4 className="text-3xl font-black text-slate-900 flex items-center gap-2 tracking-tight">
-                  <CoinIcon className="w-8 h-8" />
+                <h4 className="text-3xl font-black text-slate-900 flex items-baseline tracking-tight">
+                  <span className="text-2xl font-black text-slate-400 mr-0.5">$</span>
                   {user?.walletBalance?.toLocaleString(undefined, { minimumFractionDigits: 2 })}
                 </h4>
               </div>
@@ -313,15 +319,35 @@ function Profile() {
                 {/* CURRENT PASSWORD (ONLY IN EDIT MODE) */}
                 {isEditing && (
                   <div className="space-y-1.5 animate-slide-down">
-                    <label className="text-[9px] font-black text-indigo-600 uppercase tracking-widest px-1">Current Password</label>
-                    <input 
-                      type="password" 
-                      required={formData.password.length > 0 || formData.username !== user?.username || formData.email !== user?.email}
-                      placeholder="Required to save critical changes"
-                      value={formData.currentPassword}
-                      onChange={(e) => setFormData({...formData, currentPassword: e.target.value})}
-                      className="w-full bg-indigo-50/20 border border-indigo-200 rounded-xl px-4 py-3 text-sm font-bold text-indigo-700 focus:bg-white focus:border-indigo-500 outline-none transition shadow-sm"
-                    />
+                    <label className={`text-[9px] font-black uppercase tracking-widest px-1 ${formData.password.length > 0 ? "text-indigo-600" : "text-slate-400"}`}>
+                      Current Password
+                    </label>
+                    <div className="relative">
+                      <input 
+                        type={showCurrentPassword ? "text" : "password"} 
+                        required={formData.password.length > 0}
+                        placeholder={formData.password.length > 0 ? "Required to change password" : "Enter current password (optional)"}
+                        value={formData.currentPassword}
+                        onChange={(e) => setFormData({...formData, currentPassword: e.target.value})}
+                        className={`w-full border rounded-xl pl-4 pr-12 py-3 text-sm font-bold outline-none transition ${
+                          formData.password.length > 0 
+                            ? "bg-indigo-50/20 border-indigo-200 text-indigo-700 focus:bg-white focus:border-indigo-500 shadow-sm" 
+                            : "bg-slate-50 border-slate-200 text-slate-850 focus:bg-white focus:border-indigo-500"
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none transition cursor-pointer"
+                        title={showCurrentPassword ? "Hide password" : "Show password"}
+                      >
+                        {showCurrentPassword ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 )}
 
@@ -329,13 +355,27 @@ function Profile() {
                 {isEditing && (
                   <div className="space-y-1.5 animate-slide-down">
                     <label className="text-[9px] font-black text-slate-400 uppercase tracking-widest px-1">New Password</label>
-                    <input 
-                      type="password" 
-                      placeholder="Enter new password"
-                      value={formData.password}
-                      onChange={(e) => setFormData({...formData, password: e.target.value})}
-                      className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-800 focus:bg-white focus:border-indigo-500 outline-none transition"
-                    />
+                    <div className="relative">
+                      <input 
+                        type={showNewPassword ? "text" : "password"} 
+                        placeholder="Enter new password"
+                        value={formData.password}
+                        onChange={(e) => setFormData({...formData, password: e.target.value})}
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-4 pr-12 py-3 text-sm font-bold text-slate-800 focus:bg-white focus:border-indigo-500 outline-none transition"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none transition cursor-pointer"
+                        title={showNewPassword ? "Hide password" : "Show password"}
+                      >
+                        {showNewPassword ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+                        )}
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

@@ -8,6 +8,9 @@ function Leaderboard() {
   const [leaders, setLeaders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const loggedInUsername = sessionStorage.getItem("username");
 
   const fetchLeaderboard = async () => {
     try {
@@ -87,6 +90,12 @@ function Leaderboard() {
       </div>
     );
   }
+
+  const filteredLeaders = leaders
+    .map((trader, idx) => ({ ...trader, originalRank: idx + 1 }))
+    .filter((trader) =>
+      trader.username?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   return (
     <div className="min-h-screen bg-[#F4F5F0] text-slate-800 px-6 py-8">
@@ -177,10 +186,19 @@ function Leaderboard() {
 
       {/* TABLE */}
       <div className="overflow-hidden rounded-[2.5rem] border border-slate-100 bg-white shadow-sm">
-        <div className="overflow-x-auto">
-          <div className="min-w-[800px]">
+        <div className="p-6 border-b border-slate-100 bg-white">
+          <input
+            type="text"
+            placeholder="Search trader..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full sm:w-80 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none transition focus:bg-white focus:border-indigo-500"
+          />
+        </div>
+        <div className="overflow-x-auto max-h-[640px] custom-scrollbar relative">
+          <div className="min-w-[760px]">
             {/* Header row */}
-            <div className="grid grid-cols-6 border-b border-slate-100 bg-slate-50/70 px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">
+            <div className="sticky top-0 z-10 grid grid-cols-[80px_2.5fr_1fr_1.5fr_1fr_100px] gap-4 border-b border-slate-100 bg-slate-50/90 backdrop-blur-md px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest items-center text-center justify-items-center">
               <div>Rank</div>
               <div>Trader</div>
               <div>Score</div>
@@ -191,57 +209,72 @@ function Leaderboard() {
 
             {/* Content rows */}
             <div className="divide-y divide-slate-100">
-              {leaders.map((trader, index) => (
-                <div
-                  key={trader._id}
-                  className="grid grid-cols-6 items-center px-8 py-6 transition hover:bg-slate-50/40 duration-200"
-                >
-                  <div className="font-black text-slate-900 text-base">
-                    #{index + 1}
-                  </div>
-
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-indigo-50 border border-indigo-100 text-sm font-black text-indigo-600">
-                      {trader.username?.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-slate-900">
-                        {trader.username}
-                      </h3>
-                      <p className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">
-                        Trader Account
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="text-lg font-black text-slate-800">
-                    {trader.score}
-                  </div>
-
-                  {/* UPDATED PROFIT/LOSS CODE */}
-                  <div
-                    className={`font-semibold ${
-                      trader.totalProfit >= 0
-                        ? "text-emerald-600"
-                        : "text-rose-600"
-                    }`}
-                  >
-                    {trader.totalProfit >= 0
-                      ? `+$${trader.totalProfit?.toFixed(2)}`
-                      : `-$${Math.abs(trader.totalProfit)?.toFixed(2)}`}
-                  </div>
-
-                  <div className="font-bold text-slate-600">
-                    {trader.totalTrades}
-                  </div>
-
-                  <div>
-                    <span className="rounded-lg bg-emerald-50 border border-emerald-100/50 px-2.5 py-1 text-[9px] font-black text-emerald-600 tracking-wider uppercase">
-                      ACTIVE
-                    </span>
-                  </div>
+              {filteredLeaders.length === 0 ? (
+                <div className="px-8 py-12 text-center text-slate-400 font-medium">
+                  No traders found matching your search.
                 </div>
-              ))}
+              ) : (
+                filteredLeaders.map((trader) => {
+                  const isMe = trader.username === loggedInUsername;
+                  return (
+                    <div
+                      key={trader._id}
+                      className={`grid grid-cols-[80px_2.5fr_1fr_1.5fr_1fr_100px] gap-4 items-center text-center justify-items-center px-6 py-4 transition duration-200 ${
+                        isMe ? "bg-indigo-50 border-t-2 border-t-indigo-200 border-l-4 border-l-indigo-600 shadow-[0_-8px_15px_-3px_rgba(0,0,0,0.1)] z-20 sticky bottom-0" : "hover:bg-slate-50/40"
+                      }`}
+                    >
+                      <div className={`font-black text-base ${isMe ? "text-indigo-900" : "text-slate-900"}`}>
+                        #{trader.originalRank}
+                      </div>
+
+                      <div className="flex items-center gap-4 w-56 text-left">
+                        <div className={`flex-shrink-0 flex h-10 w-10 items-center justify-center rounded-full text-sm font-black ${
+                          isMe ? "bg-indigo-600 border border-indigo-700 text-white shadow-sm" : "bg-indigo-50 border border-indigo-100 text-indigo-600"
+                        }`}>
+                          {trader.username?.charAt(0).toUpperCase()}
+                        </div>
+                        <div>
+                          <h3 className={`font-bold flex items-center ${isMe ? "text-indigo-900" : "text-slate-900"}`}>
+                            {trader.username}
+                            {isMe && <span className="text-indigo-600 ml-1.5 text-xs bg-indigo-100 px-1.5 py-0.5 rounded-md">(You)</span>}
+                          </h3>
+                          <p className={`text-[9px] font-bold uppercase tracking-wider ${isMe ? "text-indigo-400" : "text-slate-400"}`}>
+                            {isMe ? "My Account" : "Trader Account"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className={`text-lg font-black ${isMe ? "text-indigo-900" : "text-slate-800"}`}>
+                        {trader.score}
+                      </div>
+
+                      <div
+                        className={`font-semibold ${
+                          trader.totalProfit >= 0
+                            ? "text-emerald-600"
+                            : "text-rose-600"
+                        }`}
+                      >
+                        {trader.totalProfit >= 0
+                          ? `+$${trader.totalProfit?.toFixed(2)}`
+                          : `-$${Math.abs(trader.totalProfit)?.toFixed(2)}`}
+                      </div>
+
+                      <div className={`font-bold ${isMe ? "text-indigo-700" : "text-slate-600"}`}>
+                        {trader.totalTrades}
+                      </div>
+
+                      <div>
+                        <span className={`rounded-lg border px-2.5 py-1 text-[9px] font-black tracking-wider uppercase ${
+                          isMe ? "bg-indigo-100 border-indigo-200 text-indigo-700" : "bg-emerald-50 border-emerald-100/50 text-emerald-600"
+                        }`}>
+                          ACTIVE
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })
+              )}
             </div>
           </div>
         </div>

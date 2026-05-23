@@ -610,7 +610,7 @@ function Home() {
       </section>
 
       {/* CORE CAPABILITIES GRID */}
-      <section id="about-section" className="py-24 px-6 md:px-16 max-w-7xl mx-auto scroll-mt-20">
+      <section id="about-section" className="py-24 px-6 md:px-16 max-w-7xl mx-auto">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <span className="text-xs font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-full">
             Simulator Ecosystem
@@ -630,9 +630,9 @@ function Home() {
               <div className="h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600 text-xl font-bold">
                 📈
               </div>
-              <h3 className="text-xl font-black text-slate-900">Technical Candlestick Charts</h3>
+              <h3 className="text-xl font-black text-slate-900">Technical Stock Charts</h3>
               <p className="text-slate-500 text-sm font-semibold leading-relaxed">
-                Full-featured candlestick rendering mapping simulated high/low intervals, moving averages, and real price logs.
+                Full-featured chart rendering mapping simulated high/low intervals, moving averages, and real price logs.
               </p>
             </div>
             <ul className="text-xs font-bold text-slate-400 space-y-2 pt-4">
@@ -648,7 +648,7 @@ function Home() {
               <div className="h-12 w-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 text-xl font-bold">
                 ⚡
               </div>
-              <h3 className="text-xl font-black text-slate-900">Dynamic Matching Engine</h3>
+              <h3 className="text-xl font-black text-slate-900">Dynamic Trade Execution</h3>
               <p className="text-slate-500 text-sm font-semibold leading-relaxed">
                 Experience instantaneous market execution or set customizable target limit thresholds for sophisticated automated buying/selling.
               </p>
@@ -847,17 +847,17 @@ function Home() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <label className="text-xs font-black text-slate-600">Trading Quantity</label>
-                  <div className="flex items-center border border-slate-200 rounded-xl overflow-hidden bg-slate-50/50 shadow-sm">
+                  <div className="flex items-center border border-slate-200 rounded-xl">
                     <button
                       onClick={() => setMockQuantity(prev => Math.max(1, prev - 5))}
-                      className="px-4 py-2 hover:bg-slate-200 active:bg-slate-300 font-black text-sm transition-colors text-slate-600 cursor-pointer"
+                      className="px-3 py-1.5 hover:bg-slate-50 font-black text-sm transition text-slate-500"
                     >
                       -
                     </button>
-                    <span className="px-4 font-black text-sm text-slate-900 bg-white py-2 border-x border-slate-200 min-w-[3.5rem] text-center">{mockQuantity}</span>
+                    <span className="px-4 font-black text-sm text-slate-800">{mockQuantity}</span>
                     <button
                       onClick={() => setMockQuantity(prev => prev + 5)}
-                      className="px-4 py-2 hover:bg-slate-200 active:bg-slate-300 font-black text-sm transition-colors text-slate-600 cursor-pointer"
+                      className="px-3 py-1.5 hover:bg-slate-50 font-black text-sm transition text-slate-500"
                     >
                       +
                     </button>
@@ -880,13 +880,9 @@ function Home() {
                 </div>
 
                 {mockMessage && (
-                  <div className={`text-center text-xs font-bold transition duration-300 animate-fade-in px-4 py-3 rounded-xl inline-block w-full shadow-sm ${
-                    mockMessage.includes("⚠️") 
-                      ? "bg-amber-50 text-amber-600 border border-amber-100" 
-                      : "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                  }`}>
+                  <p className="text-center text-xs font-bold transition duration-300 animate-fade-in text-slate-600">
                     {mockMessage}
-                  </div>
+                  </p>
                 )}
               </div>
             </div>
@@ -894,8 +890,8 @@ function Home() {
         </div>
       </section>
 
-      {/* INVESTOPEDIA FINANCIAL LEARNING HUB */}
-      <section className="py-24 px-6 md:px-20 lg:px-32 w-full">
+      {/* STOCKKING FINANCIAL LEARNING HUB */}
+      <section id="learn-section" className="py-24 px-6 md:px-20 lg:px-32 w-full">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <span className="text-xs font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-full">
             Knowledge Center
@@ -959,7 +955,7 @@ function Home() {
                   <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest bg-indigo-50 px-3 py-1 rounded-md">
                     Execution
                   </span>
-                  <span className="text-xs font-black text-slate-400">Investopedia Definition</span>
+                  <span className="text-xs font-black text-slate-400">Stockking Concept</span>
                 </div>
                 <h3 className="text-2xl font-black text-slate-900">How Order Execution Behaves</h3>
                 <p className="text-slate-500 font-semibold leading-relaxed">
@@ -982,7 +978,7 @@ function Home() {
                   <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest bg-indigo-50 px-3 py-1 rounded-md">
                     Shorting
                   </span>
-                  <span className="text-xs font-black text-slate-400">Investopedia Definition</span>
+                  <span className="text-xs font-black text-slate-400">Stockking Concept</span>
                 </div>
                 <h3 className="text-2xl font-black text-slate-900">Bearish Markets & Short Selling</h3>
                 <p className="text-slate-500 font-semibold leading-relaxed">
@@ -1005,7 +1001,7 @@ function Home() {
                   <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest bg-indigo-50 px-3 py-1 rounded-md">
                     Diversification
                   </span>
-                  <span className="text-xs font-black text-slate-400">Investopedia Definition</span>
+                  <span className="text-xs font-black text-slate-400">Stockking Concept</span>
                 </div>
                 <h3 className="text-2xl font-black text-slate-900">Portfolio Asset Allocation</h3>
                 <p className="text-slate-500 font-semibold leading-relaxed">

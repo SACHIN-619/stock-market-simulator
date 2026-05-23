@@ -18,8 +18,8 @@
 * **Database Cluster:** Hosted securely via MongoDB Atlas cloud infrastructure.
 
 ### Local Ports Summary
-* **React Frontend Client:** Port `5173` $\rightarrow$ `http://localhost:5173`
-* **Express Backend Server:** Port `5000` $\rightarrow$ `http://localhost:5000`
+* **React Frontend Client:** Port `5173` -> http://localhost:5173`
+* **Express Backend Server:** Port `5000` -> `http://localhost:5000`
 * **MongoDB Database:** Port `27017` (Internal instance or Cloud via Mongoose URI mapping)
 
 ---

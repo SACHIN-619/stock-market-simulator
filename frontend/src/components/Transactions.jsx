@@ -51,12 +51,12 @@ function Transactions() {
           <table className="w-full text-left border-collapse">
             <thead className="sticky top-0 z-10 bg-slate-50/90 backdrop-blur-md">
               <tr className="border-b border-slate-100">
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Type</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest">Asset</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Quantity</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Price</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Total</th>
-                <th className="px-8 py-5 text-[10px] font-black text-slate-400 uppercase tracking-widest text-right">Date</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[15%]">Type</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[15%]">Asset</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[15%]">Quantity</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[15%]">Price</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[20%]">Total</th>
+                <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[20%]">Date</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -69,25 +69,25 @@ function Transactions() {
               ) : (
                 filteredTransactions.map((tx) => (
                   <tr key={tx._id} className="hover:bg-slate-50/40 transition-colors group">
-                    <td className="px-8 py-6">
-                      <div className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
+                    <td className="px-6 py-4 text-center">
+                      <div className={`inline-flex items-center justify-center gap-1.5 px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border ${
                         tx.transactionType === "BUY" ? "bg-emerald-50 text-emerald-600 border-emerald-100/50" : "bg-rose-50 text-rose-600 border-rose-100/50"
                       }`}>
                         <div className={`w-1 h-1 rounded-full ${tx.transactionType === "BUY" ? "bg-emerald-500 animate-pulse" : "bg-rose-500"}`} />
                         {tx.transactionType}
                       </div>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="px-6 py-4 text-center">
                       <p className="font-black text-slate-900 uppercase tracking-wide">{tx.stockSymbol}</p>
                     </td>
-                    <td className="px-8 py-6 text-right font-black text-slate-800">{tx.quantity}</td>
-                    <td className="px-8 py-6 text-right font-medium text-slate-500">
+                    <td className="px-6 py-4 text-center font-black text-slate-800">{tx.quantity}</td>
+                    <td className="px-6 py-4 text-center font-medium text-slate-500">
                       ${tx.pricePerShare?.toFixed(2)}
                     </td>
-                    <td className="px-8 py-6 text-right font-black text-slate-900">
+                    <td className="px-6 py-4 text-center font-black text-slate-900">
                       ${tx.totalAmount?.toFixed(2)}
                     </td>
-                    <td className="px-8 py-6 text-right font-medium text-slate-500 text-sm">
+                    <td className="px-6 py-4 text-center font-medium text-slate-500 text-sm">
                       <span className="text-slate-700 font-semibold">{new Date(tx.createdAt).toLocaleDateString()}</span>
                       <span className="block text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{new Date(tx.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                     </td>

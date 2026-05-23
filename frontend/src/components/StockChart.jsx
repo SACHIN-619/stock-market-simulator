@@ -37,7 +37,7 @@ function StockChart({
    const firstPrice = processedData[0]?.price || 0;
 
    return (
-      <div className="h-full w-full pb-6">
+      <div className="h-full w-full pb-6" style={{ minWidth: 0, minHeight: 0 }}>
          <ResponsiveContainer
             width="100%"
             height="100%"

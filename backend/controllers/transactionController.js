@@ -87,17 +87,33 @@ export const buyStock = async (req, res, next) => {
         const totalAmount = currentPrice * quantity;
 
         // ── ATOMIC: deduct wallet only if sufficient balance ──
+        // First get user to ensure we give a correct message if balance is missing
+        const userCheck = await userModel.findById(userId);
+        if (!userCheck) {
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        // Treat undefined walletBalance as 0
+        const currentBalance = userCheck.walletBalance || 0;
+        if (currentBalance < totalAmount) {
+            return res.status(400).json({ message: "Insufficient wallet balance" });
+        }
+
         const user = await userModel.findOneAndUpdate(
             {
                 _id: userId,
-                walletBalance: { $gte: totalAmount }, // atomic balance check
+                // Ensure the atomic query works even if balance was slightly modified between check and now
+                $or: [
+                    { walletBalance: { $gte: totalAmount } },
+                    { walletBalance: { $exists: false } } // Though this shouldn't happen if they passed the check above and we initialized them, but just in case
+                ]
             },
             { $inc: { walletBalance: -totalAmount } },
             { new: true }
         );
 
         if (!user) {
-            return res.status(400).json({ message: "Insufficient wallet balance" });
+            return res.status(400).json({ message: "Insufficient wallet balance (transaction conflicted)" });
         }
 
         // Create BUY transaction

@@ -105,7 +105,7 @@ export const getPortfolio = async (req, res, next) => {
     });
 
     const totalProfit =
-      (totalCurrentValue + walletBalance) - 100000;
+      (totalCurrentValue + (walletBalance || 0)) - 100000;
 
     // 6.5. Generate dynamic growth history from transactions
     const growthHistory = [];
@@ -115,10 +115,10 @@ export const getPortfolio = async (req, res, next) => {
       const lastPrice = {};
 
       // Add starting baseline point (1 day before first transaction)
-      const firstTxTime = new Date(transactions[0].createdAt);
+      const firstTxTime = transactions[0].createdAt ? new Date(transactions[0].createdAt) : new Date();
       const startingTime = new Date(firstTxTime.getTime() - 24 * 60 * 60 * 1000);
       growthHistory.push({
-        date: startingTime.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+        date: isNaN(startingTime.getTime()) ? "Start" : startingTime.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
         value: 100000
       });
 
@@ -141,8 +141,9 @@ export const getPortfolio = async (req, res, next) => {
         });
 
         const netWorth = currentCash + holdingsValue;
+        const txDate = tx.createdAt ? new Date(tx.createdAt) : new Date();
         growthHistory.push({
-          date: new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+          date: isNaN(txDate.getTime()) ? "Unknown" : txDate.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
           value: Math.round(netWorth * 100) / 100
         });
       });
@@ -152,10 +153,10 @@ export const getPortfolio = async (req, res, next) => {
       filteredPortfolio.forEach((stock) => {
         currentHoldingsValue += stock.currentValue;
       });
-      const currentNetWorth = walletBalance + currentHoldingsValue;
+      const currentNetWorth = (walletBalance || 0) + currentHoldingsValue;
       growthHistory.push({
         date: "Today",
-        value: Math.round(currentNetWorth * 100) / 100
+        value: isNaN(currentNetWorth) ? 0 : Math.round(currentNetWorth * 100) / 100
       });
     }
 

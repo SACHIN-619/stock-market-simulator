@@ -1,8 +1,4 @@
-Here is your complete, comprehensive, and single **Root README (`/README.md`)** file. It contains absolutely everything from your project architecture, folder structures, full package explanations, live deployment links, technical flowcharts, and your team's internship credits.
 
-You can directly copy and paste this entire code block straight into your root file!
-
----
 
 ```markdown
 # 📈 StockKing: Live Stock Market Simulator & AI Insights Platform

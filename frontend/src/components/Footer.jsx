@@ -35,6 +35,24 @@ function Footer() {
     }
   };
 
+  const handleLearnClick = (e) => {
+    e.preventDefault();
+    if (location.pathname === "/") {
+      const element = document.getElementById("learn-section");
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      navigate("/");
+      setTimeout(() => {
+        const element = document.getElementById("learn-section");
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 150);
+    }
+  };
+
 
   return (
     <footer className="w-full bg-blue-900 pt-16 pb-8 text-white">
@@ -90,7 +108,8 @@ function Footer() {
                 { name: "Home", to: "/", isHome: true },
                 { name: "Dashboard", to: "/portfolio" },
                 { name: "Leaderboard", to: "/leaderboard" },
-                { name: "About", to: "#about-section", isAnchor: true }
+                { name: "About", to: "#about-section", isAbout: true },
+                { name: "Learn", to: "#learn-section", isLearn: true }
               ].map((link) => (
                 <li key={link.name}>
                   {link.isHome ? (
@@ -101,9 +120,17 @@ function Footer() {
                       <span className="w-1.5 h-1.5 rounded-full bg-blue-300 group-hover:bg-white transition-colors" />
                       {link.name}
                     </button>
-                  ) : link.isAnchor ? (
+                  ) : link.isAbout ? (
                     <button
                       onClick={handleAboutClick}
+                      className="text-xs font-bold text-blue-50 hover:text-white transition-colors duration-300 flex items-center gap-1.5 group cursor-pointer bg-transparent border-none p-0 text-left"
+                    >
+                      <span className="w-1.5 h-1.5 rounded-full bg-blue-300 group-hover:bg-white transition-colors" />
+                      {link.name}
+                    </button>
+                  ) : link.isLearn ? (
+                    <button
+                      onClick={handleLearnClick}
                       className="text-xs font-bold text-blue-50 hover:text-white transition-colors duration-300 flex items-center gap-1.5 group cursor-pointer bg-transparent border-none p-0 text-left"
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-blue-300 group-hover:bg-white transition-colors" />

@@ -890,8 +890,8 @@ function Home() {
         </div>
       </section>
 
-      {/* INVESTOPEDIA FINANCIAL LEARNING HUB */}
-      <section className="py-24 px-6 md:px-20 lg:px-32 w-full">
+      {/* STOCKKING FINANCIAL LEARNING HUB */}
+      <section id="learn-section" className="py-24 px-6 md:px-20 lg:px-32 w-full">
         <div className="text-center max-w-3xl mx-auto mb-16 space-y-4">
           <span className="text-xs font-black text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1.5 rounded-full">
             Knowledge Center
@@ -955,7 +955,7 @@ function Home() {
                   <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest bg-indigo-50 px-3 py-1 rounded-md">
                     Execution
                   </span>
-                  <span className="text-xs font-black text-slate-400">Investopedia Definition</span>
+                  <span className="text-xs font-black text-slate-400">Stockking Concept</span>
                 </div>
                 <h3 className="text-2xl font-black text-slate-900">How Order Execution Behaves</h3>
                 <p className="text-slate-500 font-semibold leading-relaxed">
@@ -978,7 +978,7 @@ function Home() {
                   <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest bg-indigo-50 px-3 py-1 rounded-md">
                     Shorting
                   </span>
-                  <span className="text-xs font-black text-slate-400">Investopedia Definition</span>
+                  <span className="text-xs font-black text-slate-400">Stockking Concept</span>
                 </div>
                 <h3 className="text-2xl font-black text-slate-900">Bearish Markets & Short Selling</h3>
                 <p className="text-slate-500 font-semibold leading-relaxed">
@@ -1001,7 +1001,7 @@ function Home() {
                   <span className="text-[10px] font-black uppercase text-indigo-600 tracking-widest bg-indigo-50 px-3 py-1 rounded-md">
                     Diversification
                   </span>
-                  <span className="text-xs font-black text-slate-400">Investopedia Definition</span>
+                  <span className="text-xs font-black text-slate-400">Stockking Concept</span>
                 </div>
                 <h3 className="text-2xl font-black text-slate-900">Portfolio Asset Allocation</h3>
                 <p className="text-slate-500 font-semibold leading-relaxed">

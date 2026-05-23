@@ -1,6 +1,5 @@
 import { generateStructuredJSON } from "./aiGeminiService.js";
 import { buildAIPrompt } from "./aiPromptBuilder.js";
-import { calculatePortfolioHealth } from "./portfolioAnalysisService.js";
 import { calculateOverallSentiment } from "./sentimentService.js";
 
 // ──────────────────────────────────────────────
@@ -8,7 +7,7 @@ import { calculateOverallSentiment } from "./sentimentService.js";
 // Generates meaningful data from raw portfolio without any AI call.
 // Used when ALL external providers (Gemini, GROQ, HF) fail.
 // ──────────────────────────────────────────────
-const buildDeterministicFallback = (portfolioData, marketData, portfolioHealth, sentimentLabel) => {
+const buildDeterministicFallback = (portfolioData, marketData, performanceMetrics, sentimentLabel, availableStocks) => {
 
     const hasPortfolio = portfolioData && portfolioData.length > 0;
 
@@ -43,10 +42,10 @@ const buildDeterministicFallback = (portfolioData, marketData, portfolioHealth, 
     // ── Reasoning Steps: derived from portfolio health metrics
     const reasoning = [];
     if (hasPortfolio) {
-        reasoning.push({ step: "1. Concentration Analysis", finding: `Portfolio concentration risk is ${portfolioHealth.concentrationRisk}. Largest position dominates ${(100 - portfolioHealth.diversificationScore).toFixed(0)}% of holdings.`, impact: portfolioHealth.concentrationRisk === "HIGH" ? "HIGH" : "MEDIUM" });
-        reasoning.push({ step: "2. Diversification Score", finding: `Diversification score: ${portfolioHealth.diversificationScore.toFixed(0)}/100. ${portfolioHealth.diversificationScore < 40 ? "Portfolio is highly concentrated — consider spreading across sectors." : "Reasonable spread across holdings detected."}`, impact: portfolioHealth.diversificationScore < 40 ? "HIGH" : "LOW" });
-        reasoning.push({ step: "3. Market Sentiment", finding: `Overall market sentiment detected as ${sentimentLabel}. Align new entries with this macro trend.`, impact: "MEDIUM" });
-        reasoning.push({ step: "4. Risk Assessment", finding: "Deterministic analysis active (AI providers temporarily rate-limited). Core metrics are calculated from your live transaction history.", impact: "LOW" });
+        reasoning.push({ step: "1. Concentration Analysis", finding: `Portfolio concentration risk is ${performanceMetrics.concentrationRisk}. Largest position dominates ${(100 - performanceMetrics.diversificationScore).toFixed(0)}% of holdings.`, impact: performanceMetrics.concentrationRisk === "HIGH" ? "HIGH" : "MEDIUM" });
+        reasoning.push({ step: "2. Diversification Score", finding: `Diversification score: ${performanceMetrics.diversificationScore.toFixed(0)}/100. ${performanceMetrics.diversificationScore < 40 ? "Portfolio is highly concentrated — consider spreading across sectors." : "Reasonable spread across holdings detected."}`, impact: performanceMetrics.diversificationScore < 40 ? "HIGH" : "LOW" });
+        reasoning.push({ step: "3. Sharpe Ratio Evaluation", finding: `Realized Sharpe Ratio is ${performanceMetrics.sharpeRatio.toFixed(2)}. ${performanceMetrics.sharpeRatio > 1.5 ? "Excellent risk-adjusted returns detected." : "Consider picking lower-volatility sectors to optimize risk-adjusted yield."}`, impact: performanceMetrics.sharpeRatio > 1.5 ? "LOW" : "MEDIUM" });
+        reasoning.push({ step: "4. Volatility Context", finding: `Trade-by-trade return standard deviation stands at ${performanceMetrics.tradeVolatility.toFixed(2)}%. Consistency score is ${performanceMetrics.consistencyScore.toFixed(0)}/100.`, impact: "LOW" });
     } else {
         reasoning.push({ step: "1. Portfolio Status", finding: "No active holdings detected. Deploy capital to activate full AI analysis including RSI signals, sentiment fusion, and sector rotation insights.", impact: "HIGH" });
         reasoning.push({ step: "2. Getting Started", finding: "Begin with 3–5 diversified positions across different sectors to establish a baseline for AI pattern recognition.", impact: "MEDIUM" });
@@ -64,31 +63,42 @@ const buildDeterministicFallback = (portfolioData, marketData, portfolioHealth, 
         };
     }) : [];
 
+    const suggestions = hasPortfolio ? [
+        { type: "DIVERSIFY", title: "Sector Diversification", description: "Spread holdings across Tech, Healthcare, Energy, and Consumer sectors to reduce correlated drawdown risk.", impact: "HIGH" }
+    ] : [
+        { type: "BUY", title: "Begin Portfolio Construction", description: "Make your first trade to activate full AI-powered portfolio intelligence, including RSI signals, sentiment analysis, and risk scoring.", impact: "HIGH" }
+    ];
+
+    if (hasPortfolio && performanceMetrics.sharpeRatio < 1) {
+        suggestions.push({
+            type: "RISK_WARNING",
+            title: "Improve Risk-Adjusted Return",
+            description: `Your Sharpe Ratio is currently ${performanceMetrics.sharpeRatio.toFixed(2)}. Consider allocating more to lower-volatility stocks to optimize stability.`,
+            impact: "MEDIUM"
+        });
+    }
+
     return {
         executiveSummary: hasPortfolio
             ? `Deterministic portfolio analysis for ${portfolioData.length} active position(s). AI model providers are temporarily rate-limited; core metrics derived from live transaction and RSI data. Market sentiment is ${sentimentLabel}.`
             : "No active portfolio detected. Alpha-Insight is ready to analyze your holdings the moment you make your first trade. Consider a diversified entry across 3–5 sectors.",
         marketSentiment: { label: sentimentLabel, score: sentimentLabel === "BULLISH" ? 65 : sentimentLabel === "BEARISH" ? 35 : 50, reasoning: `Sentiment calculated from available market data indicators.` },
-        traderScore: hasPortfolio ? Math.round(portfolioHealth.diversificationScore * 0.7 + 10) : 0,
+        traderScore: performanceMetrics.compositeScore,
         confidenceScore: hasPortfolio ? 38 : 0,
         riskAnalysis: {
-            level: portfolioHealth.concentrationRisk === "HIGH" ? "HIGH" : portfolioHealth.concentrationRisk === "MEDIUM" ? "MODERATE" : "LOW",
-            warning: portfolioHealth.concentrationRisk === "HIGH" ? "High concentration detected. Portfolio is vulnerable to single-stock risk." : "Risk levels are within acceptable parameters.",
-            concentrationRisk: portfolioHealth.concentrationRisk,
+            level: performanceMetrics.concentrationRisk === "HIGH" ? "HIGH" : performanceMetrics.concentrationRisk === "MEDIUM" ? "MODERATE" : "LOW",
+            warning: performanceMetrics.concentrationRisk === "HIGH" ? "High concentration detected. Portfolio is vulnerable to single-stock risk." : "Risk levels are within acceptable parameters.",
+            concentrationRisk: performanceMetrics.concentrationRisk,
         },
         portfolioScore: {
-            diversification: Math.round(portfolioHealth.diversificationScore),
-            riskAdjusted: hasPortfolio ? Math.round(portfolioHealth.diversificationScore * 0.75) : 0,
-            concentration: portfolioHealth.concentrationRisk,
+            diversification: Math.round(performanceMetrics.diversificationScore),
+            riskAdjusted: hasPortfolio ? Math.round(performanceMetrics.diversificationScore * 0.75) : 0,
+            concentration: performanceMetrics.concentrationRisk,
         },
         tradeSignals,
         reasoning,
         watchlist,
-        suggestions: hasPortfolio ? [
-            { type: "DIVERSIFY", title: "Sector Diversification", description: "Spread holdings across Tech, Healthcare, Energy, and Consumer sectors to reduce correlated drawdown risk.", impact: "HIGH" },
-        ] : [
-            { type: "BUY", title: "Begin Portfolio Construction", description: "Make your first trade to activate full AI-powered portfolio intelligence, including RSI signals, sentiment analysis, and risk scoring.", impact: "HIGH" },
-        ],
+        suggestions,
     };
 };
 
@@ -172,19 +182,25 @@ export const analyzePortfolioWithAI = async ({
     userProfile,
     portfolioData,
     marketData,
+    performanceMetrics,
+    availableStocks,
 }) => {
     try {
-        // Pre-compute deterministic metrics (not AI-dependent)
-        const portfolioHealth = calculatePortfolioHealth(portfolioData);
         const marketSentimentLabel = calculateOverallSentiment(marketData);
 
-        const prompt = buildAIPrompt({ userProfile, portfolioData, marketData });
+        const prompt = buildAIPrompt({ 
+            userProfile, 
+            portfolioData, 
+            marketData, 
+            performanceMetrics, 
+            availableStocks 
+        });
 
         const parsed = await generateStructuredJSON(prompt);
 
         if (!parsed) {
             console.warn("[AI] All providers exhausted → using deterministic fallback analysis.");
-            return buildDeterministicFallback(portfolioData, marketData, portfolioHealth, marketSentimentLabel);
+            return buildDeterministicFallback(portfolioData, marketData, performanceMetrics, marketSentimentLabel, availableStocks);
         }
 
         // Validate and sanitize AI output before returning
@@ -193,8 +209,7 @@ export const analyzePortfolioWithAI = async ({
 
     } catch (err) {
         console.error("AI SERVICE ERROR:", err.message);
-        const portfolioHealth = calculatePortfolioHealth(portfolioData);
         const marketSentimentLabel = calculateOverallSentiment(marketData);
-        return buildDeterministicFallback(portfolioData, marketData, portfolioHealth, marketSentimentLabel);
+        return buildDeterministicFallback(portfolioData, marketData, performanceMetrics, marketSentimentLabel, availableStocks);
     }
-};
+};

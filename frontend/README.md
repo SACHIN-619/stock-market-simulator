@@ -2,11 +2,11 @@
 ---
 
 ```markdown
-# 💻 StockKing — React Frontend UI Engine
+#  StockKing — React Frontend UI Engine
 
-[![UI Framework](https://img.shields.io/badge/UI-React%2019-blue?logo=react)](https://react.dev/)
-[![Build Tool](https://img.shields.io/badge/Build%20Tool-Vite-646CFF?logo=vite)](https://vite.dev/)
-[![Styling](https://img.shields.io/badge/Styling-Tailwind%20CSS%20v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
+[![UI Framework](https://react.dev/)
+[![Build Tool](https://vite.dev/)
+[![Styling](https://tailwindcss.com/)
 
 This directory houses the client-side single-page application (SPA) architecture for **StockKing**. The interface delivers an institutional-grade trading dashboard featuring real-time financial graphing canvases, an interactive order terminal, multi-sector portfolio allocation matrices, and a predictive AI suggestions hub.
 
@@ -82,7 +82,7 @@ frontend/
 
 ---
 
-## ⚡ UI Mechanics: The Real-Time Watchlist Notification Engine
+##  UI Mechanics: The Real-Time Watchlist Notification Engine
 
 StockKing features a premium, interactive real-time notification mechanism inside the main layout headers (`Navbar.jsx`):
 
@@ -93,7 +93,7 @@ StockKing features a premium, interactive real-time notification mechanism insid
 
 ---
 
-## 🚀 Local Deployment Steps
+##  Local Deployment Steps
 
 ### 1. Set Up Environment Workspace
 

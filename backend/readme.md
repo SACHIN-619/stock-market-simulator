@@ -1,21 +1,21 @@
-# ⚙️ StockKing — Backend Core API & WebSocket Engine
+#  StockKing — Backend Core API & WebSocket Engine
 
-[![Runtime](https://img.shields.io/badge/Runtime-Node.js%20v18+-339933?logo=node.js)](https://nodejs.org/)
-[![Framework](https://img.shields.io/badge/Framework-Express.js%20v5-000000?logo=express)](https://expressjs.com/)
-[![Database](https://img.shields.io/badge/Database-MongoDB%20Mongoose-47A248?logo=mongodb)](https://mongoosejs.com/)
+[Runtime](https://nodejs.org/)
+[Framework](https://expressjs.com/)
+[Database](https://mongoosejs.com/)
 
 This directory houses the server-side architecture powering the **StockKing** ecosystem. Engineered as an asynchronous REST API coupled with a high-frequency WebSocket distribution gateway, this system executes mock trading orders, monitors active database states, coordinates multi-engine AI analytics, and streams live market ticker simulations.
 
 ---
 
-## 🎛️ Server Orchestration Architecture
+## Server Orchestration Architecture
 
 * **Runtime Initialization (`server.js`):** The structural application entry point. It loads process environment parameters (`.env`), sets up secure handshakes with the MongoDB Atlas database cluster, mounts the HTTP framework server layer, and initializes permanent asynchronous system intervals (such as the 5-second stock price broadcaster and the 60-second alert validation engine).
 * **Application Lifecycle Blueprint (`app.js`):** Prepares global Express configurations. It integrates web infrastructure dependencies, configures cross-origin security paths (CORS), activates cookie parsers, mounts structural defensive header shields, and splits core network requests across 10 modular sub-routes.
 
 ---
 
-## 🛡️ Core Dependencies & Production Package Usage
+##  Core Dependencies & Production Package Usage
 
 ### API Transport, Speed Limiting, and Security Suites
 * **`express` (v5.2.1):** Next-generation, minimalist web routing layer processing asynchronous inbound payload streams across isolated router files.
@@ -45,7 +45,7 @@ This directory houses the server-side architecture powering the **StockKing** ec
 
 ---
 
-## 📊 Endpoints & API Architecture Map
+##  Endpoints & API Architecture Map
 
 The system separates processing tasks into individual route targets verified against specific controller behaviors:
 
@@ -64,7 +64,7 @@ The system separates processing tasks into individual route targets verified aga
 
 ---
 
-## 📁 Backend Directory Mapping
+##  Backend Directory Mapping
 
 ```text
 backend/
@@ -95,7 +95,7 @@ backend/
 ├── .env                          # Local environment variable definitions (Excluded from source logs)
 ├── app.js                        # System framework blueprint configuring middleware layers
 └── server.js                     # System boot loader initializing database and infrastructure connections
-⚙️ Asynchronous Watchlist Monitoring Engine (The "Bell")The backend architecture incorporates a premium, background automation loop that coordinates data fetches with immediate client pushes:Background Service Polling: An independent background daemon inside alertService.js tracks asset variations on a continuous 3-minute cycle.Deterministic Technical Fallbacks: If external API gateways hit connection timeouts or limits, an internal mathematical engine recalculates indicators like the Relative Strength Index (RSI) locally using database records to keep alert metrics accurate.Targeted Room Routing: When a stock tracking signal shifts states (e.g., HOLD $\rightarrow$ BUY), the module bypasses public global broadcasts. It references a specialized internal userId socket map to locate the user watching that ticker, and transmits a private socket update directly to their terminal.Client Notification Injection: The message reaches the client header layer (Navbar.jsx), triggering a red badge indicator along with deep routing anchor tags to make the notification fully actionable.🚀 Local Installation Steps1. Set Up Workspace FolderOpen a command shell window and change directories into the backend configuration workspace:Bashcd stock-market-simulator/backend
+ Asynchronous Watchlist Monitoring Engine (The "Bell")The backend architecture incorporates a premium, background automation loop that coordinates data fetches with immediate client pushes:Background Service Polling: An independent background daemon inside alertService.js tracks asset variations on a continuous 3-minute cycle.Deterministic Technical Fallbacks: If external API gateways hit connection timeouts or limits, an internal mathematical engine recalculates indicators like the Relative Strength Index (RSI) locally using database records to keep alert metrics accurate.Targeted Room Routing: When a stock tracking signal shifts states (e.g., HOLD $\rightarrow$ BUY), the module bypasses public global broadcasts. It references a specialized internal userId socket map to locate the user watching that ticker, and transmits a private socket update directly to their terminal.Client Notification Injection: The message reaches the client header layer (Navbar.jsx), triggering a red badge indicator along with deep routing anchor tags to make the notification fully actionable. Local Installation Steps1. Set Up Workspace FolderOpen a command shell window and change directories into the backend configuration workspace:Bashcd stock-market-simulator/backend
 2. Build Project Package TreeCompile your structural configuration assets and compile local dependency files:Bashnpm install
 3. Establish System Variables (.env)Create an isolated .env configuration file in the root of the /backend folder and define your platform tokens:Code snippetPORT=5000
 MONGO_URI=your_mongodb_atlas_connection_string

@@ -1,17 +1,17 @@
 
 
 ```markdown
-# 📈 StockKing: Live Stock Market Simulator & AI Insights Platform
+#  StockKing: Live Stock Market Simulator & AI Insights Platform
 
-[![Deployment Status](https://img.shields.io/badge/Frontend-Vercel-brightgreen?logo=vercel)](https://stock-market-simulators.vercel.app/)
-[![Backend Status](https://img.shields.io/badge/Backend-Render-blue?logo=render)](https://stock-market-simulator-jvru.onrender.com/)
-[![Database](https://img.shields.io/badge/Database-MongoDB%20Atlas-emerald?logo=mongodb)](https://www.mongodb.com/cloud/atlas)
+[Deployment Status on vercel](https://stock-market-simulators.vercel.app/)
+[Backend Status on render](https://stock-market-simulator-jvru.onrender.com/)
+[Database on atlas](https://www.mongodb.com/cloud/atlas)
 
 > **Rule the market completely risk-free.** StockKing is an enterprise-grade MERN stack ecosystem enabling traders to practice investment strategies using real-time simulated market trends, interactive technical charts, multi-sector portfolio analytics, and predictive AI insights.
 
 ---
 
-## 🔗 Live Deployments & Environment Ports
+##  Live Deployments & Environment Ports
 
 * **Frontend Client (Vercel):** [stock-market-simulators.vercel.app](https://stock-market-simulators.vercel.app/) *(Follow this link to start trading)*
 * **Core API Gateway (Render):** [stock-market-simulator-jvru.onrender.com](https://stock-market-simulator-jvru.onrender.com/)
@@ -24,7 +24,7 @@
 
 ---
 
-## 🏗️ System Architecture & Data Flow
+##  System Architecture & Data Flow
 
 StockKing operates on a decoupled, asynchronous multi-tier architecture optimized for sub-second state adjustments and high-frequency real-time events:
 
@@ -47,7 +47,7 @@ StockKing operates on a decoupled, asynchronous multi-tier architecture optimize
 
 ```
 
-### 🔁 Deep-Dive: How a Full Mock Asset Buy Order Request Works
+###  Deep-Dive: How a Full Mock Asset Buy Order Request Works
 
 1. **Trader Interaction:** A user inputs stock data and clicks "BUY" inside `StockDetails.jsx` $\rightarrow$ calls local handler function `handleTrade("BUY")`.
 2. **Confirmation Modal:** A confirmation modal prompts the user. Upon clicking OK, `confirmTrade()` calls the `buyStock()` extraction from `tradeService.js`.
@@ -59,16 +59,16 @@ StockKing operates on a decoupled, asynchronous multi-tier architecture optimize
 
 ---
 
-## ✨ Features & Ecosystem Tools
+##  Features & Ecosystem Tools
 
-### 📊 Baseline Core Simulation Engine
+###  Baseline Core Simulation Engine
 
 * **Virtual Asset Terminal:** Buy and sell active market equities completely risk-free using an initial automated allocation of **$100,000.00** mock capital.
 * **Unified Portfolio Visualizer:** Dynamic layout charts mapping live cash balances against active equity holdings valuations.
 * **Audit-Compliant Records:** Complete tracking mechanics providing real-time tracking for absolute profit/loss variations.
 * **Global Trader Leaderboard:** Real-time trader performance rankings compiled dynamically via specialized high-performance database indexing logs (`/trader-api`).
 
-### ⚡ Premium Technical Upgrades
+###  Premium Technical Upgrades
 
 * **High-Frequency WebSocket Streams:** Integrated server broadcast channels emitting live updated stock variables directly to clients every 5 seconds.
 * **Dual-Tier Financial Charting Canvas:** Uses high-performance TradingView `lightweight-charts` layout modules side-by-side with responsive custom `recharts` views.
@@ -83,9 +83,9 @@ StockKing operates on a decoupled, asynchronous multi-tier architecture optimize
 
 ---
 
-## 🛠️ Detailed Tech Stack & Deep Package Usage
+##  Detailed Tech Stack & Deep Package Usage
 
-### 💻 Frontend Client Dependencies (`/frontend/package.json`)
+###  Frontend Client Dependencies (`/frontend/package.json`)
 
 * `react` & `react-dom` (v19.2.5): Core declarative component library driving optimized client side Virtual DOM renders.
 * `vite` (v8.0.10): High-speed compilation server and bundle engine supporting instantaneous Hot Module Replacement (HMR).
@@ -98,7 +98,7 @@ StockKing operates on a decoupled, asynchronous multi-tier architecture optimize
 * `tailwindcss` & `@tailwindcss/vite` (v4.2.4): Modern styling utility engine optimizing UI rendering directly within class configurations.
 * `lucide-react` (v1.14.0): Icon directory providing clean vector anchors for notification layouts.
 
-### ⚙️ Backend Server Dependencies (`/backend/package.json`)
+###  Backend Server Dependencies (`/backend/package.json`)
 
 * `express` (v5.2.1): Core web runtime framework routing custom API endpoints across modular sub-trees.
 * `mongoose` (v9.6.1): Object Data Modeling layer providing structured schema-validation layouts over raw MongoDB collections.
@@ -117,7 +117,7 @@ StockKing operates on a decoupled, asynchronous multi-tier architecture optimize
 
 ---
 
-## 📁 Repository Workspace Structure
+##  Repository Workspace Structure
 
 ```text
 stock-market-simulator/
@@ -153,7 +153,7 @@ stock-market-simulator/
 
 ---
 
-## 🚀 Step-by-Step Local Setup & Installation
+##  Step-by-Step Local Setup & Installation
 
 ### Prerequisites
 
@@ -212,17 +212,17 @@ npm run dev
 
 *The local dashboard runtime will deploy smoothly on `http://localhost:5173`.*
 
----
+---0
 
-## 👥 Team 7 — Sunntek Summer Internship
+##  Team 7 — Sunntek Summer Internship
 
 This architecture was designed and delivered by Team 7 under the Sunntek Summer Internship program.
 
 * **SACHIN KUMAR** (24EG105C50) — [GitHub Profile](https://github.com/SACHIN-619)
-* **MOULYA REDDY** (24EG105A65) — [GitHub Profile](https://github.com/moulyareddy16-bot)
-* **PRANEETH REDDY** (24EG105F24) — [GitHub Profile](https://github.com/Dyapa-Praneeth-Reddy)
-* **PAVANI** (24EG105A56) — [GitHub Profile](https://github.com/pavani1280)
-* **SHIVA PRASAD REDDY** (24EG109A56) — [GitHub Profile](https://github.com/shivaprasadreddy2006)
+* **S.R.MOULYA REDDY** (24EG105A65) — [GitHub Profile](https://github.com/moulyareddy16-bot)
+* **D.PRANEETH REDDY** (24EG105F24) — [GitHub Profile](https://github.com/Dyapa-Praneeth-Reddy)
+* **V.PAVANI** (24EG105A56) — [GitHub Profile](https://github.com/pavani1280)
+* **V.SHIVA PRASAD REDDY** (24EG109A56) — [GitHub Profile](https://github.com/shivaprasadreddy2006)
 
 ---
 

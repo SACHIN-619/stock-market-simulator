@@ -12,7 +12,7 @@ This directory houses the client-side single-page application (SPA) architecture
 
 ---
 
-## 🔗 Connected Ecosystem Endpoints
+## Connected Ecosystem Endpoints
 When executing in a standard local deployment environment, the client utilizes the following target configurations:
 * **Client Local Server:** `http://localhost:5173`
 * **Target REST API Gateway:** `http://localhost:5000`
@@ -20,7 +20,7 @@ When executing in a standard local deployment environment, the client utilizes t
 
 ---
 
-## 🛠️ Advanced Tech Stack & Packages Breakdown
+##  Advanced Tech Stack & Packages Breakdown
 
 Our production client layer uses an optimized set of visual, real-time packages designed for fast data renders and modern user interactions:
 

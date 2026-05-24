@@ -257,7 +257,7 @@ export default function TraderTerminal() {
           <div className="absolute -top-40 -left-40 w-96 h-96 bg-emerald-500/10 blur-[120px] pointer-events-none" />
 
           {/* Back Action Controller */}
-          <div className="relative z-10 flex justify-between items-center mb-6">
+          <div className="relative z-10 flex flex-wrap justify-between items-center mb-6 gap-4">
             <button
               onClick={() => setSelectedStock(null)}
               className="flex items-center gap-2 text-[10px] font-black tracking-widest text-slate-400 hover:text-emerald-400 uppercase transition-colors"

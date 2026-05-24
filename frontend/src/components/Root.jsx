@@ -10,6 +10,7 @@ function Root() {
   const location = useLocation();
   const role = sessionStorage.getItem("role");
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
   // Auth pages should not have sidebar/navbar sometimes,
@@ -39,13 +40,15 @@ function Root() {
 
   return (
     <div className="min-h-screen bg-[#F4F5F0] text-slate-855 flex flex-col relative">
-      <Navbar />
+      <Navbar onMobileMenuClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)} />
 
       <div className="flex flex-1 pt-16">
         {showSidebar && (
           <Sidebar
             isCollapsed={isSidebarCollapsed}
             setIsCollapsed={setIsSidebarCollapsed}
+            isMobileOpen={isMobileSidebarOpen}
+            setIsMobileOpen={setIsMobileSidebarOpen}
           />
         )}
 
@@ -53,8 +56,8 @@ function Root() {
           className={`flex-1 flex flex-col transition-all duration-300 ${
             showSidebar
               ? isSidebarCollapsed
-                ? "ml-20"
-                : "ml-20 lg:ml-64"
+                ? "ml-0 lg:ml-20"
+                : "ml-0 lg:ml-64"
               : ""
           }`}
         >
@@ -71,6 +74,14 @@ function Root() {
           {/* Footer only on home page */}
           {location.pathname === "/" && <Footer />}
         </main>
+        
+        {/* Mobile Sidebar Overlay */}
+        {showSidebar && isMobileSidebarOpen && (
+          <div 
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-30 lg:hidden"
+            onClick={() => setIsMobileSidebarOpen(false)}
+          ></div>
+        )}
       </div>
 
       {/* GLOBAL FLOATING CHAT WIDGET */}

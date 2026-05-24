@@ -258,7 +258,7 @@ function Portfolio() {
           <h2 className="text-lg font-black text-slate-900">Current Holdings</h2>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full min-w-[700px] text-left border-collapse whitespace-nowrap">
             <thead>
               <tr className="bg-slate-50/75">
                 <th className="px-8 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Asset</th>

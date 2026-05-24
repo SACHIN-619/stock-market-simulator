@@ -2,7 +2,7 @@ import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import api from "../service/api";
 import WatchlistBell from "./WatchlistBell";
 
-function Navbar() {
+function Navbar({ onMobileMenuClick }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -76,11 +76,27 @@ function Navbar() {
     <nav className="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-4 
     bg-[#F4F5F0]/90 backdrop-blur-md border-b border-[#e4e5df]/50">
 
-      {/* LOGO & BRAND */}
-      <NavLink
-        to="/"
-        className="flex items-center gap-3 group"
-      >
+      {/* LEFT SIDE: Hamburger + Brand */}
+      <div className="flex items-center gap-2 md:gap-4">
+        {role && role !== "admin" && (
+          <button 
+            onClick={onMobileMenuClick}
+            className="lg:hidden p-2 -ml-2 rounded-xl text-slate-600 hover:bg-slate-200 transition-colors"
+            title="Open Menu"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        )}
+
+        {/* LOGO & BRAND */}
+        <NavLink
+          to="/"
+          className="flex items-center gap-2 md:gap-3 group"
+        >
         <div className="relative flex items-center justify-center">
           <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center border border-[#e4e5df] transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 group-hover:border-blue-500/30 shadow-2xs">
             <svg 
@@ -101,10 +117,11 @@ function Navbar() {
           {/* GLOW */}
           <div className="absolute inset-0 bg-blue-500/10 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
         </div>
-        <span className="text-2xl font-black text-slate-900 tracking-tighter">
+        <span className="text-xl md:text-2xl font-black text-slate-900 tracking-tighter hidden sm:block">
           Stock<span className="text-blue-600">king</span>
         </span>
       </NavLink>
+      </div>
 
       {/* RIGHT SIDE */}
       <div className="flex gap-3 items-center">
@@ -115,21 +132,21 @@ function Navbar() {
           <>
             <button
               onClick={handleHomeClick}
-              className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
+              className="px-2 md:px-5 py-2 text-xs md:text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none hidden sm:block"
             >
               Home
             </button>
 
             <button
               onClick={handleAboutClick}
-              className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
+              className="px-2 md:px-5 py-2 text-xs md:text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none hidden sm:block"
             >
               About
             </button>
 
             <button
               onClick={handleLearnClick}
-              className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none"
+              className="px-2 md:px-5 py-2 text-xs md:text-sm font-semibold text-black hover:text-slate-600 transition-colors cursor-pointer bg-transparent border-none hidden sm:block"
             >
               Learn
             </button>
@@ -137,18 +154,19 @@ function Navbar() {
         )}
 
         {!role ? (
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1 md:gap-3">
             <NavLink
               to="/signin"
-              className="px-5 py-2 text-sm font-semibold text-black hover:text-slate-600 transition-colors"
+              className="px-3 md:px-5 py-2 text-xs md:text-sm font-semibold text-black hover:text-slate-600 transition-colors"
             >
               Sign In
             </NavLink>
             <NavLink
               to="/register"
-              className="px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-xl transition-all shadow-md shadow-blue-600/10 hover:scale-105 active:scale-95"
+              className="px-4 md:px-6 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs md:text-sm font-semibold rounded-xl transition-all shadow-md shadow-blue-600/10 hover:scale-105 active:scale-95"
             >
-              Start Trading
+              <span className="hidden sm:inline">Start Trading</span>
+              <span className="sm:hidden">Start</span>
             </NavLink>
           </div>
         ) : (

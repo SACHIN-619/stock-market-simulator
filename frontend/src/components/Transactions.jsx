@@ -48,7 +48,7 @@ function Transactions() {
           />
         </div>
         <div className="overflow-x-auto max-h-[640px] custom-scrollbar relative">
-          <table className="w-full text-left border-collapse">
+          <table className="w-full min-w-[700px] text-left border-collapse whitespace-nowrap">
             <thead className="sticky top-0 z-10 bg-slate-50/90 backdrop-blur-md">
               <tr className="border-b border-slate-100">
                 <th className="px-6 py-4 text-[10px] font-black text-slate-400 uppercase tracking-widest text-center w-[15%]">Type</th>

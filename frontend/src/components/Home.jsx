@@ -586,7 +586,7 @@ function Home() {
       >
         {/* LEFT CONTENT */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
-          <h1 className="text-5xl md:text-6xl font-black leading-tight text-slate-900 tracking-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-black leading-tight text-slate-900 tracking-tight">
             Master Trading <br />
             <span className="text-indigo-600">Without Risk</span>
           </h1>
@@ -757,7 +757,7 @@ function Home() {
             <p className="text-slate-500 font-semibold leading-relaxed">
               Don't wait to register! Use this interactive mock trading terminal to execute a simulated transaction for <strong className="font-bold text-slate-900">{mainStock.name} ({mainStock.symbol})</strong>. Watch your virtual balance and holdings update instantly inside the card.
             </p>
-            <div className="flex items-center gap-6 pt-4 border-t border-slate-200">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 pt-4 border-t border-slate-200">
               <div>
                 <span className="text-[10px] text-slate-400 font-extrabold uppercase">Default Capital</span>
                 <p className="text-xl font-black text-slate-900">$100,000.00</p>

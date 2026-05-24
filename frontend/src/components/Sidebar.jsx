@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-function Sidebar({ isCollapsed, setIsCollapsed }) {
+function Sidebar({ isCollapsed, setIsCollapsed, isMobileOpen, setIsMobileOpen }) {
   const navItems = [
     { name: "Portfolio", path: "/portfolio", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg> },
     { name: "Market", path: "/stocks", icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12V7a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v5" /></svg> },
@@ -29,10 +29,10 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
   ];
 
   return (
-    <aside className={`fixed left-0 top-16 h-[calc(100vh-64px)] ${isCollapsed ? "w-20" : "w-20 lg:w-64"} bg-[#EFEFEA] border-r border-slate-200/60 transition-all duration-300 z-40 overflow-y-auto`}>
+    <aside className={`fixed left-0 top-16 h-[calc(100vh-64px)] bg-[#EFEFEA] border-r border-slate-200/60 transition-all duration-300 z-40 overflow-y-auto ${isMobileOpen ? "translate-x-0 w-64" : "-translate-x-full w-64"} lg:translate-x-0 ${isCollapsed ? "lg:w-20" : "lg:w-64"}`}>
       <div className="flex flex-col h-full py-4">
         {/* Toggle Button */}
-        <div className={`px-4 mb-4 flex ${isCollapsed ? "justify-center" : "justify-end"}`}>
+        <div className={`px-4 mb-4 flex hidden lg:flex ${isCollapsed ? "justify-center" : "justify-end"}`}>
            <button 
              onClick={() => setIsCollapsed(!isCollapsed)}
              className="p-2 rounded-xl bg-slate-50 border border-slate-200/50 text-slate-400 hover:text-blue-600 hover:border-blue-500/30 transition-all cursor-pointer group"
@@ -60,8 +60,11 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
             <NavLink
               key={item.name}
               to={item.path}
+              onClick={() => {
+                if (isMobileOpen) setIsMobileOpen(false);
+              }}
               className={({ isActive }) =>
-                `flex items-center ${isCollapsed ? "justify-center" : "gap-4"} px-4 py-3 rounded-xl transition-all border group ${
+                `flex items-center ${isCollapsed ? "lg:justify-center" : "gap-4"} px-4 py-3 rounded-xl transition-all border group ${
                   isActive
                     ? "bg-[#E0EFFF] text-[#1D4ED8] border-[#BCD6F2] font-black shadow-2xs"
                     : "text-slate-550 hover:bg-[#E4E5DF] hover:text-slate-800 border-transparent font-semibold"
@@ -72,13 +75,12 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
               <div className="shrink-0 flex items-center justify-center w-5 h-5">
                 {item.icon}
               </div>
-              {!isCollapsed && <span className="hidden lg:block text-sm tracking-tight">{item.name}</span>}
+              <span className={`text-sm tracking-tight ${isCollapsed ? "lg:hidden" : "block"}`}>{item.name}</span>
             </NavLink>
           ))}
         </nav>
 
-        {!isCollapsed && (
-          <div className="px-4 mt-auto mb-4 hidden lg:block">
+        <div className={`px-4 mt-auto mb-4 ${isCollapsed ? "lg:hidden" : "block"}`}>
             <div className="p-4 rounded-2xl bg-[#E0EFFF]/40 border border-[#BCD6F2]/40">
               <p className="text-[10px] font-black text-[#1D4ED8] uppercase tracking-widest mb-2">AI Intelligence</p>
               <p className="text-[10px] font-bold text-slate-550 leading-relaxed uppercase">
@@ -86,7 +88,6 @@ function Sidebar({ isCollapsed, setIsCollapsed }) {
               </p>
             </div>
           </div>
-        )}
       </div>
     </aside>
   );
